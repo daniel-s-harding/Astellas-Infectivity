@@ -1,0 +1,81 @@
+Names default to here(1);
+//List of parameters to change
+AddinSource = "../Encrypted Scripts/";
+Name = "Astellas - BQT Single Run";
+ID = "com.astellas.BQT_SingleRun";
+
+Version = Format( Today(), "Format Pattern", "<YY><MM><DD>" );
+JMPVersion = Left(JMP Version(), 2);
+Host = If(Host is(windows), "Win", "Mac"); //Delete line if host is both
+AddinDefText = "id=^ID^
+name=^Name^
+supportJmpSE=0
+addinVersion=^Version^
+minJmpVersion=^JMPVersion^
+host=^Host^";
+
+Save Text File(AddinSource || "addin.def", Eval Insert(AddinDefText));
+FileName = Name || ".jmpaddin";
+
+zipFolder = Function( {folderToZip, zipFileLoc, overwriteFile = 0, recursive = 1},
+	{Default Local}, 
+	/*
+		Arguments:
+			folderToZip - "path" - path to the folder you want to compress
+			zipFileLoc - "path" - path to the output zip file
+			overwriteFile - <0|1> - do you want to overwrite an existing file. default is 0
+			recursive - <0|1> - do you want all files in the folder or just top leve. default is 1
+	*/
+	// Convert the filepath to the OS and add a trailing slash if one is missing
+	If( Host is( "Windows" ),
+		folderToZip = Convert File Path( folderToZip, "Windows" );
+		zipFileLoc = Convert File Path( zipFileLoc, "Windows" );
+		If( Substr( folderToZip, -1 ) != "\",
+			folderToZip = Concat( folderToZip, "\" )
+		);
+	,
+		folderToZip = Convert File Path( folderToZip, "posix" );
+		zipFileLoc = Convert File Path( zipFileLoc, "posix" );
+		If( Substr( folderToZip, -1 ) != "/",
+			folderToZip = Concat( folderToZip, "/" )
+		);
+	);
+	
+	// Check to see if the file exst
+	If( File Exists( zipFileLoc ),
+		
+		Match( overwriteFile,
+			0, // if we should not overwrite, write to the log and return 0
+				Write( "\!NFile already exists" );
+				Return( 0 );
+		,
+			1, // else just delete the existing file
+				Delete File( zipFileLoc ),
+		);
+	);
+	
+	// create the zipfile and ZipArchive object (za)
+	za = Open( zipFileLoc, zip );
+	
+	// get our list of files to compress, based on recursive setting
+	If( recursive == 1,
+		dirlist = Files In Directory( folderToZip, "recursive" ),
+		dirlist = Files In Directory( folderToZip )
+	);	
+	
+	// loop through each file
+	For( iFile = 1, iFile <= N Items( dirlist ), iFile++, 
+		
+		// read in the uncompressed file as a blob
+		tmpBlob = Load Text File( folderToZip || dirlist[iFile], blob );
+		
+		// write compressed file to the ZipArchive object
+		za << Write( dirlist[iFile], tmpBlob );
+	);
+	
+	Return( 1 );
+);
+
+zipFolder(AddinSource, "../Production Environment/Script/" || Version || " - " || FileName, 1, 1); //Build the addin
+
+Open("../Production Environment/Script/" || Version || " - " || FileName); //Auto install

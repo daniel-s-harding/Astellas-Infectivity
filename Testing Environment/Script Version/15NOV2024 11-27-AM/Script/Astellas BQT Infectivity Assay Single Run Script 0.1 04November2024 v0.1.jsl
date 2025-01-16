@@ -1,0 +1,5070 @@
+﻿// (c) Thomas A. Little Consulting 2024
+//11/04/2024 created script
+
+
+
+//Clear all variables
+Clear Globals();
+
+scriptver = "Astellas BQT Infectivity PLA Script Version 0.1";
+pathlocation = GetEnvironmentVariable("BTQ_INFECTIVITY1");
+
+dateint = Char( As Date( Today() ) );
+datetimestamper = Substitute( Char( dateint ), ":", "-" );
+
+/*
+CreatePLADir_Astellas= expr(
+	if(!directory exists(concat(pathlocation,"Astellas KT430 RI Assay Results")),create directory(concat(pathlocation,"Astellas KT430 RI Assay Results")));
+	if(!directory exists(concat(pathlocation,"Astellas KT430 RI Assay Results\Journals")),create directory(concat(pathlocation,"Astellas KT430 RI Assay Results\Journals")));
+	if(!directory exists(concat(pathlocation,"Astellas KT430 RI Assay Results\PDFs")),create directory(concat(pathlocation,"Astellas KT430 RI Assay Results\PDFs")));
+	if(!directory exists(concat(pathlocation,"Astellas KT430 RI Assay Results\Tables")),create directory(concat(pathlocation,"Astellas KT430 RI Assay Results\Tables")));
+	if(!directory exists(concat(pathlocation,"Astellas KT430 RI Assay Results\Tracking")),create directory(concat(pathlocation,"Astellas KT430 RI Assay Results\Tracking")));
+    if(!File Exists(concat(pathlocation,"Astellas KT430 RI Assay Results\Tracking\Astellas KT430 RI Assay Tracking and Trending.jmp")),
+		dttracking = New Table( "Astellas KT430 RI Assay Tracking and Trending",
+			Add Rows( 0 ),
+			Compress File When Saved( 1 ),
+			New Column( "Script Date and Time",
+				Numeric,
+				"Continuous",
+				Format( "yyyy-mm-ddThh:mm:ss", 23, 0 ),
+				Input Format( "m/d/y h:m:s", 0 ),
+				Set Values( [] ),
+				Set Display Width( 213 )
+			),
+			New Column( "Script Version",
+				Character,
+				"Nominal",
+				Set Values( {} ),
+				Set Display Width( 279 )
+			),
+			New Column( "Configuration File Name",
+				Character,
+				"Nominal",
+				Set Values( {} ),
+				Set Display Width( 279 )
+			),
+			New Column( "Assay Name",
+				Character( 31 ),
+				"Nominal",
+				Set Values( {} ),
+				Set Display Width( 362 )
+			),		
+			New Column( "Reference Standard",
+				Character( 31 ),
+				"Nominal",
+				Set Values( {} ),
+				Set Display Width( 362 )
+			),
+			New Column( "Date Assay Initiated",
+				Character( 20 ),
+				"Nominal",
+				Set Values( {} ),
+				Set Display Width( 160 )
+			),
+			New Column( "Purpose",
+				Character,
+				"Nominal",
+				Set Values( {} ),
+				Set Display Width( 166 )
+			),
+			New Column( "Bioassay Run ID",
+				Character( 31 ),
+				"Nominal",
+				Set Values( {} ),
+				Set Display Width( 141 )
+			),			
+			New Column( "Analyst Name",
+				Character( 31 ),
+				"Nominal",
+				Set Values( {} ),
+				Set Display Width( 141 )
+			),
+			New Column( "Bioassay Preparation",
+				Character( 31 ),
+				"Nominal",
+				Set Values( {} ),
+				Set Display Width( 141 )
+			),
+			New Column( "Bioassay Revision",
+				Character( 31 ),
+				"Nominal",
+				Set Values( {} ),
+				Set Display Width( 141 )
+			),
+			New Column( "Signal",
+				Character( 31 ),
+				"Nominal",
+				Set Values( {} ),
+				Set Display Width( 157 )
+			),
+			New Column( "Method",
+				Character( 31 ),
+				"Nominal",
+				Set Values( {} ),
+				Set Display Width( 118 )
+			),
+			New Column( "Instrument ID",
+				Character( 31 ),
+				"Nominal",
+				Set Values( {} ),
+				Set Display Width( 118 )
+			),
+			New Column( "Notes", Character( 31 ), "Nominal", Set Display Width( 200 ) ),
+			New Column( "Material 1", Character( 31 ), "Nominal", Set Display Width( 60 ) ),
+			New Column( "Source 1", Character( 31 ), "Nominal", Set Display Width( 60 ) ),
+			New Column( "Catalog 1", Character( 31 ), "Nominal", Set Display Width( 60 ) ),
+			New Column( "Lot 1", Character( 31 ), "Nominal", Set Display Width( 60 ) ),
+			New Column( "Expiration 1",
+				Character( 31 ),
+				"Nominal",
+				Set Display Width( 67 )
+			),
+			New Column( "Material 2", Character( 31 ), "Nominal", Set Display Width( 60 ) ),
+			New Column( "Source 2", Character( 31 ), "Nominal", Set Display Width( 60 ) ),
+			New Column( "Catalog 2", Character( 31 ), "Nominal", Set Display Width( 60 ) ),
+			New Column( "Lot 2", Character( 31 ), "Nominal", Set Display Width( 60 ) ),
+			New Column( "Expiration 2",
+				Character( 31 ),
+				"Nominal",
+				Set Display Width( 67 )
+			),
+			New Column( "Material 3", Character( 31 ), "Nominal", Set Display Width( 60 ) ),
+			New Column( "Source 3", Character( 31 ), "Nominal", Set Display Width( 60 ) ),
+			New Column( "Catalog 3", Character( 31 ), "Nominal", Set Display Width( 60 ) ),
+			New Column( "Lot 3", Character( 31 ), "Nominal", Set Display Width( 60 ) ),
+			New Column( "Expiration 3",
+				Character( 31 ),
+				"Nominal",
+				Set Display Width( 67 )
+			),
+			New Column( "Material 4", Character( 31 ), "Nominal", Set Display Width( 60 ) ),
+			New Column( "Source 4", Character( 31 ), "Nominal", Set Display Width( 60 ) ),
+			New Column( "Catalog 4", Character( 31 ), "Nominal", Set Display Width( 60 ) ),
+			New Column( "Lot 4", Character( 31 ), "Nominal", Set Display Width( 60 ) ),
+			New Column( "Expiration 4",
+				Character( 31 ),
+				"Nominal",
+				Set Display Width( 67 )
+			),
+			New Column( "Material 5", Character( 31 ), "Nominal", Set Display Width( 60 ) ),
+			New Column( "Source 5", Character( 31 ), "Nominal", Set Display Width( 60 ) ),
+			New Column( "Catalog 5", Character( 31 ), "Nominal", Set Display Width( 60 ) ),
+			New Column( "Lot 5", Character( 31 ), "Nominal", Set Display Width( 60 ) ),
+			New Column( "Expiration 5",
+				Character( 31 ),
+				"Nominal",
+				Set Display Width( 67 )
+			),
+			New Column( "Material 6", Character( 31 ), "Nominal", Set Display Width( 60 ) ),
+			New Column( "Source 6", Character( 31 ), "Nominal", Set Display Width( 60 ) ),
+			New Column( "Catalog 6", Character( 31 ), "Nominal", Set Display Width( 60 ) ),
+			New Column( "Lot 6", Character( 31 ), "Nominal", Set Display Width( 60 ) ),
+			New Column( "Expiration 6",
+				Character( 31 ),
+				"Nominal",
+				Set Display Width( 67 )
+			),
+			New Column( "Material 7", Character( 31 ), "Nominal", Set Display Width( 60 ) ),
+			New Column( "Source 7", Character( 31 ), "Nominal", Set Display Width( 60 ) ),
+			New Column( "Catalog 7", Character( 31 ), "Nominal", Set Display Width( 60 ) ),
+			New Column( "Lot 7", Character( 31 ), "Nominal", Set Display Width( 60 ) ),
+			New Column( "Expiration 7",
+				Character( 31 ),
+				"Nominal",
+				Set Display Width( 67 )
+			),
+			New Column( "Material 8", Character( 31 ), "Nominal", Set Display Width( 60 ) ),
+			New Column( "Source 8", Character( 31 ), "Nominal", Set Display Width( 60 ) ),
+			New Column( "Catalog 8", Character( 31 ), "Nominal", Set Display Width( 60 ) ),
+			New Column( "Lot 8", Character( 31 ), "Nominal", Set Display Width( 60 ) ),
+			New Column( "Expiration 8",
+				Character( 31 ),
+				"Nominal",
+				Set Display Width( 67 )
+			),
+			New Column( "Reference Standard ID",
+				Character( 31 ),
+				"Nominal",
+				Set Display Width( 147 )
+			),
+			New Column( "RS Description",
+				Character( 31 ),
+				"Nominal",
+				Set Display Width( 82 )
+			),
+			New Column( "RS Expiry", Character( 31 ), "Nominal", Set Display Width( 60 ) ),
+			New Column( "RS CF",
+				Numeric,
+				"Continuous",
+				Format( "Best", 12 ),
+				Set Display Width( 72 )
+			),
+			New Column( "Stability CF",
+				Numeric,
+				"Continuous",
+				Format( "Best", 12 ),
+				Set Display Width( 72 )
+			),	
+			New Column( "Test Article Information",
+				Character,
+				"Nominal",
+				Set Values( {} ),
+				Set Display Width( 174 )
+			),	
+			New Column( "EC50 Reference",
+				Numeric,
+				"Continuous",
+				Format( "Best", 12 ),
+				Set Values( [] ),
+				Set Display Width( 113 )
+			),				
+			New Column( "EC50 TA",
+				Numeric,
+				"Continuous",
+				Format( "Best", 12 ),
+				Set Values( [] ),
+				Set Display Width( 113 )
+			),
+			New Column( "Parallelism, Slope Ratio",
+				Numeric,
+				"Continuous",
+				Format( "Best", 12 ),
+				Set Values( [] ),
+				Set Display Width( 113 )
+			),
+			New Column( "Linearity Ratio",
+				Numeric,
+				"Continuous",
+				Format( "Best", 12 ),
+				Set Values( [] ),
+				Set Display Width( 113 )
+			),
+			New Column( "Dose Test",
+				Numeric,
+				"Continuous",
+				Format( "Best", 12 ),
+				Set Values( [] ),
+				Set Display Width( 113 )
+			),
+			New Column( "Selected Model",
+				Character( 31 ),
+				"Nominal",
+				Set Values( {} ),
+				Set Display Width( 118 )
+			),
+			New Column( "EC50 Fixed Setpoint",
+				Numeric,
+				"Continuous",
+				Format( "Best", 12 ),
+				Set Display Width( 112 )
+			),
+			New Column( "EC50 Reference Fixed",
+				Numeric,
+				"Continuous",
+				Format( "Best", 12 ),
+				Set Values( [] ),
+				Set Display Width( 113 )
+			),
+			New Column( "Reference Standard Curve Depth",
+				Numeric,
+				"Continuous",
+				Format( "Best", 12 ),
+				Set Values( [] ),
+				Set Display Width( 113 )
+			),
+			New Column( "Relative Infectivity Delta",
+				Numeric,
+				"Continuous",
+				Format( "Best", 12 ),
+				Set Values( [] ),
+				Set Display Width( 113 )
+			),
+			New Column( "Unconstrained RI",
+				Numeric,
+				"Continuous",
+				Format( "Best", 12 ),
+				Set Values( [] ),
+				Set Display Width( 113 )
+			),
+			New Column( "Reportable RI",
+				Numeric,
+				"Continuous",
+				Format( "Best", 12 ),
+				Set Values( [] ),
+				Set Display Width( 113 )
+			),
+			New Column( "RI Upper 95",
+				Numeric,
+				"Continuous",
+				Format( "Best", 12 ),
+				Set Values( [] ),
+				Set Display Width( 113 )
+			),
+			New Column( "RI Lower 95",
+				Numeric,
+				"Continuous",
+				Format( "Best", 12 ),
+				Set Values( [] ),
+				Set Display Width( 113 )
+			),
+			New Column( "Infectious Particles Ratio",
+				Numeric,
+				"Continuous",
+				Format( "Best", 12 ),
+				Set Values( [] ),
+				Set Display Width( 113 )
+			),
+			New Column( "Failed Accepted Droplets",
+				Numeric,
+				"Continuous",
+				Format( "Best", 12 ),
+				Set Values( [] ),
+				Set Display Width( 113 )
+			),
+			New Column( "CI 95% Range", Numeric, "Continuous", Set Values( [] ), Set Display Width( 213 ) ),
+		New Column( "CI Range as % of Tolerance", Numeric, "Continuous", Set Values( [] ), Set Display Width( 213 ) ),
+			New Column( "Assay Validity",
+				Character,
+				"Nominal",
+				Set Values( {} ),
+				Set Display Width( 113 )
+			),
+			New Column( "Delta to Target",
+				Numeric,
+				"Continuous",
+				Format( "Fixed Dec", 12, 1 ),
+				Set Display Width( 213 )
+			)
+	);
+
+
+		dttracking << save(concat(pathlocation,"Astellas KT430 RI Assay Results\Tracking\Astellas KT430 RI Assay Tracking and Trending.jmp"));
+		close(dttracking);
+	);
+		    if(!File Exists(concat(pathlocation,"Astellas KT430 RI Assay Results\Tracking\Astellas KT430 Aggregate Raw Data Table.jmp")),
+		dtconcat = New Table( "Biosentinel  DS Aggregate Raw Data Table",
+			Add Rows( 0 ),
+			Compress File When Saved( 1 ),
+			New Column( "Group",
+				Character,
+				"Nominal",
+				Set Values( {} ),
+				Set Display Width( 174 )
+			),			
+			New Column( "Sampling",
+				Numeric,
+				"Continuous",
+				Format( "Best", 12 ),
+				Set Values( [] ),
+				Set Display Width( 113 )
+			),	
+			New Column( "N Rows",
+				Numeric,
+				"Continuous",
+				Format( "Best", 12 ),
+				Set Values( [] ),
+				Set Display Width( 113 )
+			),
+			New Column( "Vg/mL",
+				Numeric,
+				"Continuous",
+				Format( "Best", 12 ),
+				Set Values( [] ),
+				Set Display Width( 113 )
+			),		
+			New Column( "MOI",
+				Numeric,
+				"Continuous",
+				Format( "Best", 12 ),
+				Set Values( [] ),
+				Set Display Width( 113 )
+			),			
+			New Column( "Log10 MOI",
+				Numeric,
+				"Continuous",
+				Format( "Best", 12 ),
+				Set Values( [] ),
+				Set Display Width( 113 )
+			),
+			New Column( "Log10 Vg/mL",
+				Numeric,
+				"Continuous",
+				Format( "Best", 12 ),
+				Set Values( [] ),
+				Set Display Width( 113 )
+			),
+			New Column( "Jackknife z",
+				Numeric,
+				"Continuous",
+				Format( "Best", 12 ),
+				Set Values( [] ),
+				Set Display Width( 113 )
+			),
+			New Column( "Outlier Within Group",
+				Character,
+				"Nominal",
+				Set Values( {} ),
+				Set Display Width( 113 )
+			)
+		);
+		dtconcat << save(concat(pathlocation,"Astellas KT430 RI Assay Results\Tracking\Astellas KT430 Aggregate Raw Data Table.jmp"));
+		close(dtconcat);
+	);
+
+	
+);
+
+CreatePLADir_Astellas;
+
+*/
+
+ //astellas logo
+astellaslogo = New Image(
+	Char To Blob(
+"iVBORw0KGgoAAAANSUhEUgAAAQMAAADCCAMAAAB6zFdcAAAAyVBMVEX////ZHkmoqa2UlZenK0+PkJKRkpSNjpDKy8y/v8DU1NXe3t6rrK38/PzIyMnZ2dno6Oj09PTx8fHXADyxsrOhoqSZmpy4ubqIiYvYC0DXADjYFUT87fGjLE/WADCorrGnUWqnJkzEJEzxusT53ePaLFH65OnvrbnlcIfsoa/fUWzcN1q2KE7OIkunP1zzwsz2ztb98/Xws73hZHrrkqTfSGnoh5nbJ1Dmeo/FADioe4iolJ2oc4OooKanSGOmX3S8Jk2ohZGnGEW30hquAAAJ6ElEQVR4nO2baXejuBKGHQgSm9iMAC9J2h0nceL0OI6zzHRPz/Tk//+oK7FKGDs4PjYzufWcfDA0RsVLlapUcvd6AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPDfg3RtQPcETtcWdE9odG1B5zhU79qErrEU5f89FkioKJ8kFpbTh8Xl5ePj4+Vi8TAdL1t/0VQUJT6gYUdjert6Hp0P+/0BYzQ6uZrfzZ4eH67fl8JnEijh50iOy/H0ZjYf9UcnKaPRoN/vvzIlFuOtD8jdQFGCY5l5BKa3d8NhLkMmRX84nM9uHzY6RCqBYh3TyMOzvFkN+iciIxYfJ89Pi+uGqy2aavBJJsUKMn25GoxOZEb9wXz1tOYPRuYHSieGHpbxzeuwrgLXYfg6u5kK1/m5BNTrzNRD8njXoEKqw8nvj0VYuDQX4dMFQ8bycd5vEIEx6F/dPT2M2TWxUuB3be6BGD/1B80qcHdg6WJ6cXGRa2B2bezBGK8aAyJPF/0/zr58/6GkQoSf1REYj/NNrsC4P51MJmdf/vzxU7lwu7b0gFyvNswKjNOUydvk7K+/vz+Ml1lFScYdm3wAbvsb4uH17LRgMnn7Y/j6vJrNZqur264tPgDTDfHwtdKAy5CuMtjfvGt7D8LyrlGEe1GC07Ov2dnBomtzD8Tv5w0aTCQNTu/Tk8Onrm09GI/rInyTJcgcob/q2tIDcrM2McrTQTYjDOafo52ygZthTYNfdQ3Ovg3mnzAviixq4XB/Wtfg1137PuR/lIVULb3WJTid/NVZT+14EXgjilCfEk8nfx9+5URM0zV1x8i3toieHx5xl+dWCIevNQXevl8cocFs2kmiaUgLs0M9O8TH7F88lcXS6F6aEt9++8mX0UfoJxFXVVVUbmkQnR1qx9zpuq0KRrFCmrA4SDsJR7ElRIIGvR5FqnbEWLgU8uOZKME/eS/lKLstBtNAcH77qBqIieFbqcHkLXcC5TjB0HOQ5PwxOzxaG+v6VagVyypx8tuPUgFF2e+FtPOiDjUg0hL6VxEGfyqCBEq4zwh+u81bXZOc32CHx+pizaQSaZKFwZefogKKQveZEAza6rLuNLiV1wtZQvxHVoBpsEep6GG71XWdafAgt1HYlFgPg323X4MItdYACxMA1+Aom77kRF47fz1dC4M9Nxq8CP3LNZjV9qJ/SdlAoFYlEc80DEO36tsP2XnHtLy8Ge1oLOs3aBCYTmwYpifMM+9rkA3qrsWlZzrioLtxKU8Gg7kUBobvGuVn6XuugjRe3muRIapATKpFik0R1hA3PzCiBLGaNwoZdlxZ6NmRrZuOghE1y7PvaWClgzKiWJLeoiiybaqyFcYHUvj4SoyEwfnLWHICXhgFeoMGIcYJ/2PPh4WMQRSMLX4Y2JkGFns7MdfA4OjFlSRM1KzoshDCdnH6HQ3idFDMB9VUIp1P7+zH+CP1xEqYEEfnq2nPEyXIH5ukKhjVqH6UUD0gPd+yMbOnLB1IpKlFPaloxSdPrceCH+GouJvHCqHiVw5bNSA0iRyPDxryQas7ct2LbyS755HFUAyDBSl+hpSnw7I+DmJRA/a2neLAYfbgwjENjEo9rM0a+BSh6tmEVcFWDcKkjDp2nVreXscoKu1Mdp5DyXMZCaP+S9oxNNbdIL3SFI5i0dCIaZAPHERCeidlQbGmQYzFYx2rSC2fbaMGTiKEOltRYrcYR1xr2jsva6rqaHiX/QqFiKEgzb5elReQGHROZY6LxRKnzBh1DSyt/EZ6yDwpya7dogGhYl4yq2LKS0QNvF13ya+vijB4vclPBZsLAtLwKbfbLS1DDT9gqmvAXiISTPVw6Unb/EAa1NXKxRWXEG17yu285KVBf1X+Ms2tJGjZMTA10Q9UtD4x1zQIElWlvh8EHsPyLIcFd/7krWskq9IgwPt0m8ZZThgMhO1kp2FC3I6gQcCSoIrXMnRNA/7MKBFg2S7Jwu4jGhDK87PxwRVd5gbDO3H3JCw1aFdskJ5ZzQd8emMvhdZrO1kD3jALA5k8NFpqQEQNem7CB43cj6iw5DlhNHgRvxvQ1pHge3qsUEp5XihnuFDjbVFkW+K3ZQ34e0MbusXvasAHtbNBK/830kE1od5sDU8Ko8GldK6aDt6JBDdUkyQKHd0MkTjLG7yIUxEWvy9r4DP7P6iBFUdJovJBY6nhZGrZoHUHfJclqw0G89rPdIvqgG4vOa0owYXsupzpgjBTIakiVNYgQKrUPBbZqoFHExzpWdTwLCzMgyRGfFA12bHz+9Bn+aC2i+jbRXW09V4OQlp5hSNrwGwNU4OqCrrmB1yhDY25bRqYCKFyzVXTgI0Rq6n07fpVBbPBcFZ/0nKxsFUCNglp1Ytc04C7CY/Q8mk8JM8H7N82NOa2aMBmQUG5NQ247emgu+xLLa+Gs7WTRShsbZulL7I6bNCATwvcEwrrZA1snsuaR9iiAXvNuBKuQYM8K224cyOL83UJilDYPrXw+l7wZQc1aJAupZJ8XrTkHkqMmoqI7NYbNWC+Jw5qak11kYlV6fvv8XS37o5WJsE7y89wbROgQQMSVeZwNxY0SIvb5mjbrEEsJ1SnUQO+BN2Ucpp4bvhRhdG0TFhDkTUQ6wPBD41qf6SmQS912UZf26xBKD8dFWwQBuULlvYajB/Wz/m0jQSp2JVbWomggZCa2JsqYsGtaZAWy1GTI+jyxlJNg+oenrhGiCsRzKa5aSNNFpgtAqGXxTMqvh/QUNDAFooldlVlmZSz0gof2YIJJP/syBrwSsitbqf55Q1iUQOxWFLRXr+Y4f+ns02lxevzwhG8SHcF/7WrV0VROe+xOVGNUtP8zFE9nsU0u1w/B0VJZshhxjyuuLWXVLIF1PGE+SCuEq297282XKqEbdaK6WvUIseyTDtxeAwXZR9RylZWjHFZQgS8OqZ+j5iFhRavohCOPZ+QwIqT/LTHaz1aSmOlRU/+gDz7I5UPGiaxFF5x2WDSMd6tRlp7tJAa7Zowvpq+R4TSLq6ONY09TUAydQzP9wOXYlXIfjHPBBGNotLLPMpLfMROUhVHqb/7VshuyO6lxrwDFbihlh5GRrpn4NNyUJ37IvuX0OKDsqkCMTH9tNX60SV0jtl+IylghSkrl1HqNmbomKZu8M+8V8pq+kjF1BHDkiiYXa6KEhPTRvweGlKyJQCJbYPdiN3KYZ9YJRUaenGYer1v8EHZmpQP6maDxlzUUEM4HZSptZcCbIhdOnHEc92mLR3fs1zXWm/qWbpp1S/n1+60L0TYF5r6hZsGBQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP51/A+ZzKMEu17UBgAAAABJRU5ErkJggg==",		"base64"
+	),
+	"png"
+);
+
+//Set the fonts for the pdf report
+fontpref = Get Preferences( fonts );//get user font preferences
+Set Preferences(
+	Fonts(
+		English(
+			Text Font( "Segoe UI", 13 ),
+			Heading Font( "Segoe UI", 12, Bold ),
+			Title Font( "Segoe UI", 14, Bold ),
+			Small Font( "Segoe UI", 12 ),
+			Monospaced Font( "Segoe UI", 13 ),
+			Formula Font( "Segoe UI", 14 ),
+			Annotation Font( "Segoe UI", 12 ),
+			Axis Font( "Segoe UI", 12 ),
+			Marker Font( "Segoe UI", 12 ),
+			Axis Title Font( "Segoe UI", 12 ),
+			Data Table Font( "Segoe UI", 12 )
+		)
+	)
+);
+
+Set Preferences( Background Color( 2 ) );
+
+tablestyles = Get Preferences(
+	Shade Table Headings(),
+	Table Heading Column Borders(),
+	Table Column Borders(),
+	Table Column Group Borders(),
+	Table Row Borders(),
+	Shade Alternate Table Rows()
+);
+Set Preferences(
+	Shade Table Headings( 1 ),
+	Table Heading Column Borders( 1 ),
+	Table Column Borders( 1 ),
+	Table Column Group Borders( 1 ),
+	Table Row Borders( 1 ),
+	Shade Alternate Table Rows( 1 )
+);
+
+// Setup Criteria
+//create variable for spacing in the report
+spacer = " ";
+
+//create date and time variables to record the date and time the script is run
+datestamper = Long Date( Today() );
+dateint = Char( As Date( Today() ) );
+timestamp = MDYHMS( Today() );
+timestamp1 = Num( timestamp );
+
+//create variables for lines in the report
+liner =
+"_______________________________________________________________________________________________________________________________________________________________________";
+dashliner = "____________________________________________________________________________________________________";
+
+
+//Get user information of the person running the script including server information jmp version etc
+usernamer = Get Environment Variable( "username" );//grabs windows variable username and sets usernamer variable
+computernamer = Get Environment Variable( "computername" );//grabs windows variable computername and sets  computername variable
+logonserverr = Get Environment Variable( "logonserver" );//grabs windows variable logonserver and sets logonserverr variable
+jmpreport = JMP Version();
+userdomainr = Get Environment Variable( "userdomain" );//grabs windows variable userdomainr and setsuserdomainr  variable
+usernamedisplay = Concat( "User Name: ", usernamer );//concatenate "User Name:"  and usernamer variable for report displays
+userdomaindisplay = Concat( "User Domain: ", userdomainr );//concatenate "User Domain:"  and userdomainr variable for report displays
+computernamedisplay = Concat( "Computer Name: ", computernamer );//concatenate "Computer Name:"  and computernamer variable for report displays
+logonserverdisplay = Concat( "Logon Server: ", logonserverr );//concatenate "Logon Server:"  and logonserverr variable for report displays
+
+// Get the data requirements from the user
+//a GUI appears and the user selects the appropriate completed excel material template
+
+//create list for the dataflie and the configuration file
+datafilelist=list();
+configfilelist=list();
+
+
+
+configurator = Pick File(
+	"Select Configuration File",
+	Concat( pathlocation, "Run File\" ),
+	{"Configuration File|xls;xlsx"},
+	1,
+	0,
+	""
+);
+
+//import the excel material template as a data table and name the plate map	
+Open(configurator, Worksheets( "Infectivity Configuration" ),
+		Use for all sheets( 1 ),
+		Concatenate Worksheets( 0 ),
+		Create Concatenation Column( 0 ),
+		Worksheet Settings(
+			1,
+			Has Column Headers( 1 ),
+			Number of Rows in Headers( 1 ),
+			Headers Start on Row( 1 ),
+			Data Starts on Row( 2 ),
+			Data Starts on Column( 1 ),
+			Data Ends on Row( 0 ),
+			Data Ends on Column( 0 ),
+			Replicated Spanned Rows( 1 ),
+			Replicated Spanned Headers( 0 ),
+			Suppress Hidden Rows( 1 ),
+			Suppress Hidden Columns( 1 ),
+			Suppress Empty Columns( 1 ),
+			Treat as Hierarchy( 0 ),
+			Multiple Series Stack( 0 ),
+			Import Cell Colors( 0 ),
+			Limit Column Detect( 0 ),
+			Column Separator String( "-" )
+		)
+	);
+
+//import the excel material template as a data table and name the plate map	
+configfile =configurator;			
+positionA = Contains( configfile , "/" , -1);//finds first position for file name
+datafilenamenopath = Substr( configfile, positionA+1 );//subtracts folder path from file name
+
+positionB = Contains( datafilenamenopath, "." );//finds last position for file name
+confignamer = Substr( datafilenamenopath, 1, positionB - 1 );//final template file name
+
+//create variables for all columns in the sample and materials info tab of the excel template
+dtconfig = Current Data Table();
+column1details = Column( 1 ) << get values;
+column2details = Column( 2 ) << get values;
+column3details = Column( 3 ) << get values;
+
+//Dynamically read in the Systems Suitability and Validity Criteria from the materials template//Specification Limits
+RPLSL=num(column2details[1]);
+RPUSL=num(column2details[2]);
+
+//Curve Depth Limit
+curvedepthlimit = Num( column2details[3] );
+
+
+//Unconstrained EC50 Limit for the standard
+EC50reflowerlimit = Num( column2details[4] );
+EC50refupperlimit = Num( column2details[5] );
+
+//Constrained - Unconstrained Relative Infectivity difference (delta) Limit
+RPDeltalimit = Num( column2details[6] );
+
+
+//Outlier Limit; Values less than this number will be marked as outliers by comparison to the Jackknife z 
+outlierlimitnum = Num( column2details[7] );
+
+//Between Group Externally Studentized Residuals Outlier Limit
+studoutlierlimitnum = Num( column2details[8] );
+
+//Parallelism Slope ratio lower limit 
+lowerparallel_limit = Num( column2details[9] );
+
+//Parallelism Slope ratio upper limit 
+upperparallel_limit = Num( column2details[10] );
+
+
+//Linearity Ratio lower limit
+linearity_limit = Num( column2details[11] );
+
+//Dose Reponse Test (≤)
+Doselimit = Num( column2details[12] );
+
+//fixed position
+fixedRFER = Num( column2details[13] );
+
+//target for ec50 reference concentration 
+ec50referencecontarget = Num(column2details[14]);
+
+
+//fixed TA log value	
+fixedTAvalue =Num( column2details[15] );
+
+
+//Infectious Particles Ratio LSL
+infectpartLSL = Num( column2details[16] );
+
+//Infectious Particles Ratio USL
+infectpartUSL = Num( column2details[17] );
+
+//Failed Accepted Droplets Limit
+	dropletscountlimit = Num( column2details[18] );
+
+//report file name
+filenamer = column2details[20];
+
+
+//Test Sample names and information
+SN1=column2details[21];
+SN2=column2details[22];
+SN3=column2details[23];
+SN4=column2details[24];
+SN5=column2details[25];
+SN6=column2details[26];
+SN7=column2details[27];
+
+snlist={SN1,SN2,SN3,SN4,SN5,SN6, SN7};
+	
+finalsnlist=List();
+
+//Make the SN list
+for(i=1, i<=7,i++,
+	if(eval(snlist[i])=="",a=1+2,finalsnlist[i]=eval(snlist[i]));
+);
+
+
+rstandard = column2details[21];
+platetotal =  column2details[29];
+
+Current Data Table(dtconfig );
+column(14)<<data type( numeric ) << modeling type( "continuous" );
+column(15)<<data type( numeric ) << modeling type( "continuous" );
+column(16)<<data type( numeric ) << modeling type( "continuous" );
+
+
+samplesperplate = Column(4) << get values;
+pmcolumn1details = Column (5)  << get values;
+pmcolumn2details = Column (6) << get values;
+pmcolumn3details = Column (7) << get values;
+pmcolumn4details = Column (8) << get values;
+pmcolumn5details = Column (9) << get values;
+pmcolumn6details = Column (10) << get values;
+pmcolumn7details = Column (11) << get values;
+pmcolumn8details = Column (12) << get values;
+pmcolumn9details = Column (13) << get values;
+pmcolumn10details = Column (14) << get values;
+pmcolumn11details = Column (15) << get values;
+pmcolumn12details = Column (16) << get values;
+
+
+//Universal Names and Locations for the first plate
+//A Row
+A1name = (pmcolumn1details[1]);
+A2name = (pmcolumn2details[1]);
+A3name = (pmcolumn3details[1]);
+A4name = (pmcolumn4details[1]);
+A5name = (pmcolumn5details[1]);
+A6name = (pmcolumn6details[1]);
+A7name = (pmcolumn7details[1]);
+A8name = (pmcolumn8details[1]);
+A9name = (pmcolumn9details[1]);
+A10name = (pmcolumn10details[1]);
+A11name = (pmcolumn11details[1]);
+A12name = (pmcolumn12details[1]);
+
+	//B Row
+B1name = (pmcolumn1details[2]);
+B2name = (pmcolumn2details[2]);
+B3name = (pmcolumn3details[2]);
+B4name = (pmcolumn4details[2]);
+B5name = (pmcolumn5details[2]);
+B6name = (pmcolumn6details[2]);
+B7name = (pmcolumn7details[2]);
+B8name = (pmcolumn8details[2]);
+B9name = (pmcolumn9details[2]);
+B10name = (pmcolumn10details[2]);
+B11name = (pmcolumn11details[2]);
+B12name = (pmcolumn12details[2]);
+
+	//C Row
+C1name = (pmcolumn1details[3]);
+C2name = (pmcolumn2details[3]);
+C3name = (pmcolumn3details[3]);
+C4name = (pmcolumn4details[3]);
+C5name = (pmcolumn5details[3]);
+C6name = (pmcolumn6details[3]);
+C7name = (pmcolumn7details[3]);
+C8name = (pmcolumn8details[3]);
+C9name = (pmcolumn9details[3]);
+C10name = (pmcolumn10details[3]);
+C11name = (pmcolumn11details[3]);
+C12name = (pmcolumn12details[3]);
+
+	//D Row
+D1name = (pmcolumn1details[4]);
+D2name = (pmcolumn2details[4]);
+D3name = (pmcolumn3details[4]);
+D4name = (pmcolumn4details[4]);
+D5name = (pmcolumn5details[4]);
+D6name = (pmcolumn6details[4]);
+D7name = (pmcolumn7details[4]);
+D8name = (pmcolumn8details[4]);
+D9name = (pmcolumn9details[4]);
+D10name = (pmcolumn10details[4]);
+D11name = (pmcolumn11details[4]);
+D12name = (pmcolumn12details[4]);
+
+	//E Row
+E1name = (pmcolumn1details[5]);
+E2name = (pmcolumn2details[5]);
+E3name = (pmcolumn3details[5]);
+E4name = (pmcolumn4details[5]);
+E5name = (pmcolumn5details[5]);
+E6name = (pmcolumn6details[5]);
+E7name = (pmcolumn7details[5]);
+E8name = (pmcolumn8details[5]);
+E9name = (pmcolumn9details[5]);
+E10name = (pmcolumn10details[5]);
+E11name = (pmcolumn11details[5]);
+E12name = (pmcolumn12details[5]);
+
+	//F Row
+F1name = (pmcolumn1details[6]);
+F2name = (pmcolumn2details[6]);
+F3name = (pmcolumn3details[6]);
+F4name = (pmcolumn4details[6]);
+F5name = (pmcolumn5details[6]);
+F6name = (pmcolumn6details[6]);
+F7name = (pmcolumn7details[6]);
+F8name = (pmcolumn8details[6]);
+F9name = (pmcolumn9details[6]);
+F10name = (pmcolumn10details[6]);
+F11name = (pmcolumn11details[6]);
+F12name = (pmcolumn12details[6]);
+
+	//G Row
+G1name = (pmcolumn1details[7]);
+G2name = (pmcolumn2details[7]);
+G3name = (pmcolumn3details[7]);
+G4name = (pmcolumn4details[7]);
+G5name = (pmcolumn5details[7]);
+G6name = (pmcolumn6details[7]);
+G7name = (pmcolumn7details[7]);
+G8name = (pmcolumn8details[7]);
+G9name = (pmcolumn9details[7]);
+G10name = (pmcolumn10details[7]);
+G11name = (pmcolumn11details[7]);
+G12name = (pmcolumn12details[7]);
+
+	//H Row
+H1name = (pmcolumn1details[8]);
+H2name = (pmcolumn2details[8]);
+H3name = (pmcolumn3details[8]);
+H4name = (pmcolumn4details[8]);
+H5name = (pmcolumn5details[8]);
+H6name = (pmcolumn6details[8]);
+H7name = (pmcolumn7details[8]);
+H8name = (pmcolumn8details[8]);
+H9name = (pmcolumn9details[8]);
+H10name = (pmcolumn10details[8]);
+H11name = (pmcolumn11details[8]);
+H12name = (pmcolumn12details[8]);
+
+
+//Dilution factors that correspond to 3 samples per plate from materials template
+//A Row
+df3sampA1name = Num( pmcolumn1details[12] );
+df3sampA2name = Num( pmcolumn2details[12] );
+df3sampA3name = Num( pmcolumn3details[12] );
+df3sampA4name = Num( pmcolumn4details[12] );
+df3sampA5name = Num( pmcolumn5details[12] );
+df3sampA6name = Num( pmcolumn6details[12] );
+df3sampA7name = Num( pmcolumn7details[12] );
+df3sampA8name = Num( pmcolumn8details[12] );
+df3sampA9name = Num( pmcolumn9details[12] );
+df3sampA10name = Num( pmcolumn10details[12] );
+df3sampA11name = Num( pmcolumn11details[12] );
+df3sampA12name = Num( pmcolumn12details[12] );
+
+	//B Row
+df3sampB1name = Num( pmcolumn1details[13] );
+df3sampB2name = Num( pmcolumn2details[13] );
+df3sampB3name = Num( pmcolumn3details[13] );
+df3sampB4name = Num( pmcolumn4details[13] );
+df3sampB5name = Num( pmcolumn5details[13] );
+df3sampB6name = Num( pmcolumn6details[13] );
+df3sampB7name = Num( pmcolumn7details[13] );
+df3sampB8name = Num( pmcolumn8details[13] );
+df3sampB9name = Num( pmcolumn9details[13] );
+df3sampB10name = Num( pmcolumn10details[13] );
+df3sampB11name = Num( pmcolumn11details[13] );
+df3sampB12name = Num( pmcolumn12details[13] );
+
+	//C Row
+df3sampC1name = Num( pmcolumn1details[14] );
+df3sampC2name = Num( pmcolumn2details[14] );
+df3sampC3name = Num( pmcolumn3details[14] );
+df3sampC4name = Num( pmcolumn4details[14] );
+df3sampC5name = Num( pmcolumn5details[14] );
+df3sampC6name = Num( pmcolumn6details[14] );
+df3sampC7name = Num( pmcolumn7details[14] );
+df3sampC8name = Num( pmcolumn8details[14] );
+df3sampC9name = Num( pmcolumn9details[14] );
+df3sampC10name = Num( pmcolumn10details[14] );
+df3sampC11name = Num( pmcolumn11details[14] );
+df3sampC12name = Num( pmcolumn12details[14] );
+
+	//D Row
+df3sampD1name = Num( pmcolumn1details[15] );
+df3sampD2name = Num( pmcolumn2details[15] );
+df3sampD3name = Num( pmcolumn3details[15] );
+df3sampD4name = Num( pmcolumn4details[15] );
+df3sampD5name = Num( pmcolumn5details[15] );
+df3sampD6name = Num( pmcolumn6details[15] );
+df3sampD7name = Num( pmcolumn7details[15] );
+df3sampD8name = Num( pmcolumn8details[15] );
+df3sampD9name = Num( pmcolumn9details[15] );
+df3sampD10name = Num( pmcolumn10details[15] );
+df3sampD11name = Num( pmcolumn11details[15] );
+df3sampD12name = Num( pmcolumn12details[15] );
+
+	//E Row
+df3sampE1name = Num( pmcolumn1details[16] );
+df3sampE2name = Num( pmcolumn2details[16] );
+df3sampE3name = Num( pmcolumn3details[16] );
+df3sampE4name = Num( pmcolumn4details[16] );
+df3sampE5name = Num( pmcolumn5details[16] );
+df3sampE6name = Num( pmcolumn6details[16] );
+df3sampE7name = Num( pmcolumn7details[16] );
+df3sampE8name = Num( pmcolumn8details[16] );
+df3sampE9name = Num( pmcolumn9details[16] );
+df3sampE10name = Num( pmcolumn10details[16] );
+df3sampE11name = Num( pmcolumn11details[16] );
+df3sampE12name = Num( pmcolumn12details[16] );
+
+	//F Row
+df3sampF1name = Num( pmcolumn1details[17] );
+df3sampF2name = Num( pmcolumn2details[17] );
+df3sampF3name = Num( pmcolumn3details[17] );
+df3sampF4name = Num( pmcolumn4details[17] );
+df3sampF5name = Num( pmcolumn5details[17] );
+df3sampF6name = Num( pmcolumn6details[17] );
+df3sampF7name = Num( pmcolumn7details[17] );
+df3sampF8name = Num( pmcolumn8details[17] );
+df3sampF9name = Num( pmcolumn9details[17] );
+df3sampF10name = Num( pmcolumn10details[17] );
+df3sampF11name = Num( pmcolumn11details[17] );
+df3sampF12name = Num( pmcolumn12details[17] );
+
+	//G Row
+df3sampG1name = Num( pmcolumn1details[18] );
+df3sampG2name = Num( pmcolumn2details[18] );
+df3sampG3name = Num( pmcolumn3details[18] );
+df3sampG4name = Num( pmcolumn4details[18] );
+df3sampG5name = Num( pmcolumn5details[18] );
+df3sampG6name = Num( pmcolumn6details[18] );
+df3sampG7name = Num( pmcolumn7details[18] );
+df3sampG8name = Num( pmcolumn8details[18] );
+df3sampG9name = Num( pmcolumn9details[18] );
+df3sampG10name = Num( pmcolumn10details[18] );
+df3sampG11name = Num( pmcolumn11details[18] );
+df3sampG12name = Num( pmcolumn12details[18] );
+
+	//H Row
+df3sampH1name = Num( pmcolumn1details[19] );
+df3sampH2name = Num( pmcolumn2details[19] );
+df3sampH3name = Num( pmcolumn3details[19] );
+df3sampH4name = Num( pmcolumn4details[19] );
+df3sampH5name = Num( pmcolumn5details[19] );
+df3sampH6name = Num( pmcolumn6details[19] );
+df3sampH7name = Num( pmcolumn7details[19] );
+df3sampH8name = Num( pmcolumn8details[19] );
+df3sampH9name = Num( pmcolumn9details[19] );
+df3sampH10name = Num( pmcolumn10details[19] );
+df3sampH11name = Num( pmcolumn11details[19] );
+df3sampH12name = Num( pmcolumn12details[19] );
+
+
+	//Dilution factors that correspond to Medium dilution factor from materials template
+	//A Row
+	df2sampA1name=num(pmcolumn1details[22]);
+	df2sampA2name=num(pmcolumn2details[22]);
+	df2sampA3name=num(pmcolumn3details[22]);
+	df2sampA4name=num(pmcolumn4details[22]);
+	df2sampA5name=num(pmcolumn5details[22]);
+	df2sampA6name=num(pmcolumn6details[22]);
+	df2sampA7name=num(pmcolumn7details[22]);
+	df2sampA8name=num(pmcolumn8details[22]);
+	df2sampA9name=num(pmcolumn9details[22]);
+	df2sampA10name=num(pmcolumn10details[22]);
+	df2sampA11name=num(pmcolumn11details[22]);
+	df2sampA12name=num(pmcolumn12details[22]);
+
+	//B Row
+	df2sampB1name=num(pmcolumn1details[23]);
+	df2sampB2name=num(pmcolumn2details[23]);
+	df2sampB3name=num(pmcolumn3details[23]);
+	df2sampB4name=num(pmcolumn4details[23]);
+	df2sampB5name=num(pmcolumn5details[23]);
+	df2sampB6name=num(pmcolumn6details[23]);
+	df2sampB7name=num(pmcolumn7details[23]);
+	df2sampB8name=num(pmcolumn8details[23]);
+	df2sampB9name=num(pmcolumn9details[23]);
+	df2sampB10name=num(pmcolumn10details[23]);
+	df2sampB11name=num(pmcolumn11details[23]);
+	df2sampB12name=num(pmcolumn12details[23]);
+
+	//C Row
+	df2sampC1name=num(pmcolumn1details[24]);
+	df2sampC2name=num(pmcolumn2details[24]);
+	df2sampC3name=num(pmcolumn3details[24]);
+	df2sampC4name=num(pmcolumn4details[24]);
+	df2sampC5name=num(pmcolumn5details[24]);
+	df2sampC6name=num(pmcolumn6details[24]);
+	df2sampC7name=num(pmcolumn7details[24]);
+	df2sampC8name=num(pmcolumn8details[24]);
+	df2sampC9name=num(pmcolumn9details[24]);
+	df2sampC10name=num(pmcolumn10details[24]);
+	df2sampC11name=num(pmcolumn11details[24]);
+	df2sampC12name=num(pmcolumn12details[24]);
+
+	//D Row
+	df2sampD1name=num(pmcolumn1details[25]);
+	df2sampD2name=num(pmcolumn2details[25]);
+	df2sampD3name=num(pmcolumn3details[25]);
+	df2sampD4name=num(pmcolumn4details[25]);
+	df2sampD5name=num(pmcolumn5details[25]);
+	df2sampD6name=num(pmcolumn6details[25]);
+	df2sampD7name=num(pmcolumn7details[25]);
+	df2sampD8name=num(pmcolumn8details[25]);
+	df2sampD9name=num(pmcolumn9details[25]);
+	df2sampD10name=num(pmcolumn10details[25]);
+	df2sampD11name=num(pmcolumn11details[25]);
+	df2sampD12name=num(pmcolumn12details[25]);
+
+	//E Row
+	df2sampE1name=num(pmcolumn1details[26]);
+	df2sampE2name=num(pmcolumn2details[26]);
+	df2sampE3name=num(pmcolumn3details[26]);
+	df2sampE4name=num(pmcolumn4details[26]);
+	df2sampE5name=num(pmcolumn5details[26]);
+	df2sampE6name=num(pmcolumn6details[26]);
+	df2sampE7name=num(pmcolumn7details[26]);
+	df2sampE8name=num(pmcolumn8details[26]);
+	df2sampE9name=num(pmcolumn9details[26]);
+	df2sampE10name=num(pmcolumn10details[26]);
+	df2sampE11name=num(pmcolumn11details[26]);
+	df2sampE12name=num(pmcolumn12details[26]);
+
+	//F Row
+	df2sampF1name=num(pmcolumn1details[27]);
+	df2sampF2name=num(pmcolumn2details[27]);
+	df2sampF3name=num(pmcolumn3details[27]);
+	df2sampF4name=num(pmcolumn4details[27]);
+	df2sampF5name=num(pmcolumn5details[27]);
+	df2sampF6name=num(pmcolumn6details[27]);
+	df2sampF7name=num(pmcolumn7details[27]);
+	df2sampF8name=num(pmcolumn8details[27]);
+	df2sampF9name=num(pmcolumn9details[27]);
+	df2sampF10name=num(pmcolumn10details[27]);
+	df2sampF11name=num(pmcolumn11details[27]);
+	df2sampF12name=num(pmcolumn12details[27]);
+
+	//G Row
+	df2sampG1name=num(pmcolumn1details[28]);
+	df2sampG2name=num(pmcolumn2details[28]);
+	df2sampG3name=num(pmcolumn3details[28]);
+	df2sampG4name=num(pmcolumn4details[28]);
+	df2sampG5name=num(pmcolumn5details[28]);
+	df2sampG6name=num(pmcolumn6details[28]);
+	df2sampG7name=num(pmcolumn7details[28]);
+	df2sampG8name=num(pmcolumn8details[28]);
+	df2sampG9name=num(pmcolumn9details[28]);
+	df2sampG10name=num(pmcolumn10details[28]);
+	df2sampG11name=num(pmcolumn11details[28]);
+	df2sampG12name=num(pmcolumn12details[28]);
+
+	//H Row
+	df2sampH1name=num(pmcolumn1details[29]);
+	df2sampH2name=num(pmcolumn2details[29]);
+	df2sampH3name=num(pmcolumn3details[29]);
+	df2sampH4name=num(pmcolumn4details[29]);
+	df2sampH5name=num(pmcolumn5details[29]);
+	df2sampH6name=num(pmcolumn6details[29]);
+	df2sampH7name=num(pmcolumn7details[29]);
+	df2sampH8name=num(pmcolumn8details[29]);
+	df2sampH9name=num(pmcolumn9details[29]);
+	df2sampH10name=num(pmcolumn10details[29]);
+	df2sampH11name=num(pmcolumn11details[29]);
+	df2sampH12name=num(pmcolumn12details[29]);
+
+	//Dilution factors that correspond to low dilution factor from materials template
+	//A Row
+	df1sampA1name=num(pmcolumn1details[32]);
+	df1sampA2name=num(pmcolumn2details[32]);
+	df1sampA3name=num(pmcolumn3details[32]);
+	df1sampA4name=num(pmcolumn4details[32]);
+	df1sampA5name=num(pmcolumn5details[32]);
+	df1sampA6name=num(pmcolumn6details[32]);
+	df1sampA7name=num(pmcolumn7details[32]);
+	df1sampA8name=num(pmcolumn8details[32]);
+	df1sampA9name=num(pmcolumn9details[32]);
+	df1sampA10name=num(pmcolumn10details[32]);
+	df1sampA11name=num(pmcolumn11details[32]);
+	df1sampA12name=num(pmcolumn12details[32]);
+
+	//B Row
+	df1sampB1name=num(pmcolumn1details[33]);
+	df1sampB2name=num(pmcolumn2details[33]);
+	df1sampB3name=num(pmcolumn3details[33]);
+	df1sampB4name=num(pmcolumn4details[33]);
+	df1sampB5name=num(pmcolumn5details[33]);
+	df1sampB6name=num(pmcolumn6details[33]);
+	df1sampB7name=num(pmcolumn7details[33]);
+	df1sampB8name=num(pmcolumn8details[33]);
+	df1sampB9name=num(pmcolumn9details[33]);
+	df1sampB10name=num(pmcolumn10details[33]);
+	df1sampB11name=num(pmcolumn11details[33]);
+	df1sampB12name=num(pmcolumn12details[33]);
+
+	//C Row
+	df1sampC1name=num(pmcolumn1details[34]);
+	df1sampC2name=num(pmcolumn2details[34]);
+	df1sampC3name=num(pmcolumn3details[34]);
+	df1sampC4name=num(pmcolumn4details[34]);
+	df1sampC5name=num(pmcolumn5details[34]);
+	df1sampC6name=num(pmcolumn6details[34]);
+	df1sampC7name=num(pmcolumn7details[34]);
+	df1sampC8name=num(pmcolumn8details[34]);
+	df1sampC9name=num(pmcolumn9details[34]);
+	df1sampC10name=num(pmcolumn10details[34]);
+	df1sampC11name=num(pmcolumn11details[34]);
+	df1sampC12name=num(pmcolumn12details[34]);
+
+	//D Row
+	df1sampD1name=num(pmcolumn1details[35]);
+	df1sampD2name=num(pmcolumn2details[35]);
+	df1sampD3name=num(pmcolumn3details[35]);
+	df1sampD4name=num(pmcolumn4details[35]);
+	df1sampD5name=num(pmcolumn5details[35]);
+	df1sampD6name=num(pmcolumn6details[35]);
+	df1sampD7name=num(pmcolumn7details[35]);
+	df1sampD8name=num(pmcolumn8details[35]);
+	df1sampD9name=num(pmcolumn9details[35]);
+	df1sampD10name=num(pmcolumn10details[35]);
+	df1sampD11name=num(pmcolumn11details[35]);
+	df1sampD12name=num(pmcolumn12details[35]);
+
+	//E Row
+	df1sampE1name=num(pmcolumn1details[36]);
+	df1sampE2name=num(pmcolumn2details[36]);
+	df1sampE3name=num(pmcolumn3details[36]);
+	df1sampE4name=num(pmcolumn4details[36]);
+	df1sampE5name=num(pmcolumn5details[36]);
+	df1sampE6name=num(pmcolumn6details[36]);
+	df1sampE7name=num(pmcolumn7details[36]);
+	df1sampE8name=num(pmcolumn8details[36]);
+	df1sampE9name=num(pmcolumn9details[36]);
+	df1sampE10name=num(pmcolumn10details[36]);
+	df1sampE11name=num(pmcolumn11details[36]);
+	df1sampE12name=num(pmcolumn12details[36]);
+
+	//F Row
+	df1sampF1name=num(pmcolumn1details[37]);
+	df1sampF2name=num(pmcolumn2details[37]);
+	df1sampF3name=num(pmcolumn3details[37]);
+	df1sampF4name=num(pmcolumn4details[37]);
+	df1sampF5name=num(pmcolumn5details[37]);
+	df1sampF6name=num(pmcolumn6details[37]);
+	df1sampF7name=num(pmcolumn7details[37]);
+	df1sampF8name=num(pmcolumn8details[37]);
+	df1sampF9name=num(pmcolumn9details[37]);
+	df1sampF10name=num(pmcolumn10details[37]);
+	df1sampF11name=num(pmcolumn11details[37]);
+	df1sampF12name=num(pmcolumn12details[37]);
+
+	//G Row
+	df1sampG1name=num(pmcolumn1details[38]);
+	df1sampG2name=num(pmcolumn2details[38]);
+	df1sampG3name=num(pmcolumn3details[38]);
+	df1sampG4name=num(pmcolumn4details[38]);
+	df1sampG5name=num(pmcolumn5details[38]);
+	df1sampG6name=num(pmcolumn6details[38]);
+	df1sampG7name=num(pmcolumn7details[38]);
+	df1sampG8name=num(pmcolumn8details[38]);
+	df1sampG9name=num(pmcolumn9details[38]);
+	df1sampG10name=num(pmcolumn10details[38]);
+	df1sampG11name=num(pmcolumn11details[38]);
+	df1sampG12name=num(pmcolumn12details[38]);
+
+	//H Row
+	df1sampH1name=num(pmcolumn1details[39]);
+	df1sampH2name=num(pmcolumn2details[39]);
+	df1sampH3name=num(pmcolumn3details[39]);
+	df1sampH4name=num(pmcolumn4details[39]);
+	df1sampH5name=num(pmcolumn5details[39]);
+	df1sampH6name=num(pmcolumn6details[39]);
+	df1sampH7name=num(pmcolumn7details[39]);
+	df1sampH8name=num(pmcolumn8details[39]);
+	df1sampH9name=num(pmcolumn9details[39]);
+	df1sampH10name=num(pmcolumn10details[39]);
+	df1sampH11name=num(pmcolumn11details[39]);
+	df1sampH12name=num(pmcolumn12details[39]);
+	
+	
+//4 MOI concentration
+A1con=column1details[32];
+B1con=column1details[33];
+C1con=column1details[34];
+D1con=column1details[35];
+
+
+Open(configurator, Worksheets( "Materials" ),
+		Use for all sheets( 1 ),
+		Concatenate Worksheets( 0 ),
+		Create Concatenation Column( 0 ),
+		Worksheet Settings(
+			1,
+			Has Column Headers( 1 ),
+			Number of Rows in Headers( 1 ),
+			Headers Start on Row( 1 ),
+			Data Starts on Row( 2 ),
+			Data Starts on Column( 1 ),
+			Data Ends on Row( 0 ),
+			Data Ends on Column( 0 ),
+			Replicated Spanned Rows( 1 ),
+			Replicated Spanned Headers( 0 ),
+			Suppress Hidden Rows( 1 ),
+			Suppress Hidden Columns( 1 ),
+			Suppress Empty Columns( 1 ),
+			Treat as Hierarchy( 0 ),
+			Multiple Series Stack( 0 ),
+			Import Cell Colors( 0 ),
+			Limit Column Detect( 0 ),
+			Column Separator String( "-" )
+		)
+	);
+
+	//Open data table for materials
+	dtAssayInfo =current data table();
+
+
+	
+	//save names and values for the assay 
+	AssayDetailsNames = Column(dtAssayInfo,2)[1::13];
+	AssayDetailsValues = Column(dtAssayInfo,3)[1::13];
+	
+	
+	assaynameval=AssayDetailsValues[1];
+	
+	//instrument id
+	instrumentid=column(dtAssayInfo,3)[9];
+	
+	//Reference Standard Lot#
+	refstandlotnumber = column(dtAssayInfo,4)[25];
+	
+	//Reference Name
+	referencename = column(dtAssayInfo,2)[25];
+	
+	//Cell Concentration
+	cellconcentationvalue=column(dtAssayInfo,4)[27];
+	
+	//Bioassay preparation date and operator
+	bioassayprep=column(dtAssayInfo,3)[11];
+			assaydate=char(AssayDetailsValues[3]);
+		purposevalue=AssayDetailsValues[4];
+		bioassayrun=AssayDetailsValues[5];
+		analystname = AssayDetailsValues[6];
+		bioassayprep = AssayDetailsValues[11];
+		bioassayrev = AssayDetailsValues[12];
+		signalvalue=AssayDetailsValues[7];
+		methodvalue= AssayDetailsValues[8];
+		assaynotes =  AssayDetailsValues[13];
+
+	
+		//materials and equipment for tracking and trending
+			Material_1 = Column(dtAssayInfo, 2)[15];
+		Source_1 = Column(dtAssayInfo, 3)[15];
+		Catalog_1 = Column(dtAssayInfo, 4)[15];
+		Lot_1 = Column(dtAssayInfo, 5)[15];
+		Expiration_1 = Column(dtAssayInfo, 6)[15];
+		Material_2 = Column(dtAssayInfo, 2)[16];
+		Source_2 = Column(dtAssayInfo, 3)[16];
+		Catalog_2 = Column(dtAssayInfo, 4)[16];
+		Lot_2 = Column(dtAssayInfo, 5)[16];
+		Expiration_2 = Column(dtAssayInfo, 6)[16];
+		Material_3 = Column(dtAssayInfo, 2)[17];
+		Source_3 = Column(dtAssayInfo, 3)[17];
+		Catalog_3 = Column(dtAssayInfo, 4)[17];
+		Lot_3 = Column(dtAssayInfo, 5)[17];
+		Expiration_3 = Column(dtAssayInfo, 6)[17];
+		Material_4 = Column(dtAssayInfo, 2)[18];
+		Source_4 = Column(dtAssayInfo, 3)[18];
+		Catalog_4 = Column(dtAssayInfo, 4)[18];
+		Lot_4 = Column(dtAssayInfo, 5)[18];
+		Expiration_4 = Column(dtAssayInfo, 6)[18];
+		Material_5 = Column(dtAssayInfo, 2)[19];
+		Source_5 = Column(dtAssayInfo, 3)[19];
+		Catalog_5 = Column(dtAssayInfo, 4)[19];
+		Lot_5 = Column(dtAssayInfo, 5)[19];
+		Expiration_5 = Column(dtAssayInfo, 6)[19];
+		Material_6 = Column(dtAssayInfo, 2)[20];
+		Source_6 = Column(dtAssayInfo, 3)[20];
+		Catalog_6 = Column(dtAssayInfo, 4)[20];
+		Lot_6 = Column(dtAssayInfo, 5)[20];
+		Expiration_6 = Column(dtAssayInfo, 6)[20];
+		Material_7 = Column(dtAssayInfo, 2)[21];
+		Source_7 = Column(dtAssayInfo, 3)[21];
+		Catalog_7 = Column(dtAssayInfo, 4)[21];
+		Lot_7 = Column(dtAssayInfo, 5)[21];
+		Expiration_7 = Column(dtAssayInfo, 6)[21];
+		Material_8 = Column(dtAssayInfo, 2)[22];
+		Source_8 = Column(dtAssayInfo, 3)[22];
+		Catalog_8 = Column(dtAssayInfo, 4)[22];
+		Lot_8 = Column(dtAssayInfo, 5)[22];
+		Expiration_8 = Column(dtAssayInfo, 6)[22];
+		RSDescriptionvalue = Column(dtAssayInfo, 3)[25];
+		RSExpiryvalue = Column(dtAssayInfo, 5)[25];
+		StabilityCF = num(Column(dtAssayInfo, 7)[25]);
+		ReferenceLotCF=num(Column(dtAssayInfo, 6)[25]);
+
+//close the materials template
+close(dtAssayInfo, no save);
+
+
+//GUI for selecting data file from QuantaSoft 
+datafilenamerlist = Pick File( "Select Assay Run Plate Files", Concat( pathlocation, "Data File\" ), {"Data File|csv"},1, 0, "Plate Files.jmp", multiple);	
+
+
+platenumber = N Items( datafilenamerlist );
+
+if (
+platenumber == 1,  
+
+positionA = Contains( datafilenamerlist[1] , "/" , -1); //finds first position for file name
+platenameA =  Substr( datafilenamerlist[1], positionA+1 );//subtracts folder path from file name
+
+positionC = Contains( platenameA , "." );//finds last position for file name
+
+platenamerA =Substr( platenameA, 1, positionC - 1 );//final template file name
+,
+platenumber == 2, 
+
+positionA = Contains( datafilenamerlist[1] , "/" , -1); //finds first position for file name
+positionB = Contains( datafilenamerlist[2] , "/" , -1); //finds first position for file name
+platenameA =  Substr( datafilenamerlist[1], positionA+1 );//subtracts folder path from file name
+platenameB =  Substr( datafilenamerlist[2], positionB+1 );//subtracts folder path from file name
+
+positionC = Contains( platenameA , "." );//finds last position for file name
+positionD = Contains( platenameB , "." );//finds last position for file name
+
+platenamerA =Substr( platenameA, 1, positionC - 1 );//final template file name
+platenamerB = Substr( platenameB, 1, positionD - 1 );//final template file name
+,
+platenumber == 3,  
+
+positionA = Contains( datafilenamerlist[1] , "/" , -1); //finds first position for file name
+positionB = Contains( datafilenamerlist[2] , "/" , -1); //finds first position for file name
+positionC = Contains( datafilenamerlist[2] , "/" , -1); //finds first position for file name
+platenameA =  Substr( datafilenamerlist[1], positionA+1 );//subtracts folder path from file name
+platenameB =  Substr( datafilenamerlist[2], positionB+1 );//subtracts folder path from file name
+platenameC =  Substr( datafilenamerlist[2], positionB+1 );//subtracts folder path from file name
+
+positionD = Contains( platenameA , "." );//finds last position for file name
+positionE = Contains( platenameB , "." );//finds last position for file name
+positionF = Contains( platenameC , "." );//finds last position for file name
+
+platenamerA =Substr( platenameA, 1, positionC - 1 );//final template file name
+platenamerB = Substr( platenameB, 1, positionD - 1 );//final template file name
+platenamerC = Substr( platenameB, 1, positionD - 1 );//final template file name
+);
+
+// Loading user selected files
+dtname = List( platenumber  );
+
+	LineBox = expr(Text Box("__________________________________________________________________________________________________________________________________________________________________________________________________", << set wrap(2000)) << journal());
+	DashedLine = expr(Text Box("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ", << set wrap(2000)) << journal());
+	VSpacer = function({ n },{Default Local},
+		String = "Text  Box( \!"";
+		for(i=1, i<=n,i++,
+			concat to(string,"\!n")
+		);
+		concat to(string,"\!") << journal();");
+		eval(parse(string));
+	);
+
+
+//
+For( i = 1, i < platenumber + 1, i++,
+	dt = Open(datafilenamerlist[i] );
+	dtname[i] = dt << get name;
+);
+
+//Load user selected files depending on the number of pcr plates
+
+//1 pcr plate
+If(platenumber==1,
+	data table(dtname[1])<<New Column( "Infection Plate",
+	Numeric,
+	"Continuous",
+	Format( "Best", 12 ),
+	formula(
+		1
+	)
+);
+
+dttext = Data Table( dtname[1] );
+);
+
+
+//2 pcr plates
+If( platenumber  == 2,
+current data table(data table(dtname[1]));
+	data table(dtname[1])<<New Column( "Infection Plate",
+	Numeric,
+	"Continuous",
+	Format( "Best", 12 ),
+	formula(
+		1
+	)
+);
+current data table(data table(dtname[2]));
+	data table(dtname[2])<<New Column( "Infection Plate",
+	Numeric,
+	"Continuous",
+	Format( "Best", 12 ),
+	formula(
+		2
+	)
+);
+current data table(Data Table( dtname[1] ) );
+	dttext = Data Table( dtname[1] ) << Concatenate( Data Table( dtname[2] ) );
+	Close( dtname[1], no save );
+	Close( dtname[2], no save );
+			
+);
+
+//3 pcr plates
+If( platenumber == 3,
+	data table(dtname[1])<<New Column( "Infection Plate",
+	Numeric,
+	"Continuous",
+	Format( "Best", 12 ),
+	formula(
+		1
+	)
+);
+	data table(dtname[2])<<New Column( "Infection Plate",
+	Numeric,
+	"Continuous",
+	Format( "Best", 12 ),
+	formula(
+		2
+	)
+);
+	data table(dtname[3])<<New Column( "Infection Plate",
+	Numeric,
+	"Continuous",
+	Format( "Best", 12 ),
+	formula(
+		3
+	)
+);
+	dttext = Data Table( dtname[1] ) << Concatenate( Data Table( dtname[2] ), Data Table( dtname[3] ) );
+	Close( dtname[1], no save );
+	Close( dtname[2], no save );
+	Close( dtname[3], no save );
+			
+);
+
+dttext = Current Data Table();
+:Name("Conc(copies/µL)")<<set name("Concentration");
+:Name("Sample Description 1")<<set name("Sample");
+
+
+dttext << delete columns( 3::6);
+dttext << delete columns( 4 :: 9 );
+dttext <<delete columns(5::6);
+
+
+//get the corresponding number of samples based on the number of rows
+totalrownumbers=nrows(dttext);
+
+//create dilution factor column
+dttext<<New Column( "Dilution Factor",
+	Numeric,
+	"Continuous",
+	Format( "Best", 12 ),
+	Formula(
+		If( :Infection Plate == 1,
+			Match( :Well,
+				"A01", df3sampA1name,
+				"A02", df3sampA2name,
+				"A03", df3sampA3name,
+				"A04", df3sampA4name,
+				"A05", df3sampA5name,
+				"A06", df3sampA6name,
+				"A07", df3sampA7name,
+				"A08", df3sampA8name,
+				"A09", df3sampA9name,
+				"A10", df3sampA10name,
+				"A11", df3sampA11name,
+				"A12", df3sampA12name,			
+				"B01", df3sampB1name,
+				"B02", df3sampB2name,
+				"B03", df3sampB3name,
+				"B04", df3sampB4name,
+				"B05", df3sampB5name,
+				"B06", df3sampB6name,
+				"B07", df3sampB7name,
+				"B08", df3sampB8name,
+				"B09", df3sampB9name,
+				"B10", df3sampB10name,
+				"B11", df3sampB11name,
+				"B12", df3sampB12name,				
+				"C01", df3sampC1name,
+				"C02", df3sampC2name,
+				"C03", df3sampC3name,
+				"C04", df3sampC4name,
+				"C05", df3sampC5name,
+				"C06", df3sampC6name,
+				"C07", df3sampC7name,
+				"C08", df3sampC8name,
+				"C09", df3sampC9name,
+				"C10", df3sampC10name,
+				"C11", df3sampC11name,
+				"C12", df3sampC12name,
+				"D01", df3sampD1name,
+				"D02", df3sampD2name,
+				"D03", df3sampD3name,
+				"D04", df3sampD4name,
+				"D05", df3sampD5name,
+				"D06", df3sampD6name,
+				"D07", df3sampD7name,
+				"D08", df3sampD8name,
+				"D09", df3sampD9name,
+				"D10", df3sampD10name,
+				"D11", df3sampD11name,
+				"D12", df3sampD12name,
+				"E01", df3sampE1name,
+				"E02", df3sampE2name,
+				"E03", df3sampE3name,
+				"E04", df3sampE4name,
+				"E05", df3sampE5name,
+				"E06", df3sampE6name,
+				"E07", df3sampE7name,
+				"E08", df3sampE8name,
+				"E09", df3sampE9name,
+				"E10", df3sampE10name,
+				"E11", df3sampE11name,
+				"E12", df3sampE12name,
+				"F01", df3sampF1name,
+				"F02", df3sampF2name,
+				"F03", df3sampF3name,
+				"F04", df3sampF4name,
+				"F05", df3sampF5name,
+				"F06", df3sampF6name,
+				"F07", df3sampF7name,
+				"F08", df3sampF8name,
+				"F09", df3sampF9name,
+				"F10", df3sampF10name,
+				"F11", df3sampF11name,
+				"F12", df3sampF12name,
+				"G01", df3sampG1name,
+				"G02", df3sampG2name,
+				"G03", df3sampG3name,
+				"G04", df3sampG4name,
+				"G05", df3sampG5name,
+				"G06", df3sampG6name,
+				"G07", df3sampG7name,
+				"G08", df3sampG8name,
+				"G09", df3sampG9name,
+				"G10", df3sampG10name,
+				"G11", df3sampG11name,
+				"G12", df3sampG12name,
+				"H01", df3sampH1name,
+				"H02", df3sampH2name,
+				"H03", df3sampH3name,
+				"H04", df3sampH4name,
+				"H05", df3sampH5name,
+				"H06", df3sampH6name,
+				"H07", df3sampH7name,
+				"H08", df3sampH8name,
+				"H09", df3sampH9name,
+				"H10", df3sampH10name,
+				"H11", df3sampH11name,
+				"H12", df3sampH12name,
+				
+				Empty(), Empty()
+			),
+			If( :Infection Plate == 2,
+				Match( :Well,
+					"A01", df2sampA1name,
+					"A02", df2sampA2name,
+					"A03", df2sampA3name,
+					"A04", df2sampA4name,
+					"A05", df2sampA5name,
+					"A06", df2sampA6name,
+					"A07", df2sampA7name,
+					"A08", df2sampA8name,
+					"A09", df2sampA9name,
+					"A10", df2sampA10name,
+					"A11", df2sampA11name,
+					"A12", df2sampA12name,					
+					"B01", df2sampB1name,
+					"B02", df2sampB2name,
+					"B03", df2sampB3name,
+					"B04", df2sampB4name,
+					"B05", df2sampB5name,
+					"B06", df2sampB6name,
+					"B07", df2sampB7name,
+					"B08", df2sampB8name,
+					"B09", df2sampB9name,
+					"B10", df2sampB10name,
+					"B11", df2sampB11name,
+					"B12", df2sampB12name,					
+					"C01", df2sampC1name,
+					"C02", df2sampC2name,
+					"C03", df2sampC3name,
+					"C04", df2sampC4name,
+					"C05", df2sampC5name,
+					"C06", df2sampC6name,
+					"C07", df2sampC7name,
+					"C08", df2sampC8name,
+					"C09", df2sampC9name,
+					"C10", df2sampC10name,
+					"C11", df2sampC11name,
+					"C12", df2sampC12name,
+					"D01", df2sampD1name,
+					"D02", df2sampD2name,
+					"D03", df2sampD3name,
+					"D04", df2sampD4name,
+					"D05", df2sampD5name,
+					"D06", df2sampD6name,
+					"D07", df2sampD7name,
+					"D08", df2sampD8name,
+					"D09", df2sampD9name,
+					"D10", df2sampD10name,
+					"D11", df2sampD11name,
+					"D12", df2sampD12name,
+					"E01", df2sampE1name,
+					"E02", df2sampE2name,
+					"E03", df2sampE3name,
+					"E04", df2sampE4name,
+					"E05", df2sampE5name,
+					"E06", df2sampE6name,
+					"E07", df2sampE7name,
+					"E08", df2sampE8name,
+					"E09", df2sampE9name,
+					"E10", df2sampE10name,
+					"E11", df2sampE11name,
+					"E12", df2sampE12name,
+					"F01", df2sampF1name,
+					"F02", df2sampF2name,
+					"F03", df2sampF3name,
+					"F04", df2sampF4name,
+					"F05", df2sampF5name,
+					"F06", df2sampF6name,
+					"F07", df2sampF7name,
+					"F08", df2sampF8name,
+					"F09", df2sampF9name,
+					"F10", df2sampF10name,
+					"F11", df2sampF11name,
+					"F12", df2sampF12name,
+					"G01", df2sampG1name,
+					"G02", df2sampG2name,
+					"G03", df2sampG3name,
+					"G04", df2sampG4name,
+					"G05", df2sampG5name,
+					"G06", df2sampG6name,
+					"G07", df2sampG7name,
+					"G08", df2sampG8name,
+					"G09", df2sampG9name,
+					"G10", df2sampG10name,
+					"G11", df2sampG11name,
+					"G12", df2sampG12name,
+					"H01", df2sampH1name,
+					"H02", df2sampH2name,
+					"H03", df2sampH3name,
+					"H04", df2sampH4name,
+					"H05", df2sampH5name,
+					"H06", df2sampH6name,
+					"H07", df2sampH7name,
+					"H08", df2sampH8name,
+					"H09", df2sampH9name,
+					"H10", df2sampH10name,
+					"H11", df2sampH11name,
+					"H12", df2sampH12name,
+					Empty(), Empty()
+				),
+			
+			)
+		)
+	)
+);
+
+
+
+
+//Delete the values that don't correspond to concentration values
+current data table(dttext);
+
+//
+dttext<<New Column( "Sampling",
+	Numeric,
+	"Continuous",
+	Format( "Best", 12 ),
+	Formula(
+			Match( :Well,
+				"A01", A1name,
+				"A02", A2name,
+				"A03", A3name,
+				"A04", A4name,
+				"A05", A5name,
+				"A06", A6name,
+				"A07", A7name,
+				"A08", A8name,
+				"A09", A9name,
+				"A10", A10name,
+				"A11", A11name,
+				"A12", A12name,			
+				"B01", B1name,
+				"B02", B2name,
+				"B03", B3name,
+				"B04", B4name,
+				"B05", B5name,
+				"B06", B6name,
+				"B07", B7name,
+				"B08", B8name,
+				"B09", B9name,
+				"B10", B10name,
+				"B11", B11name,
+				"B12", B12name,				
+				"C01", C1name,
+				"C02", C2name,
+				"C03", C3name,
+				"C04", C4name,
+				"C05", C5name,
+				"C06", C6name,
+				"C07", C7name,
+				"C08", C8name,
+				"C09", C9name,
+				"C10", C10name,
+				"C11", C11name,
+				"C12", C12name,
+				"D01", D1name,
+				"D02", D2name,
+				"D03", D3name,
+				"D04", D4name,
+				"D05", D5name,
+				"D06", D6name,
+				"D07", D7name,
+				"D08", D8name,
+				"D09", D9name,
+				"D10", D10name,
+				"D11", D11name,
+				"D12", D12name,
+				"E01", E1name,
+				"E02", E2name,
+				"E03", E3name,
+				"E04", E4name,
+				"E05", E5name,
+				"E06", E6name,
+				"E07", E7name,
+				"E08", E8name,
+				"E09", E9name,
+				"E10", E10name,
+				"E11", E11name,
+				"E12", E12name,
+				"F01", F1name,
+				"F02", F2name,
+				"F03", F3name,
+				"F04", F4name,
+				"F05", F5name,
+				"F06", F6name,
+				"F07", F7name,
+				"F08", F8name,
+				"F09", F9name,
+				"F10", F10name,
+				"F11", F11name,
+				"F12", F12name,
+				"G01", G1name,
+				"G02", G2name,
+				"G03", G3name,
+				"G04", G4name,
+				"G05", G5name,
+				"G06", G6name,
+				"G07", G7name,
+				"G08", G8name,
+				"G09", G9name,
+				"G10", G10name,
+				"G11", G11name,
+				"G12", G12name,
+				"H01", H1name,
+				"H02", H2name,
+				"H03", H3name,
+				"H04", H4name,
+				"H05", H5name,
+				"H06", H6name,
+				"H07", H7name,
+				"H08", H8name,
+				"H09", H9name,
+				"H10", H10name,
+				"H11", H11name,
+				"H12", H12name
+				)
+				)
+);
+
+:Sampling<<hide(1);
+
+dttext << select where( Is Missing( :Sampling ) ) << delete rows;
+
+
+maintablerows=nrows(dttext);
+
+
+
+//Sort the Sample column by the infection plate
+dttext<< Sort(
+			By( :Sampling ),
+			Order(  Ascending ), replace);
+			
+close(dttext, no save);
+
+dttext=current data table();
+
+//Change data type back to character for remaining formulas
+:Sample << data type( "Character" );
+
+
+
+assayval = 24;
+
+dttext << New Column( "Group",
+	Character,
+	"Nominal",
+	Formula(
+		If( Row() <= assayval,
+			SN1,
+			If( Row() <= assayval * 2,
+				SN2,
+				If( Row() <= assayval * 3,
+					SN3,
+					If( Row() <= assayval * 4,
+						SN4,
+						If(
+							Row() <= assayval * 5, 
+							SN5,
+							
+						If(
+							 Row() <= assayval * 6,
+									SN6,
+								If(
+							 Row() <= assayval * 7,
+									SN7,
+									
+							empty()
+
+								)
+						)
+					)
+				)
+			)
+		)
+	)
+	)
+);
+
+
+//close configuration file
+Close( dtconfig, no save );
+
+//Change data type of the concentration column
+:Concentration << data type( numeric ) << modeling type( "continuous" );
+
+//Set the final concentrations based on being between 50 and 5000
+dttext << New Column( "Final Concentration",
+	Numeric,
+	"Continuous",
+	Format( "Best", 12 ),
+	Formula( If( 50 <= :Concentration < 5000, :Concentration, 0 ) )
+);
+
+
+
+
+//Create Copies column
+dttext << New Column( "Copies/uL",
+	Numeric,
+	"Continuous",
+	Format( "Best", 12 ),
+	Formula( Num( :Final Concentration ) * 5 )
+);
+
+//Create Vg/mL column
+dttext << New Column( "Vg/mL",
+	Numeric,
+	"Continuous",
+	Format( "Scientific", 12, 2 ),
+	Formula( If( :Name( "Copies/uL" ) != 0, :Name( "Copies/uL" ) * :Dilution Factor * 1000 ) )
+);
+
+
+//Create new data table that has the average Vg/mL values
+dttextsum2 = dttext << Summary(
+	Group( :Group, :Sampling ),
+	Mean( :Name( "Vg/mL" ) ),
+	Mean( :Name( "Accepted Droplets" ) ),
+	Std Dev( :Name( "Vg/mL" ) ),
+	CV( :Name( "Vg/mL" ) ),
+	Freq( "None" ),
+	Weight( "None" ),
+);
+		
+
+	//get the numbers for the MOI concentrations needed to calculate nomninaldose
+	dilutionnumberlister = list();
+	dilutionnumberlister[1]=num(A1con);
+	dilutionnumberlister[2]=num(B1con);
+	dilutionnumberlister[3]=num(C1con);
+	dilutionnumberlister[4]=num(D1con);
+
+//record nominal dose (the middle dose; since there are 4 MOI it is the median) to calculate infectious particle ratio
+nominaldose = median(dilutionnumberlister);
+
+//list of concentrations
+moilist = List();
+moilist[1] = Char( A1con );
+moilist[2] = Char( B1con );
+moilist[3] = Char( C1con );
+moilist[4] = Char( D1con );
+
+//Make MOI Column
+current data table(dttextsum2);
+dttextsum2 << New Column( "MOI",
+	continuous,
+	numeric,
+	Values( Repeat( moilist, Floor( N Rows( dttextsum2 ) / N Items( moilist ) ) ) )
+);
+
+//Change MOI column to Scientific Notation
+:MOI << Format( "Scientific", 12 );
+
+//Transform the MOI data using Log 10
+dttextsum2 << New Column( "Log10 MOI", continuous, numeric, formula( Log10( :MOI ) ) );
+
+
+//make log10 of each of the concentrations
+moival1 = Log10( num(A1con) );
+moival2 = Log10( num(B1con) );
+moival3 = Log10( num(C1con) );
+moival4 = Log10( num(D1con) );
+
+
+//Copy the table without formulas
+Current Data Table( dttextsum2 );
+
+dttextsum3=dttextsum2<<subset(invisible,Copy formula( 0 ), All rows, Selected columns only( 0 ));
+
+
+close(dttextsum2, no save);
+
+//Rename the data table to be dttextsum2
+dttextsum2=dttextsum3;
+
+
+//Rename the data table that will be used in analysis
+dttextsum2 << set name( filenamer );
+
+
+// Set up the report window that will be the first page of the pdf report
+// this page includes the logos of Bioassay Sciences and astellas
+// it also includes user and time log information
+// Set up the report window
+heading = New Window( "astellas Potency Report",
+	V List Box(
+		String Col Box( "", {spacer} ),
+		H List Box( String Col Box( "", {spacer} ) ),
+		H List Box( V List Box( Picture Box( astellaslogo ) ), ),
+		H List Box( String Col Box( "", {spacer} ) ),
+		H List Box( cb = Text Box( "Astellas BQT Assay Report" ) ),
+		H List Box( at = Text Box( "Test Article Report" ) ), 
+
+	),
+	V List Box( H List Box( String Col Box( "", {spacer} ) ) ),
+
+	V List Box( H List Box( String Col Box( "", {spacer} ) ) ),
+	V List Box(), 
+
+);
+cb << Font Color( 19 ) << Set Font Size( 20 ) << set Font Style( "Bold" );
+cb << Set Wrap( 1000 );
+at << Set Font Size( 20 );
+at << Font Color( "Blue" ) << set Font Style( "Bold" );
+Heading << journal << close window;
+
+//User Report
+userreport = New Window( "User Report",
+	V List Box( H List Box( String Col Box( "", {liner} ) ) ),
+	V List Box(
+
+		String Col Box( "", {spacer} ), 
+	
+		H List Box( username = Text Box( "Assay Details" ) ),
+		V List Box( H List Box( String Col Box( "", {liner} ) ) ),
+		String Col Box( "", {spacer} ),
+		String Col Box( "", {spacer} ),
+		String Col Box( "User Information",
+			{usernamedisplay, computernamedisplay, logonserverdisplay, userdomaindisplay, scriptver,
+			Concat( "JMP Version ", jmpreport )}
+		),
+		String Col Box( "", {spacer} ),
+		String Col Box( "", {spacer} ),
+		String Col Box( "", {spacer} ), 
+
+	),
+	V List Box( H List Box( String Col Box( "", {dashliner, "Analyst Signature/Date"} ) ) ),
+	String Col Box( "", {spacer} ),
+	String Col Box( "", {spacer} ),
+	String Col Box( "", {spacer} ),
+	V List Box( H List Box( String Col Box( "", {dashliner, "Approver Signature/Date"} ) ) ), 
+);
+username << Set Font Size( 16 );
+username << Font Color( " Blue" ) << set Font Style( "Bold" );
+userreport << journal << close window;
+
+//Page break to go to another page in the report
+pagebreaker = New Window( "     Nothing Really",
+	V List Box( String Col Box( "", {spacer} ), String Col Box( "", {spacer} ), Page Break Box(), )
+);
+pagebreaker << journal << close window;
+
+
+	
+		//Materials for first assay run
+	materialreport = New Window( "Material Report",
+		V List Box( H List Box( String Col Box( "", {liner} ) ) ),
+		V List Box(
+			String Col Box( "", {spacer} ),
+			H List Box( materialname = Text Box( concat(assaynameval,""," Files" )) ),
+			V List Box( H List Box( String Col Box( "", {liner} ) ) ), 
+
+		),
+		String Col Box( "", {spacer} ), 
+
+	);
+	materialname << Set Font Size( 16 );
+	materialname << Font Color( "Blue" ) << set Font Style( "Bold" );
+	materialreport << journal << close window;
+
+	H List Box(
+		Text Box("  "),	String Col Box( "First Data File", {dtname[1]} ),
+		Text Box("  "),	String Col Box( "Second Data File", {dtname[2]} ),			
+		) << journal();
+	VSpacer(2);
+	
+//Make sure all analysis is done on the summary table
+Current Data Table( dttextsum2 );
+
+//change name of response column
+:Name( "Mean(Vg/mL)" ) << set name( "Vg/mL" );
+
+//change the name of the accepted droplets column
+:Name("Mean(Accepted Droplets)")<<set name("Accepted Droplets");
+
+
+//Create column for the Droplet comparison to 10000
+	dttextsum2 << New Column( "Droplet Result", Character, "Nominal", Formula( If( :Accepted Droplets < 10000, "1", "0" ) ) );
+	:Droplet Result << delete formula;
+	:Droplet Result << hide( 1 );
+	
+//exclude the rows that droplet count <10000
+dttextsum2 << select where( :Droplet Result == "1") << exclude(1) << Clear Select();
+
+//Count the number of wells that fail accepted droplets limit
+	dropletsres = :Droplet Result << get values;
+	
+	delval = List();
+	delval[1] = "";
+
+	For( i = 1, i <= N Items( dropletsres ), i++,
+		Remove From( dropletsres, As List( Loc( dropletsres, delval[1] ) ) )
+	);
+
+	If( Contains( dropletsres, "1" ), 
+	
+		delcols = List();
+		delcols[1] = "0";
+
+		For( i = 1, i <= N Items( dropletsres ), i++,
+			Remove From( dropletsres, As List( Loc( dropletsres, delcols[1] ) ) )
+		);
+	
+		dropletsrescount = N Items( dropletsres );
+	
+	, 
+	
+		dropletsrescount = 0;
+	
+	);
+
+//	Failed Droplet Validity
+	If( dropletsrescount <= dropletscountlimit,
+		dropletsrescountcrit = "Pass",
+		"Fail"
+	);
+
+
+//create column for the log transformation of the Vg/mL column
+dttextsum2 << New Column( "Log10 Vg/mL",
+	Numeric,
+	"Continuous",
+	Format( "Best", 12 ),
+	Formula( Log10( :Name( "Vg/mL" ) ) )
+);
+
+//Outlier Identification
+//Outlier Jackknife z Within Group/Dose Outlier Determination
+Current Data Table( dttextsum2 );
+multi = Multivariate(
+	Y( :Name( "Vg/mL" ) ),
+	Estimation Method( "Row-wise" ),
+	Matrix Format( "Square" ),
+	Scatterplot Matrix( Density Ellipses( 1 ), Shaded Ellipses( 0 ), Ellipse Color( 3 ) ),
+	Pairwise Correlations( 1 ),
+	Mahalanobis Distances( 1 ),
+	Jackknife Distances( 1 ),
+	By( :Group, :MOI )
+);
+multi << Jackknife Distances( 1, Save Jackknife Distances );
+multi << close window;
+:Jackknife Distances By Group By MOI << Set name( "Jackknife z" );
+:Jackknife z << Format( "Fixed", 6, 3 );
+dttextsum2 << New Column( "First Outlier Within Group Check",
+	character,
+	formula( If( Round( Abs( :Jackknife z ), 3 ) >=outlierlimitnum, "Outlier", "Pass" ) )
+);
+dttextsum2 << select all rows;
+dttextsum2 << invert row selection;
+
+dttextsum2 << select where( :First Outlier Within Group Check == "Outlier" ) << exclude( 1 );
+dttextsum2 << ClearSelect;
+
+//summary table for mean 
+dtMeanSummary = dttextsum2 << Summary(
+	invisible,
+	Group( :Group, :MOI ),
+	Mean( :Name( "Vg/mL" ) ),
+	link to original table (0)
+);
+
+ConcentrationColName = "MOI";
+
+:Name("Mean(Vg/mL)")<<set name("Mean Vg/mL");
+
+eval(eval expr(dttextsum2 << Update(
+	With( dtMeanSummary ),
+	Match Columns( :Group = :Group, expr(parse(":" || Log Capture( Print( ConcentrationColName ) ) || "n")) = expr(parse(":" || Log Capture( Print( ConcentrationColName ) ) || "n")) ),
+	Add Columns from Update Table( :"Mean Vg/mL"n ),
+	Replace Columns in Main Table( None )
+)));
+Close( dtMeanSummary, no save );
+
+//get the standard deviation for each MOI
+dtSDSummary = dttextsum2 << Summary(
+	invisible,
+	Group( :Sample Type, :MOI),
+	Std Dev( :Name( "Vg/mL" ) )
+);
+
+:Name("Std Dev(Vg/mL)")<<set name("Std Dev Vg/mL");
+
+eval(eval expr(dttextsum2 << Update(
+	With( dtSDSummary ),
+	Match Columns( expr(parse(":" || Log Capture( Print( ConcentrationColName ) ) || "n")) = expr(parse(":" || Log Capture( Print( ConcentrationColName ) ) || "n")) ),
+	Add Columns from Update Table( :"Std Dev Vg/mL"n ),
+	Replace Columns in Main Table( None )
+)));	
+Close( dtSDSummary, no save );
+
+Column(dttextsum2, N Cols()) << set name("SD (Vg/mL)");
+:Name("Mean Vg/mL")<<set name("Mean (Vg/mL)");
+
+dttextsum2 << New Column( "Analytical Error Upper",
+	Numeric,
+	"Continuous",
+	Format( "Fixed Dec", 12, 3 ),
+	Formula( :Name( "Mean (Vg/mL)" ) + 1.96 * :Name( "SD (Vg/mL)" ) )
+);
+
+dttextsum2 << New Column( "Analytical Error Lower",
+	Numeric,
+	"Continuous",
+	Format( "Fixed Dec", 12, 3 ),
+	Formula( :Name( "Mean (Vg/mL)" ) - 1.96 * :Name( "SD (Vg/mL)" ) )
+);
+	
+dttextsum2 << New Column( "Outlier Within Group",
+	Character( 7 ),
+	"Nominal",
+	Formula(
+		Match( :First Outlier Within Group Check, 
+				// Condition 1
+			"Pass", "Pass", 
+				// Condition 2
+			"Outlier",
+				If( :Name( "Vg/mL" ) > :"Analytical Error Lower"n & :Name( "Vg/mL" ) < :"Analytical Error Upper"n,
+					"Pass",
+					"Outlier"
+				)
+		)
+	),
+	Set Property( "Value Colors", {"Pass" = -15400938, "Outlier" = -16768477} ),
+	Color Cell by Value
+);
+	
+dttextsum2 << Clear Row States;
+dttextsum2 << select where( :Outlier Within Group == "Outlier" ) << Exclude(1) << ClearSelect;
+dttextsum2 << select where( :Droplet Result == "1") << exclude;
+
+	//create variable name for the test article type. whether it's TA or TI
+	
+	dttestart=dttextsum2<<select where(!contains(:Group,"Std"))<<subset(invisible);
+	
+	testsampletypes=:Group<<get values;
+	
+	testsamplelist= Associative Array( testsampletypes );
+	
+	talist=testsamplelist<<get keys;
+		
+	
+	//close the TA data table
+	close(dttestart, no save);	
+
+
+//Outlier Studentized Residuals, Between Group/Dose Outlier Determination
+//Between Group Outlier Removal Prior to Model Fitting and Masking Selection
+current data table(dttextsum2);
+dttextsum2 << Clear Row States;
+dttextsum2 << select where( :Outlier Within Group == "Outlier" ) << exclude;
+dttextsum2 << select where( :Droplet Result == "1") << exclude;
+dttextsum2 << select all rows;
+dttextsum2 << invert row selection;
+
+
+//hide outlier within dose columns
+:First Outlier Within Group Check<<hide(1);
+:Name("Mean (Vg/mL)")<<hide(1);
+:Name("SD (Vg/mL)")<<hide(1);
+:Analytical Error Upper<<hide(1);
+:Analytical Error Lower<<hide(1);
+
+//set name of first table
+dttextsum2 << set name("first table");
+
+
+
+
+
+//EC50 STD  Dose Unconstrained Fixed
+dtbetween=dttextsum2<<select where( contains( :Name( "Group" ),rstandard))<<subset(invisible);
+
+:Name( "MOI" ) << set modeling type( "Continuous" );
+
+	group1 = Fit Model(
+		Y( :Name("Log10 Vg/mL") ),
+		Effects( :Group, :Name( "Log10 MOI" ), :Group* :Name( "Log10 MOI" ) ),
+		Personality( "Standard Least Squares" ),
+		Emphasis( "Effect Leverage" ),
+		Run(
+			:Name("Log10 Vg/mL") << {Summary of Fit( 1 ), Analysis of Variance( 1 ), Parameter Estimates( 1 ), Scaled Estimates( 1 ),
+			Plot Actual by Predicted( 1 ), Plot Residual by Predicted( 1 ), Plot Residual by Row( 1 ), Plot Studentized Residuals( 0 ),
+			Plot Effect Leverage( 1 ), Plot Residual by Normal Quantiles( 0 ), Box Cox Y Transformation( 0 ), Show VIF( 1 )},
+			Effect Summary( 0 )
+		)
+	); 
+	group1r = group1 << report;
+	group1r << Externally Studentized Residuals; 
+	group1r << close window;
+
+	:Name("Externally Studentized Residuals Log10 Vg/mL") << set Name( "Externally Studentized Residuals" );
+	:Externally Studentized Residuals << Format( "Fixed Dec", 7, 3 );
+	dtbetween << New Column( "Outlier Between Group",
+		Character,
+		"Nominal",
+		formula( If( Abs( :Externally Studentized Residuals ) >= studoutlierlimitnum, "Outlier", "Ok" ) )
+	);
+
+	:Outlier Between Group<<Set Property( "Value Colors", {"Ok" = -15400938, "Outlier" = -16768477} )<<Color Cell by Value;
+	
+
+	dtbetween << select where( :Outlier Between Group == "Outlier" ) << exclude;
+	dtbetween << clear select;
+
+
+ec50refuncon = Fit Model(
+	Y( :Name( "Log10 Vg/mL" ) ),
+	Effects( :Name( "Log10 MOI" ) ),
+	Personality( "Standard Least Squares" ),
+	Emphasis( "Effect Leverage" ),
+	Run(
+		Profiler(
+			1,
+			Confidence Intervals( 1 ),
+			Term Value( Name( "Log10 MOI" )(-1.29874, Lock( 0 ), Show( 1 )) )
+		),
+		:Name( "Log10 Vg/mL" ) << {Summary of Fit( 1 ), Analysis of Variance( 1 ), Parameter Estimates( 1 ),
+		Scaled Estimates( 1 ), Plot Actual by Predicted( 1 ), Plot Residual by Predicted( 1 ),
+		Plot Residual by Row( 1 ), Plot Studentized Residuals( 0 ), Plot Effect Leverage( 1 ),
+		Plot Residual by Normal Quantiles( 0 ), Box Cox Y Transformation( 0 ), Show VIF( 1 ),
+		Inverse Prediction( Response( fixedRFER ), Term Value( Name( "Log10 MOI" )(.) ) )},
+		Effect Summary( 0 )
+	),
+	SendToReport(
+		Dispatch(
+			{"Response Log10 Vg/mL", "Inverse Prediction"},
+			"2",
+			ScaleBox,
+			{Min( 3.5 ), Max( 6.5 ), Inc( 0.5 ), Minor Ticks( 0 )}
+		)
+	)
+);
+
+ec50refunconr = ec50refuncon << report;
+ec50refvalues = ec50refunconr["Inverse Prediction"][columnbox( 2 )] << getasmatrix;
+ec50refunconfourdoselog = ec50refvalues[1];
+ec50refunconfourdose = 10 ^ (ec50refunconfourdoselog);
+ec50refunconr << close window;
+
+dtbetween << clear row states;
+dtbetween << select where( :Droplet Result == "1") << exclude;
+dtbetween << select where( :Outlier Within Group == "Outlier" ) << exclude;
+dtbetween << select where( :Outlier Between Group == "Outlier" ) << exclude;
+
+//Calculate curve depth 
+	dtcurvedepth = dtbetween << Summary(
+		Group( :MOI ),
+		Mean( :"Vg/mL"n ),
+		Freq( "None" ),
+		Weight( "None" )
+	);
+	
+	
+	//Column for calculating the Reference minimum and maximum
+	current data table(dtcurvedepth);
+	
+	
+	//Column for calculating the curve depth
+	dtcurvedepth << New Column( "Reference Curve Depth",
+			continuous,
+			formula( If( Row() == 1, Col Maximum( :"Mean(Vg/mL)"n ) - Col Minimum( :"Mean(Vg/mL)"n ) ) )
+		);
+		:Reference Curve Depth << Format( "Fixed", 7, 2 );
+		refcurvedepth = :Reference Curve Depth[1];
+			
+	close(dtcurvedepth, no save);
+	close(ec50refuncon, no save);
+	close(dtbetween, no save);
+
+
+//Systems Suitability List
+ssuitabilitylistupper = List();
+ssuitabilitylistlower = List();
+ssuitabilitylistupper[1] = EC50refupperlimit;
+ssuitabilitylistlower[1] = EC50reflowerlimit;
+
+
+//Setup
+samplesizedose = List();
+parallelismsample = List();
+parallelismvalidity = List();
+linearitysample = List();
+linearityvalidity = List();
+cvperdose = List();
+cvvalidity = List();
+rpdelta = List();
+doseresponse = List();
+ec50lsl = List();
+ec50usl = List();
+rpdeltavalidity = List();
+samplesec50ref = List();
+samplesec50test = List();
+samplesrp = List();
+samplesrpu95 = List();
+samplesrpl95 = List();
+samplesoos = List();
+overallvalidity = List();
+criterialist = List();
+validlist = List();
+CIRangelist=List();
+CITolerancelist=List();
+unconsamplesec50ref = List();
+unconsamplesec50test = List();
+unconsamplesrp = List();
+unconsamplesrpu95 = List();
+unconsamplesrpl95 = List();
+
+//Make each tracking variable a list
+EC50refslist = list();
+EC50testslist = list();
+ConstrainedPotencylist = list();
+ConstrainedPotencyU95list = list();
+ConstrainedPotencyL95list = list();
+FinalReportablelist = list();
+Failureresultlist = list();
+validitylist = list();
+
+parallellist=list();
+linearitylist=list();
+dosetestlist=list();
+selectedmodellist=list();
+RPdeltalist=list();
+infectparticlelist=list();
+finalparallellist=list();
+finallinearitylist=list();
+
+
+//Get max and min MOI value for masking
+Current Data Table( dttextsum2 );
+moinumbers = :Log10 MOI << get as matrix;
+MaximumDose = Max( moinumbers );
+MinimumDose = Min( moinumbers );
+
+
+	//create list of dilution values for the labels on the graphs
+	//get a subset of the dilutions
+	current data table(dttextsum2);
+	dtdilution=dttextsum2<<select where(:MOI !=0)<<subset(invisible);
+	:MOI<<modeling type("Nominal")<<data type("Character");
+	current data table(dtdilution);
+	dilutionlist1=:MOI<<get as matrix;
+	dilutionlist= Associative Array( dilutionlist1 );
+	dilutionlister = dilutionlist<< Get Keys;
+	
+	close(dtdilution, no save);
+
+	//make the list of test articles removing the standard based on how many total samples are recorded on the first tab of the materials template
+	If( SN1 != "" & SN2 != "" & SN3 != "" & SN4 != "" & SN5 != ""&SN6!=""&SN7!="" , 
+
+
+	//make the list of the test samples if there are 5 samples and the reference standard
+		snames = List();
+		snames[1] = SN1;
+		snames[2] = SN2;
+		snames[3] = SN3;
+		snames[4] = SN4;
+		snames[5] = SN5;
+		snames[6] = SN6;
+		snames[7] = SN7;
+
+	//create variables for the final materials list
+		samplenames = List();
+
+
+	//Make the  final list of test articles and standard (if applicable)
+		For( i = 1, i <= 7, i++,
+			If( Eval( snames[i] ) == "",
+				a = 1 + 2,
+				samplenames[i] = Eval( snames[i] )
+			)
+		);
+
+
+	//Make the final list of test articles excluding the standard group (if applicable)
+		delcols = List();
+		delcols[1] = rstandard;
+
+		For( i = 1, i <= N Items( samplenames ), i++,
+			Remove From( samplenames, As List( Loc( samplenames, delcols[1] ) ) )
+		);
+
+	,
+	If( SN1 != "" & SN2 != "" & SN3 != "" & SN4 != "" & SN5 != ""&SN6 != "" , 
+
+
+	//make the list of the test samples if there are 5 samples and the reference standard
+		snames = List();
+		snames[1] = SN1;
+		snames[2] = SN2;
+		snames[3] = SN3;
+		snames[4] = SN4;
+		snames[5] = SN5;
+		snames[6] = SN6;
+
+	//create variables for the final materials list
+		samplenames = List();
+
+
+	//Make the  final list of test articles and standard (if applicable)
+		For( i = 1, i <= 6, i++,
+			If( Eval( snames[i] ) == "",
+				a = 1 + 2,
+				samplenames[i] = Eval( snames[i] )
+			)
+		);
+
+
+	//Make the final list of test articles excluding the standard group (if applicable)
+		delcols = List();
+		delcols[1] = rstandard;
+
+		For( i = 1, i <= N Items( samplenames ), i++,
+			Remove From( samplenames, As List( Loc( samplenames, delcols[1] ) ) )
+		);
+	, 
+
+		If( SN1 != "" & SN2 != "" & SN3 != "" & SN4 != "" & SN5 != "" , 
+
+	//make the list of the test samples if there are 4 samples and the reference standard
+			snames = List();
+			snames[1] = SN1;
+			snames[2] = SN2;
+			snames[3] = SN3;
+			snames[4] = SN4;
+			snames[5] = SN5;
+
+
+	//create variables for the final materials list
+			samplenames = List();
+
+
+	//Make the  final list of test articles and standard (if applicable)
+			For( i = 1, i <= 5, i++,
+				If( Eval( snames[i] ) == "",
+					a = 1 + 2,
+					samplenames[i] = Eval( snames[i] )
+				)
+			);
+
+
+	//Make the final list of test articles excluding the standard group (if applicable)
+			delcols = List();
+			delcols[1] = rstandard;
+
+			For( i = 1, i <= N Items( samplenames ), i++,
+				Remove From( samplenames, As List( Loc( samplenames, delcols[1] ) ) )
+			);
+		, 
+
+			If( SN1 != "" & SN2 != "" & SN3 != "" & SN4 != "" & SN5 == "" , 
+
+	//make the list of the test samples if there are 3 samples and the reference standard
+				snames = List();
+				snames[1] = SN1;
+				snames[2] = SN2;
+				snames[3] = SN3;
+				snames[4] = SN4;
+
+
+	//create variables for the final materials list
+				samplenames = List();
+
+
+	//Make the  final list of test articles and standard (if applicable)
+				For( i = 1, i <= 4, i++,
+					If( Eval( snames[i] ) == "",
+						a = 1 + 2,
+						samplenames[i] = Eval( snames[i] )
+					)
+				);
+
+
+	//Make the final list of test articles excluding the standard group (if applicable)
+				delcols = List();
+				delcols[1] = rstandard;
+
+				For( i = 1, i <= N Items( samplenames ), i++,
+					Remove From( samplenames, As List( Loc( samplenames, delcols[1] ) ) )
+				);
+			, 
+
+				If( SN1 != "" & SN2 != "" & SN3 != "" & SN4 == "" & SN5 == "" , 
+
+	//make the list of the test samples if there are 2 samples and the reference standard
+					snames = List();
+					snames[1] = SN1;
+					snames[2] = SN2;
+					snames[3] = SN3;
+
+
+	//create variables for the final materials list
+					samplenames = List();
+
+
+	//Make the  final list of test articles and standard (if applicable)
+					For( i = 1, i <= 3, i++,
+						If( Eval( snames[i] ) == "",
+							a = 1 + 2,
+							samplenames[i] = Eval( snames[i] )
+						)
+					);
+
+
+	//Make the final list of test articles excluding the standard group (if applicable)
+					delcols = List();
+					delcols[1] = rstandard;
+
+					For( i = 1, i <= N Items( samplenames ), i++,
+						Remove From( samplenames, As List( Loc( samplenames, delcols[1] ) ) )
+					);
+
+				, 
+
+					If( SN1 != "" & SN2 != "" & SN3 == "" & SN4 == "" & SN5 == "" , 
+
+	//make the list of the test samples if there is 1 sample and the reference standard
+						snames = List();
+						snames[1] = SN1;
+						snames[2] = SN2;
+
+
+	//create variables for the final materials list
+						samplenames = List();
+
+
+	//Make the  final list of test articles and standard (if applicable)
+						For( i = 1, i <= 2, i++,
+							If( Eval( snames[i] ) == "",
+								a = 1 + 2,
+								samplenames[i] = Eval( snames[i] )
+							)
+						);
+
+
+	//Make the final list of test articles excluding the standard group (if applicable)
+						delcols = List();
+						delcols[1] = rstandard;
+
+						For( i = 1, i <= N Items( samplenames ), i++,
+							Remove From( samplenames, As List( Loc( samplenames, delcols[1] ) ) )
+						);
+
+					, 
+
+						Empty();
+						
+						)
+
+					)
+				)
+			)
+		)
+	);
+	 
+ //Record the number of samples for the loop
+samplenum = N Items( samplenames );
+
+//Begin For loop for each sample
+For( j = 1, j <= samplenum, j++, 
+
+//Determine Max Min Values for the Y axis for Graphs
+	dtsubset = dttextsum2 << select where( :Group == rstandard | :Group == samplenames[j] ) << subset( invisible );
+	
+	//exclude the droplets from the subset data
+	ExcludeDroplets= expr((dtsubset << select where( :Droplet Result == "1") << exclude(1)) << Clear Select());
+	
+	//Between Outliers
+		group2 = Fit Model(
+		Y( :Name("Log10 Vg/mL") ),
+		Effects( :Group, :Name( "Log10 MOI" ), :Group* :Name( "Log10 MOI" ) ),
+		Personality( "Standard Least Squares" ),
+		Emphasis( "Effect Leverage" ),
+		Run(
+			:Name("Log10 Vg/mL") << {Summary of Fit( 1 ), Analysis of Variance( 1 ), Parameter Estimates( 1 ), Scaled Estimates( 1 ),
+			Plot Actual by Predicted( 1 ), Plot Residual by Predicted( 1 ), Plot Residual by Row( 1 ), Plot Studentized Residuals( 0 ),
+			Plot Effect Leverage( 1 ), Plot Residual by Normal Quantiles( 0 ), Box Cox Y Transformation( 0 ), Show VIF( 1 )},
+			Effect Summary( 0 )
+		)
+	); 
+	group2r = group2 << report;
+	group2r << Externally Studentized Residuals; 
+	group2r << close window;
+
+	:Name("Externally Studentized Residuals Log10 Vg/mL") << set Name( "Externally Studentized Residuals" );
+	:Externally Studentized Residuals << Format( "Fixed Dec", 7, 3 );
+	
+	dtsubset << New Column( "Outlier Between Group",
+		Character,
+		"Nominal",
+		formula( If( Abs( :Externally Studentized Residuals ) >= studoutlierlimitnum, "Outlier", "Ok" ) )
+	);
+
+	:Outlier Between Group<<Set Property( "Value Colors", {"Ok" = -15400938, "Outlier" = -16768477} )<<Color Cell by Value;
+
+	dtsubset << select where( :Outlier Between Group == "Outlier" ) << exclude;
+	dtsubset << clear select;
+
+	
+//Show the Reference Standard data in the report
+
+	refstanddata = New Window( "     Data Display",
+		V List Box(
+			H List Box( String Col Box( "", {liner} ) ),
+			String Col Box( "", {spacer} ),
+			H List Box(
+				refdataname = Text Box( Concat( samplenames[j]," ","& Reference Standard Data" ) ), 
+					//String Col Box("", {spacer}),
+			)
+		),
+		V List Box( H List Box( String Col Box( "", {liner} ) ) ), 
+
+	);
+	refdataname << Set Font Size( 16 );
+	refdataname << Font Color( " Blue" ) << set Font Style( "Bold" ) << set wrap( 2000 );
+	refstanddata << journal << close window;
+	dtsubset << Journal; 
+
+	//Add Limits of Outlier Detections to report below table
+	jackztb = Text Box( Concat( "Within Group Jackknife z Outlier Limit (≥): ", Char( outlierlimitnum ) ) );
+	jackztb << Font Color( " Blue" ) << set Font Style( "Bold" );
+	jackztb << Set Font Size( 12 );
+	jackztb << Set Wrap( 1000 );
+	jackztb << journal;
+
+	studrtb = Text Box( Concat( "Between Group Externally Studentized Residuals Outlier Limit (≥): ", Char( studoutlierlimitnum ) ) );
+	studrtb << Font Color( " Blue" ) << set Font Style( "Bold" );
+	studrtb << Set Font Size( 12 );
+	studrtb << Set Wrap( 1000 );
+	studrtb << journal;
+
+	//Add Limits AcceptedDroplets to report below table
+		accdroptb = Text Box( "Accepted Droplets: Invalid wells with < 10,000 accepted droplets excluded from all calculations" );
+		accdroptb << Font Color( "Blue"  ) << set Font Style( "Bold" );
+		accdroptb << Set Font Size( 12 );
+		accdroptb << Set Wrap( 1000 );
+		accdroptb << journal;
+
+	
+
+	//Summary Statistics header
+	summaryreport = New Window( "Plate Map Report",
+		V List Box( H List Box( String Col Box( "", {liner} ) ) ),
+		V List Box(
+			String Col Box( "", {spacer} ),
+			H List Box( summaryname = Text Box( concat(samplenames[j]," "," Test Sample & Reference Standard","  Summary Statistics" ) )),
+			V List Box( H List Box( String Col Box( "", {liner} ) ) ), 
+
+		),
+		String Col Box( "", {spacer} ), 
+
+	);
+	summaryname << Set Font Size( 16 );
+	summaryname << Font Color( "Blue" ) << set Font Style( "Bold" )<<set wrap(1000);
+	summaryreport << journal << close window;
+
+	
+	
+	dtsubset<<clear select;
+		
+	
+	dtsummary = dtsubset<< Summary(invisible,
+		Group( :Group, :Name("MOI") ),
+		Mean( :Name("Vg/mL") ),
+		Std Dev( :Name("Vg/mL") ),
+		Freq( "None" ),
+		Weight( "None" )
+	);
+	dtsummary << delete rows();
+	Column( "Mean(Vg/mL)" ) << Format( "Fixed Dec", 7, 3 );
+	Column( "Std Dev(Vg/mL)" ) << Format( "Fixed Dec", 7, 3 );
+	dtsummary << select where(contains( :Name( "Group" ),"Std"));
+	dtsummary << move rows( atstart )<<clear select;
+	
+
+	dtsummary<< clear row states;
+	dtsummary << journal;
+	Close( dtsummary, no save );
+
+//exclude outliers expression
+	current data table(dtsubset);
+		ExcludeOutliers = expr((dtsubset << select where( :Outlier Between Group == "Outlier"| :Outlier Within Group == "Outlier") << exclude(1)) << Clear Select());
+		
+	//Best Linear Model Selection that meets all Validity Criteria
+	//1)	All data
+	//2)	Both low doses excluded
+	//3)	Both high doses excluded
+	//4)	STD low dose excluded
+	//5)	STD high dose excluded
+	//6)	Test low dose excluded
+	//7)	Test high dose excluded
+	//8)	STD low dose and test high dose excluded
+	//9)	STD high dose and test low dose excluded
+
+	//Model 1)All data
+	dtsubset << clear row states;
+	ExcludeOutliers;
+	ExcludeDroplets;
+	dtsubset << select all rows;
+	dtsubset << invert row selection;
+	
+	
+	model1 = Fit Curve(
+	Y( :Name( "Log10 Vg/mL" ) ),
+	X( :Log10 MOI),
+	Group( :Group),
+	Fit Linear(
+		Equivalence Test(
+			Reference Group(rstandard), 
+			Equivalence with Ratios(
+				1,
+				Set Decision Lines( 0.5, 1.5 ),
+				Show Summary Report( 1 )
+				)
+			)
+		)
+	);
+	model1r = model1 << report;
+	model1rootmean = model1r["Model Comparison"][columnbox( "RMSE" )] << getasmatrix;
+	model1rsquare = model1r["Model Comparison"][columnbox( "R-Square" )] << getasmatrix;
+	model1r2 = model1rsquare[1];
+	model1rmse = model1rootmean[1];
+	
+	//slope ratio value
+	model1ratio = model1r["Equivalence Summary"][columnbox( "Ratio")]<< get as matrix;
+	model1sloperatio = model1ratio[2];
+	
+	//slope ratio lower limit 
+	model1ratiolower = model1r["Equivalence Summary"][columnbox( "Lower Confidence Limit")]<< get as matrix;
+	model1sloperatiolower = model1ratiolower[2];
+
+	//slope ratio upper limit 
+	model1ratioupper = model1r["Equivalence Summary"][columnbox( "Upper Confidence Limit")]<< get as matrix;
+	model1sloperatioupper = model1ratioupper[2];
+	
+	
+	model1r << close window;
+
+
+		//model 1 quad and linearity ratio
+		model1 =Fit Model(
+		Y(:Name( "Log10 Vg/mL" ) ),
+		Effects(
+			:Group,
+			:Name( "Log10 MOI" ),
+			:Group* :Name( "Log10 MOI" ),
+			:Name( "Log10 MOI" ) * :Name( "Log10 MOI" )
+		),
+		Personality( "Standard Least Squares" ),
+		Emphasis( "Effect Leverage" ),
+		Run(
+			Profiler(
+				1,
+				Confidence Intervals( 1 ),
+				Term Value(
+					Concentration( 2.5, Lock( 0 ), Show( 1 ) ),
+					Group( "Std", Lock( 0 ), Show( 1 ) )
+				)
+			),
+			:Name("Log10 Vg/mL")<< {Summary of Fit( 1 ), Analysis of Variance( 1 ),
+			Parameter Estimates( 1 ), Lack of Fit( 0 ), Scaled Estimates( 1 ),
+			Plot Actual by Predicted( 1 ), Plot Residual by Predicted( 0 ),
+			Plot Residual by Row( 1 ), Plot Studentized Residuals( 0 ),
+			Plot Effect Leverage( 1 ), Plot Residual by Normal Quantiles( 0 ),
+			Box Cox Y Transformation( 0 ), Show All Confidence Intervals( 1 ),
+			Show VIF( 1 )}
+			)
+		);
+		model1r = model1 << report;
+		model1quadss = model1r["Scaled Estimates"][columnbox( "Scaled Estimate" )] << getasmatrix;
+		model1conc = model1quadss[4];
+		model1quad = model1quadss[7];
+		model1quadp = abs(( model1quad * 1 ) / (model1conc * 2))* 100;//Linearity Ratio Formula
+		model1r << close window;
+
+
+	
+	//Model 2 Both Low Doses Excluded
+	current data table(dtsubset);
+	dtsubset << clear row states;
+	ExcludeOutliers;
+	ExcludeDroplets;
+	dtsubset << select where( :Name( "Log10 MOI" ) == MinimumDose) << exclude;
+	dtsubset << select all rows;
+	dtsubset << invert row selection;
+	
+	model2 = Fit Curve(
+	Y( :Name( "Log10 Vg/mL" ) ),
+	X( :Log10 MOI),
+	Group( :Group),
+	Fit Linear(
+		Equivalence Test(
+			Reference Group(rstandard), 
+			Equivalence with Ratios(
+				1,
+				Set Decision Lines( 0.5, 1.5 ),
+				Show Summary Report( 1 )
+				)
+			)
+		)
+	);
+	model2r = model2 << report;
+	model2rootmean = model2r["Model Comparison"][columnbox( "RMSE" )] << getasmatrix;
+	model2rsquare = model2r["Model Comparison"][columnbox( "R-Square" )] << getasmatrix;
+	model2r2 = model2rsquare[1];
+	model2rmse = model2rootmean[1];
+	
+	//slope ratio value
+	model2ratio = model2r["Equivalence Summary"][columnbox( "Ratio")]<< get as matrix;
+	model2sloperatio = model2ratio[2];
+	
+	//slope ratio lower limit 
+	model2ratiolower = model2r["Equivalence Summary"][columnbox( "Lower Confidence Limit")]<< get as matrix;
+	model2sloperatiolower = model2ratiolower[2];
+
+	//slope ratio upper limit 
+	model2ratioupper = model2r["Equivalence Summary"][columnbox( "Upper Confidence Limit")]<< get as matrix;
+	model2sloperatioupper = model2ratioupper[2];
+	
+	
+	model2r << close window;
+
+
+		//model 2 quad and linearity ratio
+		model2 =Fit Model(
+		Y(:Name( "Log10 Vg/mL" ) ),
+		Effects(
+			:Group,
+			:Name( "Log10 MOI" ),
+			:Group* :Name( "Log10 MOI" ),
+			:Name( "Log10 MOI" ) * :Name( "Log10 MOI" )
+		),
+		Personality( "Standard Least Squares" ),
+		Emphasis( "Effect Leverage" ),
+		Run(
+			Profiler(
+				1,
+				Confidence Intervals( 1 ),
+				Term Value(
+					Concentration( 2.5, Lock( 0 ), Show( 1 ) ),
+					Group( "Std", Lock( 0 ), Show( 1 ) )
+				)
+			),
+			:Name("Log10 Vg/mL")<< {Summary of Fit( 1 ), Analysis of Variance( 1 ),
+			Parameter Estimates( 1 ), Lack of Fit( 0 ), Scaled Estimates( 1 ),
+			Plot Actual by Predicted( 1 ), Plot Residual by Predicted( 0 ),
+			Plot Residual by Row( 1 ), Plot Studentized Residuals( 0 ),
+			Plot Effect Leverage( 1 ), Plot Residual by Normal Quantiles( 0 ),
+			Box Cox Y Transformation( 0 ), Show All Confidence Intervals( 1 ),
+			Show VIF( 1 )}
+			)
+		);
+		model2r = model2 << report;
+		model2quadss = model2r["Scaled Estimates"][columnbox( "Scaled Estimate" )] << getasmatrix;
+		model2conc = model2quadss[4];
+		model2quad = model2quadss[7];
+		model2quadp = abs(( model2quad * 1 ) / (model2conc * 2))* 100;//Linearity Ratio Formula
+		model2r << close window;
+
+
+	//Model 3 Both High Doses Excluded
+	dtsubset << clear row states;
+	ExcludeOutliers;
+	ExcludeDroplets;
+	dtsubset << select where( :Name( "Log10 MOI" ) == MaximumDose) << exclude;
+	dtsubset << select all rows;
+	dtsubset << invert row selection;
+
+	model3 = Fit Curve(
+	Y( :Name( "Log10 Vg/mL" ) ),
+	X( :Log10 MOI),
+	Group( :Group),
+	Fit Linear(
+		Equivalence Test(
+			Reference Group(rstandard), 
+			Equivalence with Ratios(
+				1,
+				Set Decision Lines( 0.5, 1.5 ),
+				Show Summary Report( 1 )
+				)
+			)
+		)
+	);
+	model3r = model3 << report;
+	model3rootmean = model3r["Model Comparison"][columnbox( "RMSE" )] << getasmatrix;
+	model3rsquare = model3r["Model Comparison"][columnbox( "R-Square" )] << getasmatrix;
+	model3r2 = model3rsquare[1];
+	model3rmse = model3rootmean[1];
+
+	//slope ratio value
+	model3ratio = model3r["Equivalence Summary"][columnbox( "Ratio")]<< get as matrix;
+	model3sloperatio = model3ratio[2];
+	
+	//slope ratio lower limit 
+	model3ratiolower = model3r["Equivalence Summary"][columnbox( "Lower Confidence Limit")]<< get as matrix;
+	model3sloperatiolower = model3ratiolower[2];
+
+	//slope ratio upper limit 
+	model3ratioupper = model3r["Equivalence Summary"][columnbox( "Upper Confidence Limit")]<< get as matrix;
+	model3sloperatioupper = model3ratioupper[2];
+	
+	model3r << close window;
+	
+		//model 3 quad and linearity ratio
+		model3 =Fit Model(
+		Y(:Name( "Log10 Vg/mL" ) ),
+		Effects(
+			:Group,
+			:Name( "Log10 MOI" ),
+			:Group* :Name( "Log10 MOI" ),
+			:Name( "Log10 MOI" ) * :Name( "Log10 MOI" )
+		),
+		Personality( "Standard Least Squares" ),
+		Emphasis( "Effect Leverage" ),
+		Run(
+			Profiler(
+				1,
+				Confidence Intervals( 1 ),
+				Term Value(
+					Concentration( 2.5, Lock( 0 ), Show( 1 ) ),
+					Group( "Std", Lock( 0 ), Show( 1 ) )
+				)
+			),
+			:Name("Log10 Vg/mL")<< {Summary of Fit( 1 ), Analysis of Variance( 1 ),
+			Parameter Estimates( 1 ), Lack of Fit( 0 ), Scaled Estimates( 1 ),
+			Plot Actual by Predicted( 1 ), Plot Residual by Predicted( 0 ),
+			Plot Residual by Row( 1 ), Plot Studentized Residuals( 0 ),
+			Plot Effect Leverage( 1 ), Plot Residual by Normal Quantiles( 0 ),
+			Box Cox Y Transformation( 0 ), Show All Confidence Intervals( 1 ),
+			Show VIF( 1 )}
+			)
+		);
+		model3r = model3 << report;
+		model3quadss = model3r["Scaled Estimates"][columnbox( "Scaled Estimate" )] << getasmatrix;
+		model3conc = model3quadss[4];
+		model3quad = model3quadss[7];
+		model3quadp = abs(( model3quad * 1 ) / (model3conc * 2))* 100;//Linearity Ratio Formula
+		model3r << close window;
+
+
+	//Model 4)	STD Low Dose Excluded
+	dtsubset << clear row states;
+	ExcludeOutliers;
+	ExcludeDroplets;
+	dtsubset << select where( Contains(:Name("Group"),"Std")& :Name( "Log10 MOI" ) == MinimumDose ) << exclude;
+	dtsubset << select all rows;
+	dtsubset << invert row selection;
+
+	model4 = Fit Curve(
+	Y( :Name( "Log10 Vg/mL" ) ),
+	X( :Log10 MOI),
+	Group( :Group),
+	Fit Linear(
+		Equivalence Test(
+			Reference Group(rstandard), 
+			Equivalence with Ratios(
+				1,
+				Set Decision Lines( 0.5, 1.5 ),
+				Show Summary Report( 1 )
+				)
+			)
+		)
+	);
+	model4r = model4 << report;
+	model4rootmean = model4r["Model Comparison"][columnbox( "RMSE" )] << getasmatrix;
+	model4rsquare = model4r["Model Comparison"][columnbox( "R-Square" )] << getasmatrix;
+	model4r2 = model4rsquare[1];
+	model4rmse = model4rootmean[1];
+
+	//slope ratio value
+	model4ratio = model4r["Equivalence Summary"][columnbox( "Ratio")]<< get as matrix;
+	model4sloperatio = model4ratio[2];
+	
+	//slope ratio lower limit 
+	model4ratiolower = model4r["Equivalence Summary"][columnbox( "Lower Confidence Limit")]<< get as matrix;
+	model4sloperatiolower = model4ratiolower[2];
+
+	//slope ratio upper limit 
+	model4ratioupper = model4r["Equivalence Summary"][columnbox( "Upper Confidence Limit")]<< get as matrix;
+	model4sloperatioupper = model4ratioupper[2];
+	
+	model4r << close window;
+
+		//model 4 quad and linearity ratio
+		model4 =Fit Model(
+		Y(:Name( "Log10 Vg/mL" ) ),
+		Effects(
+			:Group,
+			:Name( "Log10 MOI" ),
+			:Group* :Name( "Log10 MOI" ),
+			:Name( "Log10 MOI" ) * :Name( "Log10 MOI" )
+		),
+		Personality( "Standard Least Squares" ),
+		Emphasis( "Effect Leverage" ),
+		Run(
+			Profiler(
+				1,
+				Confidence Intervals( 1 ),
+				Term Value(
+					Concentration( 2.5, Lock( 0 ), Show( 1 ) ),
+					Group("Std", Lock( 0 ), Show( 1 ) )
+				)
+			),
+			:Name("Log10 Vg/mL")<< {Summary of Fit( 1 ), Analysis of Variance( 1 ),
+			Parameter Estimates( 1 ), Lack of Fit( 0 ), Scaled Estimates( 1 ),
+			Plot Actual by Predicted( 1 ), Plot Residual by Predicted( 0 ),
+			Plot Residual by Row( 1 ), Plot Studentized Residuals( 0 ),
+			Plot Effect Leverage( 1 ), Plot Residual by Normal Quantiles( 0 ),
+			Box Cox Y Transformation( 0 ), Show All Confidence Intervals( 1 ),
+			Show VIF( 1 )}
+			)
+		);
+		model4r = model4 << report;
+		model4quadss = model4r["Scaled Estimates"][columnbox( "Scaled Estimate" )] << getasmatrix;
+		model4conc = model4quadss[4];
+		model4quad = model4quadss[7];
+		model4quadp = abs(( model4quad * 1 ) / (model4conc * 2))* 100;//Linearity Ratio Formula
+		model4r << close window;
+
+
+	//Model 5) STD High Dose Excluded
+	dtsubset << clear row states;
+	ExcludeOutliers;
+	ExcludeDroplets;
+	dtsubset << select where( Contains(:Name("Group"),"Std") & :Name( "Log10 MOI" ) == MaximumDose ) << exclude;
+	dtsubset << select all rows;
+	dtsubset << invert row selection;
+
+	model5 = Fit Curve(
+	Y( :Name( "Log10 Vg/mL" ) ),
+	X( :Log10 MOI),
+	Group( :Group),
+	Fit Linear(
+		Equivalence Test(
+			Reference Group(rstandard), 
+			Equivalence with Ratios(
+				1,
+				Set Decision Lines( 0.5, 1.5 ),
+				Show Summary Report( 1 )
+				)
+			)
+		)
+	);
+	model5r = model5 << report;
+	model5rootmean = model5r["Model Comparison"][columnbox( "RMSE" )] << getasmatrix;
+	model5rsquare = model5r["Model Comparison"][columnbox( "R-Square" )] << getasmatrix;
+	model5r2 = model5rsquare[1];
+	model5rmse = model5rootmean[1];
+
+	//slope ratio value
+	model5ratio = model5r["Equivalence Summary"][columnbox( "Ratio")]<< get as matrix;
+	model5sloperatio = model5ratio[2];
+	
+	//slope ratio lower limit 
+	model5ratiolower = model5r["Equivalence Summary"][columnbox( "Lower Confidence Limit")]<< get as matrix;
+	model5sloperatiolower = model5ratiolower[2];
+
+	//slope ratio upper limit 
+	model5ratioupper = model5r["Equivalence Summary"][columnbox( "Upper Confidence Limit")]<< get as matrix;
+	model5sloperatioupper = model5ratioupper[2];
+	
+	model5r << close window;
+	
+		//model 5 quad and linearity ratio
+		model5 =Fit Model(
+		Y(:Name( "Log10 Vg/mL" ) ),
+		Effects(
+			:Group,
+			:Name( "Log10 MOI" ),
+			:Group* :Name( "Log10 MOI" ),
+			:Name( "Log10 MOI" ) * :Name( "Log10 MOI" )
+		),
+		Personality( "Standard Least Squares" ),
+		Emphasis( "Effect Leverage" ),
+		Run(
+			Profiler(
+				1,
+				Confidence Intervals( 1 ),
+				Term Value(
+					Concentration( 2.5, Lock( 0 ), Show( 1 ) ),
+					Group( "Std", Lock( 0 ), Show( 1 ) )
+				)
+			),
+			:Name("Log10 Vg/mL")<< {Summary of Fit( 1 ), Analysis of Variance( 1 ),
+			Parameter Estimates( 1 ), Lack of Fit( 0 ), Scaled Estimates( 1 ),
+			Plot Actual by Predicted( 1 ), Plot Residual by Predicted( 0 ),
+			Plot Residual by Row( 1 ), Plot Studentized Residuals( 0 ),
+			Plot Effect Leverage( 1 ), Plot Residual by Normal Quantiles( 0 ),
+			Box Cox Y Transformation( 0 ), Show All Confidence Intervals( 1 ),
+			Show VIF( 1 )}
+			)
+		);
+		model5r = model5 << report;
+		model5quadss = model5r["Scaled Estimates"][columnbox( "Scaled Estimate" )] << getasmatrix;
+		model5conc = model5quadss[4];
+		model5quad = model5quadss[7];
+		model5quadp =abs(( model5quad * 1 ) / (model5conc * 2))* 100;//Linearity Ratio Formula
+		model5r << close window;
+
+
+	//Model 6) Test Low Dose Excluded
+	dtsubset << clear row states;
+	ExcludeOutliers;
+	ExcludeDroplets;
+	dtsubset << select where(!Contains(:Name("Group"),"Std") & :Name( "Log10 MOI" ) == MinimumDose ) << exclude;
+	dtsubset << select all rows;
+	dtsubset << invert row selection;
+
+	model6 = Fit Curve(
+	Y( :Name( "Log10 Vg/mL" ) ),
+	X( :Log10 MOI),
+	Group( :Group),
+	Fit Linear(
+		Equivalence Test(
+			Reference Group(rstandard), 
+			Equivalence with Ratios(
+				1,
+				Set Decision Lines( 0.5, 1.5 ),
+				Show Summary Report( 1 )
+				)
+			)
+		)
+	);
+	model6r = model6 << report;
+	model6rootmean = model6r["Model Comparison"][columnbox( "RMSE" )] << getasmatrix;
+	model6rsquare = model6r["Model Comparison"][columnbox( "R-Square" )] << getasmatrix;
+	model6r2 = model6rsquare[1];
+	model6rmse = model6rootmean[1];
+
+	//slope ratio value
+	model6ratio = model6r["Equivalence Summary"][columnbox( "Ratio")]<< get as matrix;
+	model6sloperatio = model6ratio[2];
+	
+	//slope ratio lower limit 
+	model6ratiolower = model6r["Equivalence Summary"][columnbox( "Lower Confidence Limit")]<< get as matrix;
+	model6sloperatiolower = model6ratiolower[2];
+
+	//slope ratio upper limit 
+	model6ratioupper = model6r["Equivalence Summary"][columnbox( "Upper Confidence Limit")]<< get as matrix;
+	model6sloperatioupper = model6ratioupper[2];
+	
+	model6r << close window;
+	
+		//model 6 quad and linearity ratio
+		model6 =Fit Model(
+		Y(:Name( "Log10 Vg/mL" ) ),
+		Effects(
+			:Group,
+			:Name( "Log10 MOI" ),
+			:Group* :Name( "Log10 MOI" ),
+			:Name( "Log10 MOI" ) * :Name( "Log10 MOI" )
+		),
+		Personality( "Standard Least Squares" ),
+		Emphasis( "Effect Leverage" ),
+		Run(
+			Profiler(
+				1,
+				Confidence Intervals( 1 ),
+				Term Value(
+					Concentration( 2.5, Lock( 0 ), Show( 1 ) ),
+					Group( "Std", Lock( 0 ), Show( 1 ) )
+				)
+			),
+			:Name("Log10 Vg/mL")<< {Summary of Fit( 1 ), Analysis of Variance( 1 ),
+			Parameter Estimates( 1 ), Lack of Fit( 0 ), Scaled Estimates( 1 ),
+			Plot Actual by Predicted( 1 ), Plot Residual by Predicted( 0 ),
+			Plot Residual by Row( 1 ), Plot Studentized Residuals( 0 ),
+			Plot Effect Leverage( 1 ), Plot Residual by Normal Quantiles( 0 ),
+			Box Cox Y Transformation( 0 ), Show All Confidence Intervals( 1 ),
+			Show VIF( 1 )}
+			)
+		);
+		model6r = model6 << report;
+		model6quadss = model6r["Scaled Estimates"][columnbox( "Scaled Estimate" )] << getasmatrix;
+		model6conc = model6quadss[4];
+		model6quad = model6quadss[7];
+		model6quadp = abs(( model6quad * 1 ) / (model6conc * 2))* 100;//Linearity Ratio Formula
+		model6r << close window;
+
+
+	//Model 7) Test High Dose Excluded
+	dtsubset << clear row states;
+	ExcludeOutliers;
+	ExcludeDroplets;
+	dtsubset << select where(!Contains(:Name("Group"),"Std") & :Name( "Log10 MOI" ) == MaximumDose ) << exclude;
+	dtsubset << select all rows;
+	dtsubset << invert row selection;
+
+	model7 = Fit Curve(
+	Y( :Name( "Log10 Vg/mL" ) ),
+	X( :Log10 MOI),
+	Group( :Group),
+	Fit Linear(
+		Equivalence Test(
+			Reference Group(rstandard ), 
+			Equivalence with Ratios(
+				1,
+				Set Decision Lines( 0.5, 1.5 ),
+				Show Summary Report( 1 )
+				)
+			)
+		)
+	);
+	model7r = model7 << report;
+	model7rootmean = model7r["Model Comparison"][columnbox( "RMSE" )] << getasmatrix;
+	model7rsquare = model7r["Model Comparison"][columnbox( "R-Square" )] << getasmatrix;
+	model7r2 = model7rsquare[1];
+	model7rmse = model7rootmean[1];
+
+	//slope ratio value
+	model7ratio = model7r["Equivalence Summary"][columnbox( "Ratio")]<< get as matrix;
+	model7sloperatio = model7ratio[2];
+	
+	//slope ratio lower limit 
+	model7ratiolower = model7r["Equivalence Summary"][columnbox( "Lower Confidence Limit")]<< get as matrix;
+	model7sloperatiolower = model7ratiolower[2];
+
+	//slope ratio upper limit 
+	model7ratioupper = model7r["Equivalence Summary"][columnbox( "Upper Confidence Limit")]<< get as matrix;
+	model7sloperatioupper = model7ratioupper[2];
+	
+	model7r << close window;
+	
+		//model 7 quad and linearity ratio
+		model7 =Fit Model(
+		Y(:Name( "Log10 Vg/mL" ) ),
+		Effects(
+			:Group,
+			:Name( "Log10 MOI" ),
+			:Group* :Name( "Log10 MOI" ),
+			:Name( "Log10 MOI" ) * :Name( "Log10 MOI" )
+		),
+		Personality( "Standard Least Squares" ),
+		Emphasis( "Effect Leverage" ),
+		Run(
+			Profiler(
+				1,
+				Confidence Intervals( 1 ),
+				Term Value(
+					Concentration( 2.5, Lock( 0 ), Show( 1 ) ),
+					Group("Std", Lock( 0 ), Show( 1 ) )
+				)
+			),
+			:Name("Log10 Vg/mL")<< {Summary of Fit( 1 ), Analysis of Variance( 1 ),
+			Parameter Estimates( 1 ), Lack of Fit( 0 ), Scaled Estimates( 1 ),
+			Plot Actual by Predicted( 1 ), Plot Residual by Predicted( 0 ),
+			Plot Residual by Row( 1 ), Plot Studentized Residuals( 0 ),
+			Plot Effect Leverage( 1 ), Plot Residual by Normal Quantiles( 0 ),
+			Box Cox Y Transformation( 0 ), Show All Confidence Intervals( 1 ),
+			Show VIF( 1 )}
+			)
+		);
+		model7r = model7 << report;
+		model7quadss = model7r["Scaled Estimates"][columnbox( "Scaled Estimate" )] << getasmatrix;
+		model7conc = model7quadss[4];
+		model7quad = model7quadss[7];
+		model7quadp = abs(( model7quad * 1 ) / (model7conc * 2))* 100;//Linearity Ratio Formula
+		model7r << close window;
+
+
+
+	//Model 8) STD Low Dose and Test High Dose Excluded
+	dtsubset << clear row states;
+	ExcludeOutliers;
+	ExcludeDroplets;
+	dtsubset << select where( Contains(:Name("Group"),"Std") & :Name( "Log10 MOI" ) == MinimumDose ) << exclude;
+	dtsubset << select where(!Contains(:Name("Group"),"Std") & :Name( "Log10 MOI" ) == MaximumDose ) << exclude;
+	dtsubset << select all rows;
+	dtsubset << invert row selection;
+
+	model8 = Fit Curve(
+	Y( :Name( "Log10 Vg/mL" ) ),
+	X( :Log10 MOI),
+	Group( :Group),
+	Fit Linear(
+		Equivalence Test(
+			Reference Group(rstandard ), 
+			Equivalence with Ratios(
+				1,
+				Set Decision Lines( 0.5, 1.5 ),
+				Show Summary Report( 1 )
+				)
+			)
+		)
+	);
+	model8r = model8 << report;
+	model8rootmean = model8r["Model Comparison"][columnbox( "RMSE" )] << getasmatrix;
+	model8rsquare = model8r["Model Comparison"][columnbox( "R-Square" )] << getasmatrix;
+	model8r2 = model8rsquare[1];
+	model8rmse = model8rootmean[1];
+
+	//slope ratio value
+	model8ratio = model8r["Equivalence Summary"][columnbox( "Ratio")]<< get as matrix;
+	model8sloperatio = model8ratio[2];
+	
+	//slope ratio lower limit 
+	model8ratiolower = model8r["Equivalence Summary"][columnbox( "Lower Confidence Limit")]<< get as matrix;
+	model8sloperatiolower = model8ratiolower[2];
+
+	//slope ratio upper limit 
+	model8ratioupper = model8r["Equivalence Summary"][columnbox( "Upper Confidence Limit")]<< get as matrix;
+	model8sloperatioupper = model8ratioupper[2];
+	
+	model8r << close window;
+	
+		//model 8 quad and linearity ratio
+		model8 =Fit Model(
+		Y(:Name( "Log10 Vg/mL" ) ),
+		Effects(
+			:Group,
+			:Name( "Log10 MOI" ),
+			:Group* :Name( "Log10 MOI" ),
+			:Name( "Log10 MOI" ) * :Name( "Log10 MOI" )
+		),
+		Personality( "Standard Least Squares" ),
+		Emphasis( "Effect Leverage" ),
+		Run(
+			Profiler(
+				1,
+				Confidence Intervals( 1 ),
+				Term Value(
+					Concentration( 2.5, Lock( 0 ), Show( 1 ) ),
+					Group( "Std", Lock( 0 ), Show( 1 ) )
+				)
+			),
+			:Name("Log10 Vg/mL")<< {Summary of Fit( 1 ), Analysis of Variance( 1 ),
+			Parameter Estimates( 1 ), Lack of Fit( 0 ), Scaled Estimates( 1 ),
+			Plot Actual by Predicted( 1 ), Plot Residual by Predicted( 0 ),
+			Plot Residual by Row( 1 ), Plot Studentized Residuals( 0 ),
+			Plot Effect Leverage( 1 ), Plot Residual by Normal Quantiles( 0 ),
+			Box Cox Y Transformation( 0 ), Show All Confidence Intervals( 1 ),
+			Show VIF( 1 )}
+			)
+		);
+		model8r = model8 << report;
+		model8quadss = model8r["Scaled Estimates"][columnbox( "Scaled Estimate" )] << getasmatrix;
+		model8conc = model8quadss[4];
+		model8quad = model8quadss[7];
+		model8quadp = abs(( model8quad * 1 ) / (model8conc * 2))* 100;//Linearity Ratio Formula
+		model8r << close window;
+
+
+	//Model 9) STD High Dose and Test Low Dose Excluded
+	dtsubset << clear row states;
+	ExcludeOutliers;
+	ExcludeDroplets;
+	dtsubset << select where( Contains(:Name("Group"),"Std")& :Name( "Log10 MOI" ) == MaximumDose ) << exclude;
+	dtsubset << select where(!Contains(:Name("Group"),"Std") & :Name( "Log10 MOI" ) == MinimumDose ) << exclude;
+	dtsubset << select all rows;
+	dtsubset << invert row selection;
+
+	model9 = Fit Curve(
+	Y( :Name( "Log10 Vg/mL" ) ),
+	X( :Log10 MOI),
+	Group( :Group),
+	Fit Linear(
+		Equivalence Test(
+			Reference Group(rstandard ), 
+			Equivalence with Ratios(
+				1,
+				Set Decision Lines( 0.5, 1.5 ),
+				Show Summary Report( 1 )
+				)
+			)
+		)
+	);
+	model9r = model9 << report;
+	model9rootmean = model9r["Model Comparison"][columnbox( "RMSE" )] << getasmatrix;
+	model9rsquare = model9r["Model Comparison"][columnbox( "R-Square" )] << getasmatrix;
+	model9r2 = model9rsquare[1];
+	model9rmse = model9rootmean[1];
+
+	//slope ratio value
+	model9ratio = model9r["Equivalence Summary"][columnbox( "Ratio")]<< get as matrix;
+	model9sloperatio = model9ratio[2];
+	
+	//slope ratio lower limit 
+	model9ratiolower = model9r["Equivalence Summary"][columnbox( "Lower Confidence Limit")]<< get as matrix;
+	model9sloperatiolower = model9ratiolower[2];
+
+	//slope ratio upper limit 
+	model9ratioupper = model9r["Equivalence Summary"][columnbox( "Upper Confidence Limit")]<< get as matrix;
+	model9sloperatioupper = model9ratioupper[2];
+	
+	model9r << close window;
+
+		//model 9 quad and linearity ratio
+		model9 =Fit Model(
+		Y(:Name( "Log10 Vg/mL" ) ),
+		Effects(
+			:Group,
+			:Name( "Log10 MOI" ),
+			:Group* :Name( "Log10 MOI" ),
+			:Name( "Log10 MOI" ) * :Name( "Log10 MOI" )
+		),
+		Personality( "Standard Least Squares" ),
+		Emphasis( "Effect Leverage" ),
+		Run(
+			Profiler(
+				1,
+				Confidence Intervals( 1 ),
+				Term Value(
+					Concentration( 2.5, Lock( 0 ), Show( 1 ) ),
+					Group( "Std", Lock( 0 ), Show( 1 ) )
+				)
+			),
+			:Name("Log10 Vg/mL")<< {Summary of Fit( 1 ), Analysis of Variance( 1 ),
+			Parameter Estimates( 1 ), Lack of Fit( 0 ), Scaled Estimates( 1 ),
+			Plot Actual by Predicted( 1 ), Plot Residual by Predicted( 0 ),
+			Plot Residual by Row( 1 ), Plot Studentized Residuals( 0 ),
+			Plot Effect Leverage( 1 ), Plot Residual by Normal Quantiles( 0 ),
+			Box Cox Y Transformation( 0 ), Show All Confidence Intervals( 1 ),
+			Show VIF( 1 )}
+			)
+		);
+		model9r = model9 << report;
+		model9quadss = model9r["Scaled Estimates"][columnbox( "Scaled Estimate" )] << getasmatrix;
+		model9conc = model9quadss[4];
+		model9quad = model9quadss[7];
+		model9quadp = abs(( model9quad * 1 ) / (model9conc * 2)) * 100;//Linearity Ratio Formula
+		model9r << close window;
+
+
+	//Build the validity lists and Model Selection Table
+	parallellist = List();
+	parallellowerlist = List();
+	parallelupperlist = List();
+	modellist = List();
+	linearitylist = List();
+	r2list = List();
+	rmselist = List();
+	
+	//Parallel List of slope ratio
+	parallellist[1] = model1sloperatio;
+	parallellist[2] = model2sloperatio;
+	parallellist[3] = model3sloperatio;
+	parallellist[4] = model4sloperatio;
+	parallellist[5] = model5sloperatio;
+	parallellist[6] = model6sloperatio;
+	parallellist[7] = model7sloperatio;
+	parallellist[8] = model8sloperatio;
+	parallellist[9] = model9sloperatio;
+	
+	//Parallel List of slope ratio lower CI
+	parallellowerlist[1] = model1sloperatiolower;
+	parallellowerlist[2] = model2sloperatiolower;
+	parallellowerlist[3] = model3sloperatiolower;
+	parallellowerlist[4] = model4sloperatiolower;
+	parallellowerlist[5] = model5sloperatiolower;
+	parallellowerlist[6] = model6sloperatiolower;
+	parallellowerlist[7] = model7sloperatiolower;
+	parallellowerlist[8] = model8sloperatiolower;
+	parallellowerlist[9] = model9sloperatiolower;
+	
+	//Parallel List of slope ratio of upper CI
+	parallelupperlist[1] = model1sloperatioupper;
+	parallelupperlist[2] = model2sloperatioupper;
+	parallelupperlist[3] = model3sloperatioupper;
+	parallelupperlist[4] = model4sloperatioupper;
+	parallelupperlist[5] = model5sloperatioupper;
+	parallelupperlist[6] = model6sloperatioupper;
+	parallelupperlist[7] = model7sloperatioupper;
+	parallelupperlist[8] = model8sloperatioupper;
+	parallelupperlist[9] = model9sloperatioupper;
+
+	//Model List
+	modellist[1] = "Model 1, All Doses";
+	modellist[2] = "Model 2, Low Standard and Test Doses Excluded";
+	modellist[3] = "Model 3, High Standard and Test Doses Excluded";
+	modellist[4] = "Model 4, Standard Low Dose Only Excluded";
+	modellist[5] = "Model 5, Standard High Dose Only Excluded";
+	modellist[6] = "Model 6, Test Low Dose Only Excluded";
+	modellist[7] = "Model 7, Test High Dose Only Excluded";
+	modellist[8] = "Model 8, Standard Low Dose and Test High Dose Excluded";
+	modellist[9] = "Model 9, Standard High Dose and Test Low Dose Excluded";
+	
+	//Linearity List
+	linearitylist[1] = model1quadp;
+	linearitylist[2] = model2quadp;
+	linearitylist[3] = model3quadp;
+	linearitylist[4] = model4quadp;
+	linearitylist[5] = model5quadp;
+	linearitylist[6] = model6quadp;
+	linearitylist[7] = model7quadp;
+	linearitylist[8] = model8quadp;
+	linearitylist[9] = model9quadp;
+	
+	//R2 List
+	r2list[1] = model1r2;
+	r2list[2] = model2r2;
+	r2list[3] = model3r2;
+	r2list[4] = model4r2;
+	r2list[5] = model5r2;
+	r2list[6] = model6r2;
+	r2list[7] = model7r2;
+	r2list[8] = model8r2;
+	r2list[9] = model9r2;
+	
+	//RMSE List
+	rmselist[1] = model1rmse;
+	rmselist[2] = model2rmse;
+	rmselist[3] = model3rmse;
+	rmselist[4] = model4rmse;
+	rmselist[5] = model5rmse;
+	rmselist[6] = model6rmse;
+	rmselist[7] = model7rmse;
+	rmselist[8] = model8rmse;
+	rmselist[9] = model9rmse;
+
+	//Build the Masking and Validity Criteria Table and Select the Best Model
+	dtmasking = New Table( "Masking and Validity","invisible" );
+	dtmasking << add rows( 9 );
+	dtmasking << New Column( "Model", character, set values( modellist ) );
+	dtmasking << New Column( "Parallelism Slope Ratio", continuous, set values( parallellist ) );
+	dtmasking << New Column( "Parallelism Slope Ratio Lower 95%", continuous, set values( parallellowerlist ) );
+	dtmasking << New Column( "Parallelism Slope Ratio Upper 95%", continuous, set values( parallelupperlist ) );	
+	dtmasking << New Column( "Linearity Ratio", continuous, set values( linearitylist ) );
+	dtmasking << New Column( "R2", continous, set values( r2list ) );
+	dtmasking << New Column( "RMSE", continous, set values( rmselist ) );
+	dtmasking << delete columns( :Column 1 );
+	:Name("Parallelism Slope Ratio") << Format( "Fixed Dec", 7, 3 );
+	:Name("Parallelism Slope Ratio Lower 95%") << Format( "Fixed Dec", 7, 3)<<hide(1);
+	:Name("Parallelism Slope Ratio Upper 95%") << Format( "Fixed Dec", 7, 3)<<hide(1); 
+	:Linearity Ratio << Format( "Fixed Dec", 7, 3 );
+	:R2 << Format( "Fixed Dec", 7, 3 );
+	:RMSE << Format( "Fixed Dec", 7, 3 );
+	
+	//Determine the model
+	dtmasking<<New Column( "Linearity Test",
+	Character,
+	"Nominal",
+	Formula( If( :Linearity Ratio <= linearity_limit, "Ok for Linearity", "Fail for Linearity" ) ),
+	Set Display Width( 134 )
+);
+:Linearity Test<<hide;
+	dtmasking<<New Column( "Parallelism Test",
+	Character,
+	"Nominal",
+	Formula(
+		If(
+			:Name( "Parallelism Slope Ratio" ) >= lowerparallel_limit &
+			:Name( "Parallelism Slope Ratio" ) <= upperparallel_limit,
+			"Ok for Parallelism",
+			"Fail for Parallelism"
+		)
+	)
+);
+:Parallelism Test<<hide;
+	dtmasking<<New Column( "Combined",
+	Character,
+	"Nominal",
+	Formula( :Linearity Test || " " || :Parallelism Test ),
+	Set Display Width( 304 )
+);
+:Combined<<hide;
+
+
+	dtmasking << New Column( "Validity Evaluation",
+		Character,
+		"Nominal",
+		Set Property(
+			"Value Colors",
+			{"Fails both Parallelism and Linearity" = 35, "Fails Parallelism and is Linear" = -16768477,
+			"Parallel and Fails Linearity" = -16768477, "Parallel and Linear" = -15400938}
+		),
+		Color Cell by Value,
+		Formula(
+			If(
+				:Parallelism Test == "Ok for Parallelism" & :Linearity Test == "Ok for Linearity", "Parallel and Linear",
+				:Parallelism Test != "Ok for Parallelism" & :Linearity Test == "Ok for Linearity", "Fails Parallelism and is Linear",
+				:Parallelism Test== "Ok for Parallelism"& :Linearity Test != "Ok for Linearity", "Parallel and Fails Linearity",
+				:Parallelism Test != "Ok for Parallelism"& :Linearity Test != "Ok for Linearity", "Fails both Parallelism and Linearity"
+			)
+		)
+	);
+	
+	dtmasking << New Column( "Masking Rank",
+		Numeric,
+		"Continuous",
+		Format( "Best", 12 ),
+		Formula(
+			Match( :Validity Evaluation,
+				"Fails Parallelism and is Linear", 2,
+				"Parallel and Fails Linearity", 2,
+				"Parallel and Linear", 1,
+				"Fails both Parallelism and Linearity", 3
+			)
+		), 
+
+	);
+	
+	
+	:Masking Rank<<hide(1);
+	
+	dtmasking<<New Column( "Modelling Rank",
+		Numeric,
+		"Continuous",
+		Format( "Best", 12 ),
+		Formula(
+			If(
+				(Contains( :Model, "1" ) | Contains( :Model, "2" ) |
+				Contains( :Model, "3" )) & :Masking Rank == 1,
+				1,
+				2
+			)
+		)
+	);
+	
+	//create column for difference of slope ratio from 1
+	dtmasking<<New Column( "Delta",
+		Numeric,
+		"Continuous",
+		Format( "Best", 12 ),
+		Formula( Abs( :Name( "Parallelism Slope Ratio" ) - 1 ) )
+	);
+	
+	
+	:Delta<<hide(1);
+	
+	modellingranklist=:Modelling Rank<<get as matrix;
+	
+	:Modelling Rank <<hide(1);
+	
+	if(contains(modellingranklist,1),
+	
+	//sort based on passing both parallelism and linearity and having the smallest difference in slope ratio to 1
+	dtmasking << Sort(
+		By(  :Modelling Rank, :Masking Rank, :Delta ),
+		Order( Ascending, Ascending, Ascending ),
+		replace table( 1 )
+	);
+	,
+	//sort based on passing both parallelism and linearity and having the smallest difference in slope ratio to 1
+	dtmasking << Sort(
+		By( :Masking Rank, :Delta ),
+		Order( Ascending, Ascending ),
+		replace table( 1 )
+	);
+);	
+	dtmasking << New Column( "Selected Model", Character, "Nominal", Formula( If( Row() == 1, :Model[1] ) ), );
+	modelgetter = :Selected Model << get values;
+	plamodel = modelgetter[1];
+	paralellsloperatios = :Name("Parallelism Slope Ratio") << get values;
+	paralellsloperatioslower = :Name("Parallelism Slope Ratio Lower 95%") <<get values;
+	paralellsloperatiosupper = :Name("Parallelism Slope Ratio Upper 95%") <<get values;
+	linearityprobs = :Linearity Ratio << get values;
+	sloperatioparallel = paralellsloperatios[1];
+	sloperatioparallellower = paralellsloperatioslower[1];
+	sloperatioparallelupper = paralellsloperatiosupper[1];
+	plalinearityprob = linearityprobs[1];
+	
+	selectedmodellist[j]=plamodel;
+
+	//Model Section header
+	modelreport = New Window( "Plate Map Report",
+		V List Box( H List Box( String Col Box( "", {liner} ) ) ),
+		V List Box(
+			String Col Box( "", {spacer} ),
+			H List Box( modelname = Text Box(concat(samplenames[j],"  Model Selection"))),
+			V List Box( H List Box( String Col Box( "", {liner} ) ) ), 
+
+		),
+		String Col Box( "", {spacer} ), 
+
+	);
+	modelname << Set Font Size( 16 );
+	modelname << Font Color( "Blue" ) << set Font Style( "Bold" )<<set wrap (10000);
+	modelreport << journal << close window;
+
+	dtmasking<<journal;
+	close(dtmasking, no save);
+	
+	//Select the Dose Subset and Masking
+	dtsubset << clear row states;
+	ExcludeOutliers;
+	ExcludeDroplets;
+	dtsubset << select all rows;
+	dtsubset << invert row selection;
+
+	If( plamodel == "Model 1, All Doses",
+		a = 1 + 1, 
+
+	);
+	If( plamodel == "Model 2, Low Standard and Test Doses Excluded",
+		dtsubset << select where( :Name( "Log10 MOI" ) == MinimumDose |:Name( "Log10 MOI" ) == MinimumDose ) << exclude, 
+
+	);
+	If( plamodel == "Model 3, High Standard and Test Doses Excluded",
+		dtsubset << select where( :Name( "Log10 MOI" ) == MaximumDose |:Name( "Log10 MOI" ) == MaximumDose) << exclude, 
+
+	);
+	If( plamodel == "Model 4, Standard Low Dose Only Excluded",
+		dtsubset << select where(Contains(:Name("Group"),"Std") & :Name( "Log10 MOI" ) == MinimumDose ) << exclude, 
+
+	);
+	If( plamodel == "Model 5, Standard High Dose Only Excluded",
+		dtsubset << select where( Contains(:Name("Group"),"Std")& :Name( "Log10 MOI" ) == MaximumDose ) << exclude, 
+
+	);
+	If( plamodel == "Model 6, Test Low Dose Only Excluded",
+		dtsubset << select where(!Contains(:Name("Group"),"Std")& :Name( "Log10 MOI" ) == MinimumDose ) << exclude, 
+
+	);
+	If( plamodel == "Model 7, Test High Dose Only Excluded",
+		dtsubset << select where(!Contains(:Name("Group"),"Std") & :Name( "Log10 MOI" ) == MaximumDose ) << exclude, 
+
+	);
+	If( plamodel == "Model 8, Standard Low Dose and Test High Dose Excluded",
+		dtsubset << select where(Contains(:Name("Group"),"Std")& :Name( "Log10 MOI" ) == MinimumDose ) << exclude;
+		dtsubset << select where(!Contains(:Name("Group"),"Std") & :Name( "Log10 MOI" ) == MaximumDose ) << exclude;
+	, 
+
+	);
+	If( plamodel == "Model 9, Standard High Dose and Test Low Dose Excluded",
+		dtsubset << select where(Contains(:Name("Group"),"Std") & :Name( "Log10 MOI" ) == MaximumDose ) << exclude;
+		dtsubset << select where(!Contains(:Name("Group"),"Std")  & :Name( "Log10 MOI" ) == MinimumDose ) << exclude;
+	);
+	dtsubset << select all rows;
+	dtsubset << invert row selection;
+
+	//Max and Min for the y axis in the graphs
+	RangeMax = col max(:Name("Log10 Vg/mL"));
+	RangeMin = col min(:Name("Log10 Vg/mL"));
+
+	If( samplenum == 4&platetotal=="3", 
+
+
+//Page break
+		pagebreaker = New Window( "     Nothing Really",
+			V List Box( String Col Box( "", {spacer} ), String Col Box( "", {spacer} ), Page Break Box(), )
+		);
+		pagebreaker << journal << close window;
+	, 
+	
+if(totalrownumbers==192&j==1|totalrownumbers==192&j==2|totalrownumbers==192&j==3,
+
+//Page break
+		pagebreaker = New Window( "     Nothing Really",
+			V List Box( String Col Box( "", {spacer} ), String Col Box( "", {spacer} ), Page Break Box(), )
+		);
+		pagebreaker << journal << close window;
+,
+if(totalrownumbers==96&j==1|totalrownumbers==96&j==2|totalrownumbers==96&j==3,
+
+//Page break
+		pagebreaker = New Window( "     Nothing Really",
+			V List Box( String Col Box( "", {spacer} ), String Col Box( "", {spacer} ), Page Break Box(), )
+		);
+		pagebreaker << journal << close window;
+,
+if(totalrownumbers==112,
+
+//Page break
+		pagebreaker = New Window( "     Nothing Really",
+			V List Box( String Col Box( "", {spacer} ), String Col Box( "", {spacer} ), Page Break Box(), )
+		);
+		pagebreaker << journal << close window;
+,
+if(totalrownumbers==120,
+
+//Page break
+		pagebreaker = New Window( "     Nothing Really",
+			V List Box( String Col Box( "", {spacer} ), String Col Box( "", {spacer} ), Page Break Box(), )
+		);
+		pagebreaker << journal << close window;
+,
+if(totalrownumbers==152&j==3,
+
+//Page break
+		pagebreaker = New Window( "     Nothing Really",
+			V List Box( String Col Box( "", {spacer} ), String Col Box( "", {spacer} ), Page Break Box(), )
+		);
+		pagebreaker << journal << close window;
+,
+		Empty();
+	);
+			);
+		);
+	);
+);
+
+);
+
+
+
+	//constrained EC50 at fixed position for TA
+	current data table(dtsubset);
+ec50TAcon = Fit Model(
+	Y( :Name( "Log10 Vg/mL" ) ),
+	Effects(:Group, :Name( "Log10 MOI" ) ),
+	Personality( "Standard Least Squares" ),
+	Emphasis( "Effect Leverage" ),
+	Run(
+		:Name( "Log10 Vg/mL" ) << {Summary of Fit( 1 ), Analysis of Variance( 1 ), Parameter Estimates( 1 ),
+		Scaled Estimates( 1 ), Plot Actual by Predicted( 1 ), Plot Residual by Predicted( 1 ),
+		Plot Residual by Row( 1 ), Plot Studentized Residuals( 0 ), Plot Effect Leverage( 1 ),
+		Plot Residual by Normal Quantiles( 0 ), Box Cox Y Transformation( 0 ), Show VIF( 1 ),
+		Inverse Prediction( Response( fixedTAvalue ), Term Value( Name( "Log10 MOI (Vg/cell)" )(.), Group( All )) )},
+		Effect Summary( 0 )
+	),
+	SendToReport(
+		Dispatch(
+			{"Response Log10 Vg/mL", "Inverse Prediction"},
+			"2",
+			ScaleBox,
+			{Min( 3.5 ), Max( 6.5 ), Inc( 0.5 ), Minor Ticks( 0 )}
+		)
+	)
+);
+ec50TAconr = ec50TAcon << report;
+dt_Inf_TA_con = ec50TAconr["Response Log10 Vg/mL", "Inverse Prediction", Table Box( 1 )] << Make Into Data Table;
+ec50TAlog =  dt_Inf_TA_con:Name("Predicted Log10 MOI")[dt_Inf_TA_con << Get Rows Where(:Group == samplenames[j])][1];
+ec50TAdose = 10 ^ (ec50TAlog);
+ec50TAconr << close window;
+close(dt_Inf_TA_con, no save);
+
+
+//unconstrained EC50 at fixed position for TA
+ec50TAuncon = Fit Model(
+	Y( :Name( "Log10 Vg/mL" ) ),
+		Effects( :Group, :Name( "Log10 MOI" ), :Group * :Name( "Log10 MOI" ) ),
+	Personality( "Standard Least Squares" ),
+	Emphasis( "Effect Leverage" ),
+	Run(
+		:Name( "Log10 Vg/mL" ) << {Summary of Fit( 1 ), Analysis of Variance( 1 ), Parameter Estimates( 1 ),
+		Scaled Estimates( 1 ), Plot Actual by Predicted( 1 ), Plot Residual by Predicted( 1 ),
+		Plot Residual by Row( 1 ), Plot Studentized Residuals( 0 ), Plot Effect Leverage( 1 ),
+		Plot Residual by Normal Quantiles( 0 ), Box Cox Y Transformation( 0 ), Show VIF( 1 ),
+		Inverse Prediction( Response( fixedTAvalue ), Term Value( Name( "Log10 MOI (Vg/cell)" )(.), Group( All ) ) )},
+		Effect Summary( 0 )
+	),
+	SendToReport(
+		Dispatch(
+			{"Response Log10 Vg/mL", "Inverse Prediction"},
+			"2",
+			ScaleBox,
+			{Min( 3.5 ), Max( 6.5 ), Inc( 0.5 ), Minor Ticks( 0 )}
+		)
+	)
+);
+ec50TAunconr = ec50TAuncon << report;
+dt_Inf_TA_Uncon = ec50TAunconr["Response Log10 Vg/mL", "Inverse Prediction", Table Box( 1 )] << Make Into Data Table;
+ec50TAunconlog =  dt_Inf_TA_Uncon:Name("Predicted Log10 MOI")[dt_Inf_TA_Uncon << Get Rows Where(:Group == samplenames[j])][1];
+ec50TAuncondose = 10 ^ (ec50TAunconlog);
+ec50TAunconr << close window;
+close(dt_Inf_TA_Uncon, no save);
+
+infectparticleresult = num(nominaldose)/ec50TAdose;
+
+
+
+
+if(nitems(samplenames)==2,
+
+////Page break
+		pagebreaker = New Window( "     Nothing Really",
+			V List Box( String Col Box( "", {spacer} ), String Col Box( "", {spacer} ), Page Break Box(), )
+		);
+		pagebreaker << journal << close window;
+,
+
+empty();
+);
+
+	//Test Sample Graphs header
+	graphreport = New Window( "Plate Map Report",
+		V List Box( H List Box( String Col Box( "", {liner} ) ) ),
+		V List Box(
+			String Col Box( "", {spacer} ),
+			H List Box( graphname = Text Box(concat(samplenames[j]," ","Graphs "))) ,
+			V List Box( H List Box( String Col Box( "", {liner} ) ) ), 
+
+		),
+		String Col Box( "", {spacer} ), 
+
+	);
+	graphname << Set Font Size( 16 );
+	graphname << Font Color( "Blue" ) << set Font Style( "Bold" )<<set wrap(1000);
+	graphreport << journal << close window;
+
+	current data table(dtsubset);
+	dtsubset<<New Column( "Sampling Type",
+		Character,
+		"Nominal",
+		Formula(
+			If( Contains( :Group, "Std" ),
+				"Reference Standard",
+				"Drug Product"
+			)
+		)
+	);
+
+	//Calculate Unconstrained RI
+	//Calculate Constrained RP
+	//Calculate RP Delta
+	FMUnconstrained = dtsubset << Fit Model(invisible,
+		Y( :Name("Log10 Vg/mL") ),
+		Effects(
+			:Name( "Log10 MOI" ),
+			:Sampling Type,
+			:Name( "Log10 MOI" ) * :Sampling Type
+		),
+		Personality( "Standard Least Squares" ),
+		Emphasis( "Effect Leverage" ),
+		Run(
+			Profiler(
+				1,
+				Confidence Intervals( 1 ),
+				Term Value(
+					Name( "Log10 MOI" )(4.8356, Lock( 0 ), Show( 1 )),
+				)
+			),
+			:Name("Log10 Vg/mL") << {Summary of Fit( 1 ), Analysis of Variance( 1 ),
+			Parameter Estimates( 1 ), Scaled Estimates( 1 ),
+			Plot Actual by Predicted( 1 ), Plot Residual by Predicted( 0 ),
+			Plot Residual by Row( 1 ), Plot Studentized Residuals( 0 ),
+			Plot Effect Leverage( 1 ), Plot Residual by Normal Quantiles( 0 ),
+			Box Cox Y Transformation( 0 ), Show All Confidence Intervals( 1 ),
+			Show VIF( 1 )}
+		)
+	);
+	ResponseMean = Report(FMUnconstrained)[OutlineBox("Summary of Fit")][Number Col Box(1)][4];
+	FMUnconstrained << Inverse Prediction(
+		Response( ResponseMean ),
+		Term Value( Name( "Log10 MOI" )(.), Sampling Type( All ) )
+	);
+	FMConstrained = dtsubset << Fit Model(invisible,
+		Y( :Name("Log10 Vg/mL") ),
+		Effects(
+			:Name( "Log10 MOI" ),
+			:Sampling Type
+		),
+		Personality( "Standard Least Squares" ),
+		Emphasis( "Effect Leverage" ),
+		Run(
+			Profiler(
+				1,
+				Confidence Intervals( 1 ),
+				Term Value(
+					Name( "Log10 MOI" )(4.8356, Lock( 0 ), Show( 1 )),
+				)
+			),
+			:Name("Log10 Vg/mL") << {Summary of Fit( 1 ), Analysis of Variance( 1 ),
+			Parameter Estimates( 1 ), Scaled Estimates( 1 ),
+			Plot Actual by Predicted( 1 ), Plot Residual by Predicted( 0 ),
+			Plot Residual by Row( 1 ), Plot Studentized Residuals( 0 ),
+			Plot Effect Leverage( 1 ), Plot Residual by Normal Quantiles( 0 ),
+			Box Cox Y Transformation( 0 ), Show All Confidence Intervals( 1 ),
+			Show VIF( 1 )}
+		)
+	);
+	FMconstrained << Inverse Prediction(
+		Response( ResponseMean ),
+		Term Value( Name( "Log10 MOI" )(.), Sampling Type( All ) )
+	);
+
+	IPCon = Report(FMConstrained)[Outline Box( "Inverse Prediction" )][Table Box( 1 )] << get as matrix();
+	IPUnCon = Report(FMUnconstrained)[Outline Box( "Inverse Prediction" )][Table Box( 1 )] << get as matrix();
+	doseresponsetests = Report(FMConstrained)["Effect Tests"][columnbox( "Prob > F" )] << getasmatrix;
+	doseresponsetest = doseresponsetests[1];
+	r2constrained = Report(FMConstrained)["Summary of Fit"][columnbox( 1 )] << getasmatrix;
+	r2constrained = r2constrained[1];
+	conslopes =  Report(FMConstrained)["Parameter Estimates"][columnbox( "Estimate" )] << getasmatrix;
+	conslope = conslopes[2];
+	UnconstrainedPotency = 10 ^ IPUnCon[2,2]/10 ^ IPUnCon[1,2]; //Ref/Std
+	UnconstrainedPotencyL95 = 10 ^ IPUnCon[2,2]/10 ^ IPUnCon[1,4]; //Ref Predicted Dose/Test Upper 95
+	UnconstrainedPotencyU95 = 10 ^ IPUnCon[2,2]/10 ^ IPUnCon[1,3]; //Ref Predicted Dose/Test Lower 95
+	ConstrainedPotency = 10 ^ IPCon[2,2]/10 ^ IPCon[1,2]; //Ref/Std
+	ConstrainedPotencyL95 = 10 ^ IPCon[2,2]/10 ^ IPCon[1,4]; //Ref Predicted Dose/Test Upper 95
+	ConstrainedPotencyU95 = 10 ^ IPCon[2,2]/10 ^ IPCon[1,3]; //Ref Predicted Dose/Test Lower 95
+	ci95range=ConstrainedPotencyU95*100-ConstrainedPotencyL95*100;
+	CITolerance = (( ci95range/ (num(RPUSL) - num(RPLSL))) * 100);
+
+	dosetestlist[j]=doseresponsetest;
+	
+	CIRangelist[j]=ci95range;
+	
+	CITolerancelist[j]=CITolerance;
+	
+	current data table(dtsubset);
+	
+
+	//Create Graphs	
+	ExcludeOutliers;
+	ExcludeDroplets;
+	Biv1 = Bivariate(invisible,
+		Y( :Name("Log10 Vg/mL") ),
+		X( :Name( "Log10 MOI" ) ),
+		Fit Where(
+			:Sampling Type == "Reference Standard",
+			Fit Each Value( {Confid Curves Fit( 0 ), Line Color( {213, 72, 87} )} )
+		),
+		Fit Where(
+			:Sampling Type =="Drug Product",
+			Fit Each Value( {Confid Curves Fit( 0 ), Line Color( {64, 111, 223} )} )
+		),
+		SendToReport(
+			Dispatch(
+				{},
+				"Bivariate Fit of Data By Log10 MOI",
+				OutlineBox,
+				{Set Title( "Means by MOI" )}
+			),
+			Dispatch(
+				{},
+				"1",
+				ScaleBox,
+				{Format( "Best", Use thousands separator( 0 ), 12 ),
+				Min(  0.43*MinimumDose ), Max( 1.1*MaximumDose), Inc( 0.1 ), Minor Ticks( 0 ),
+					Label Row(
+				{Label Orientation( "Vertical" ),Show Major Labels( 0 ), Show Major Ticks( 0 ),
+				Show Minor Ticks( 0 )}
+			)
+				}
+			),
+				Dispatch(
+				{},
+				"2",
+				ScaleBox,
+				{Format( "Best", Use thousands separator( 0 ), 12 ), Min( RangeMin*0.83), Max( RangeMax*1.08 ),
+				Inc( 0.2 ), Minor Ticks( 0 ), Label Row( Show Major Grid( 1 ) )}				),
+			Dispatch(
+				{},
+				"Bivar Plot",
+				FrameBox,
+				{Frame Size( 250, 400 ), DispatchSeg( Line Seg( 1 ), {Line Color( {213, 72, 87} )} ),
+				DispatchSeg( Line Seg( 2 ), {Line Color( {64, 111, 223} )} )}
+			),
+			Dispatch( {}, "Log10 MOI", TextEditBox, {Set Text( "MOI" )} ),
+		)
+	);
+	For(aa=1,aa<= nitems(dilutionlister),aa++,
+			Report(Biv1)[ScaleBox(1)] << Add Ref Line( log10(num(dilutionlister[aa])), "Solid", "Medium Light Gray", char(round(num(dilutionlister[aa]),2)), 1 );
+	);
+	Biv2 = Bivariate(invisible,
+		Y( :Name("Log10 Vg/mL") ),
+		X( :Name( "Log10 MOI" ) ),
+		Fit Where( :Sampling Type =="Reference Standard", Fit Line( {Confid Curves Fit( 0 ), Confid Shaded Fit( 0 ), Line Color( {213, 72, 87} )} ) ),
+		Fit Where( :Sampling Type == "Drug Product", Fit Line( {Confid Curves Fit( 0 ), Confid Shaded Fit( 0 ), Line Color( {64, 111, 223} )} ) ),
+		SendToReport(
+			Dispatch(
+				{},
+				"Bivariate Fit of Data By Log10 MOI",
+				OutlineBox,
+				{Set Title( "Unconstrained Parallel Line Analysis" )}
+			),
+			Dispatch(
+				{},
+				"1",
+				ScaleBox,
+				{Format( "Best", Use thousands separator( 0 ), 12 ),
+				Min( 0.43*MinimumDose ), Max( 1.1*MaximumDose), Inc( 0.1 ), Minor Ticks( 0 ),
+					Label Row(
+				{Label Orientation( "Vertical" ),Show Major Labels( 0 ), Show Major Ticks( 0 ),
+				Show Minor Ticks( 0 )}
+			)
+				}
+			),
+				Dispatch(
+				{},
+				"2",
+				ScaleBox,
+				{Format( "Best", Use thousands separator( 0 ), 12 ), Min( RangeMin*0.83), Max( RangeMax*1.08 ),
+				Inc( 0.2 ), Minor Ticks( 0 ), Label Row( Show Major Grid( 1 ) )}				),
+			Dispatch(
+				{},
+				"Bivar Plot",
+				FrameBox,
+				{Frame Size( 250, 400 ), DispatchSeg( Line Seg( 1 ), {Line Color( {213, 72, 87} )} ),
+				DispatchSeg( Line Seg( 2 ), {Line Color( {64, 111, 223} )} )}
+			),
+			Dispatch( {}, "Log10 MOI", TextEditBox, {Set Text( "MOI" )} ),
+			
+		)
+	);
+	For(aa=1,aa<= nitems(dilutionlister),aa++,
+			Report(Biv2)[ScaleBox(1)] << Add Ref Line( log10(num(dilutionlister[aa])), "Solid", "Medium Light Gray", char(round(num(dilutionlister[aa]),2)), 1 );
+	);
+	
+	
+	Biv3 = Bivariate(invisible,
+		Y( :Name("Log10 Vg/mL") ),
+		X( :Name( "Log10 MOI" ) ),
+		Fit Where( :Sampling Type == "Reference Standard", Fit Special( Slope( conslope ), {Confid Curves Fit( 0 ), Confid Shaded Fit( 0 ), Line Color( {213, 72, 87} )} ) ),
+		Fit Where( :Sampling Type == "Drug Product", Fit Special( Slope( conslope ), {Confid Curves Fit( 0 ), Confid Shaded Fit( 0 ), Line Color( {64, 111, 223} )} ) ),
+		SendToReport(
+			Dispatch(
+				{},
+				"Bivariate Fit of Data By Log10 MOI",
+				OutlineBox,
+				{Set Title( "Constrained Parallel Line Analysis" )}
+			),
+			Dispatch(
+				{},
+				"1",
+				ScaleBox,
+				{Format( "Best", Use thousands separator( 0 ), 12 ),
+				Min(  0.43*MinimumDose ), Max( 1.1*MaximumDose), Inc( 0.1 ), Minor Ticks( 0 ),
+					Label Row(
+				{Label Orientation( "Vertical" ),Show Major Labels( 0 ), Show Major Ticks( 0 ),
+				Show Minor Ticks( 0 )}
+			)
+				}
+			),
+				Dispatch(
+				{},
+				"2",
+				ScaleBox,
+				{Format( "Best", Use thousands separator( 0 ), 12 ), Min( RangeMin*0.83), Max( RangeMax*1.08 ),
+				Inc( 0.2 ), Minor Ticks( 0 ), Label Row( Show Major Grid( 1 ) )}				),
+			Dispatch(
+				{},
+				"Bivar Plot",
+				FrameBox,
+				{Frame Size( 250, 400 ), DispatchSeg( Line Seg( 1 ), {Line Color( {213, 72, 87} )} ),
+				DispatchSeg( Line Seg( 2 ), {Line Color( {64, 111, 223} )} ),
+				Row Legend(
+					Sampling Type,
+					Color( 1 ),
+					Color Theme( "JMP Default" ),
+					Marker( 0 ),
+					Marker Theme( "" ),
+					Continuous Scale( 0 ),
+					Reverse Scale( 1 ),
+					Excluded Rows( 0 )
+				)}
+			),
+			Dispatch( {}, "Log10 MOI", TextEditBox, {Set Text( "MOI" )} ),
+		)
+	);
+	
+	
+		
+	For(aa=1,aa<= nitems(dilutionlister),aa++,
+			Report(Biv3)[ScaleBox(1)] << Add Ref Line( log10(num(dilutionlister[aa])), "Solid", "Medium Light Gray", char(round(num(dilutionlister[aa]),2)), 1 );
+	);
+
+	CurveComparison = H List Box(
+		OutlineBox("Means by Concentration",Report(Biv1)[PictureBox(1)]),
+		OutlineBox("Unconstrained Parallel Line Analysis",Report(Biv2)[PictureBox(1)]),
+		OutlineBox("Constrained Parallel Line Analysis",Report(Biv3)[PictureBox(1)]),
+	);
+	CurveComparison << journal();
+		
+	
+	Biv1 << close window(1);
+	Biv2 << close window(1);
+	Biv3 << close window(1);
+
+	
+	//Potency Report
+	dtrp = New Table( "Potency Report","invisible" );
+	dtrp << add rows( 1 );
+	dtrp << New Column( "EC50 Ref", continuous, Format( "Fixed Dec", 2 ), Set Values({10 ^ (IPCon[2,2])}) );
+	dtrp << New Column( "EC50 Test", continuous, Format( "Fixed Dec", 2 ), Set Values({10 ^ (IPCon[1,2])}) );
+	dtrp << New Column( "RI Uncorrected", continuous, Format( "Fixed Dec", 1 ), Set Values({ConstrainedPotency * 100} ) );
+	dtrp << delete columns( :Column 1 );
+	dtrp << New Column( "Reference CF", continuous, Set Values( {ReferenceLotCF} ) );
+	dtrp << New Column( "Reference Stability CF", continuous, Set Values( {StabilityCF} ) );
+	dtrp << New Column( "Relative Infectivity Reportable Result", continuous, Format( "Fixed Dec", 1 ),formula( :Reference CF + :Reference Stability CF + :RI Uncorrected) );
+	dtrp << New Column( "Assay RI Upper 95%", continuous, Format( "Fixed Dec", 1 ),formula( ReferenceLotCF + StabilityCF +  ConstrainedPotencyU95 * 100 ) );
+	dtrp << New Column( "Assay RI Lower 95%", continuous, Format( "Fixed Dec", 1 ),formula( ReferenceLotCF + StabilityCF + ConstrainedPotencyL95 * 100 ) );
+	dtrp << New Column( "Upper Spec Limit", continuous, Set Values( {num(RPUSL)} ) );
+	dtrp << New Column( "Lower Spec Limit", continuous, Set Values( {num(RPLSL)}) );
+	dtrp << New Column("CI Range", continuous, Format( "Fixed Dec", 1 ), set values ({CI95range}));
+	dtrp << New Column( "CI Range as % of Tolerance", continous, Format( "Fixed Dec", 1 ), Set Values( {CITolerance} ) );
+	dtrp << New Column( "CI Range % of Tolerance Check",
+		Character,
+		"Nominal",
+		Formula( If( :Name("CI Range as % of Tolerance")> 60, "Additional Bioassay Runs are Required", "Bioassay Results are Reportable" ) ),
+		Set Property( "Value Colors", {"Additional Bioassay Runs are Required" = -16768477, "Bioassay Results are Reportable" = -15400938} ),
+		Color Cell by Value,
+	);
+	
+	
+			//Read the values of the  DP plate map again to get the validity limits
+	dtPlateMap = Open(
+		configfile,
+		Worksheets( "Infectivity Configuration" ),
+		Use for all sheets( 1 ),
+		Concatenate Worksheets( 0 ),
+		Create Concatenation Column( 0 ),
+		Worksheet Settings(
+			1,
+			Has Column Headers( 1 ),
+			Number of Rows in Headers( 1 ),
+			Headers Start on Row( 1 ),
+			Data Starts on Row( 2 ),
+			Data Starts on Column( 1 ),
+			Data Ends on Row( 0 ),
+			Data Ends on Column( 0 ),
+			Replicated Spanned Rows( 1 ),
+			Replicated Spanned Headers( 0 ),
+			Suppress Hidden Rows( 1 ),
+			Suppress Hidden Columns( 1 ),
+			Suppress Empty Columns( 1 ),
+			Treat as Hierarchy( 0 ),
+			Multiple Series Stack( 0 ),
+			Import Cell Colors( 0 ),
+			Limit Column Detect( 0 ),
+			Column Separator String( "-" )
+		)
+	);
+	//Read specs
+	ValidityCriteria =list();
+	ValidityCriteria[1]= "Dose Response Test";
+	ValidityCriteria[2]= "Reference Standard Curve Depth";
+	ValidityCriteria[3]= "% Relative Infectivity Delta (Constrained - Unconstrained)";
+	ValidityCriteria[4]= "Parallelism Slope Ratio";
+	ValidityCriteria[5]="Linearity Ratio";
+	ValidityCriteria[6]= "Unconstrained EC50 Standard";
+	ValidityCriteria[7]= "Number of Wells that Failed Accepted Droplets (<10000)";
+	
+
+	RPLSL= num(Column(2)[1]);
+	RPUSL = num(Column(2)[2]);
+	linearity_limit = num(Column(2)[11]);
+
+	ValidityLSL =  list();
+	ValidityLSL[1]="";
+	ValidityLSL[2]=Column(2)[3];
+	ValidityLSL[3]="";
+	ValidityLSL[4]=Column(2)[9];
+	ValidityLSL[5]="";
+	ValidityLSL[6]=Column(2)[4];
+	ValidityLSL[7]="";
+
+	ValidityUSL =  list();
+	ValidityUSL[1]=Column(2)[12];
+	ValidityUSL[2]="";
+	ValidityUSL[3]=Column(2)[6];
+	ValidityUSL[4]=Column(2)[10];
+	ValidityUSL[5]=Column(2)[11];
+	ValidityUSL[6]=Column(2)[5];
+	ValidityUSL[7]=Column(2)[17];
+
+	upperparallel_limit = num(ValidityUSL[4]);
+	lowerparallel_limit = num(ValidityLSL[4]);
+
+	close(dtPlateMap, no save);
+
+if(j==1&nitems(samplenames)!=2,
+
+////Page break
+		pagebreaker = New Window( "     Nothing Really",
+			V List Box( String Col Box( "", {spacer} ), String Col Box( "", {spacer} ), Page Break Box(), )
+		);
+		pagebreaker << journal << close window;
+
+,
+
+if(j==5,
+
+////Page break
+		pagebreaker = New Window( "     Nothing Really",
+			V List Box( String Col Box( "", {spacer} ), String Col Box( "", {spacer} ), Page Break Box(), )
+		);
+		pagebreaker << journal << close window;
+
+,
+
+empty();
+);
+);
+	
+	//Validity report
+	LineBox;
+	VSpacer(1);
+	Text Box(concat(samplenames[j],"  Validity Report")) << Font Color( "Blue" ) << Set Font Size( 16 ) << set Font Style( "Bold" )  <<set wrap(10000)<< journal();
+	LineBox;
+	VSpacer(1);
+
+	dtvalidity = New Table( "Validity","invisible" );
+	dtvalidity << New Column( "Validity Criteria", character, set values( ValidityCriteria ), Set Display Width( 147 ) );
+	dtvalidity << New Column( "LSL", continuous, set values( ValidityLSL ) );
+	dtvalidity << New Column( "USL", continuous, set values( ValidityUSL ) );
+	dtvalidity << New Column( "Validity Results", Format( "Fixed Dec", 12, 3 ), continuous, set values(
+		{doseresponsetest,//Dose Response Test,
+		refcurvedepth, //Curve Depth
+			RPD = abs(ConstrainedPotency-UnConstrainedPotency)*100,//RP Delta%
+		sloperatioparallel, //Parallelism slope ratio
+		plalinearityprob, //Linearity ratio
+		EC50RefUncon = ec50refunconfourdose,
+		  //EC50
+		 dropletsrescount //droplet count
+		},
+	) );
+	dtvalidity<<select where(is missing(:Validity Criteria))<<delete rows<<clear select;
+	dtvalidity<<New Column( "Assay Validity",
+		Character,
+		"Nominal",
+		Formula(
+				If(
+					(:Validity Results >= :LSL | Is Missing( :LSL )) & (
+					:Validity Results <= :USL | Is Missing( :USL )),
+					"Passed Validity Criteria",
+					"Failed Validity Criteria"
+				)
+			),
+		Set Property(
+			"Value Colors",
+			{"Failed Validity Criteria" =  -16768477, "Passed Validity Criteria" =  -15400938}
+		),
+		Color Cell by Value,
+		Set Display Width( 143 )
+	);
+	dtvalidity << New Column( "Overall Validity",
+		Character,
+		"Nominal",
+		Formula(
+			If( Row() == 1,
+				If(
+					:Assay Validity[1] == "Passed Validity Criteria" &
+					:Assay Validity[2] == "Passed Validity Criteria" &
+					:Assay Validity[3] == "Passed Validity Criteria" &
+					:Assay Validity[4] == "Passed Validity Criteria" &
+					:Assay Validity[5] == "Passed Validity Criteria" &
+					:Assay Validity[6] == "Passed Validity Criteria" &
+					:Assay Validity[7] == "Passed Validity Criteria",
+					"Assay is Valid"
+				,
+					"Failed One or More Validity Criteria"
+				)
+			)
+		),
+		Set Property(
+			"Value Colors",
+			{"Failed One or More Validity Criteria" = -16768477, "Assay is Valid" =  -15400938}
+		),
+		Color Cell by Value,
+		Set Display Width( 212 ) 
+	);
+	dtvalidity << journal;
+	Reportable = :Overall Validity[1];
+	finalparallellist[j]=:Validity Results[4];
+	finallinearitylist[j]=:Validity Results[5];
+
+	close(dtvalidity, no save);
+	
+	dtrp << set table variable( "Validity", Reportable );
+	dtrp <<New Column( "OOS Validity",
+	Character,
+	"Nominal",
+	Set Property(
+		"Value Colors",
+		{"Invalid Assay Results not Reportable" = -16768477,
+		"Assay is Valid and OOS" = -16768477, "Assay is Valid and Within Limits" =
+		-15400938}
+	),
+	Formula(
+		If(
+			:Validity == "Assay is Valid" & :Relative Infectivity Reportable Result >=
+			Num( RPLSL ) & (:Validity == "Assay is Valid" &
+			:Relative Infectivity Reportable Result <= Num( RPUSL )),
+				"Assay is Valid and Within Limits",
+			:Validity == "Assay is Valid" & :Relative Infectivity Reportable Result <
+			Num( RPLSL ) | :Validity == "Assay is Valid" &
+			:Relative Infectivity Reportable Result > Num( RPUSL ),
+				"Assay is Valid and OOS",
+			"Invalid Assay Results not Reportable"
+		)
+	),
+	Color Cell by Value
+);
+	dtrp<<unlock(:OOS Validity);
+	oosvaliditycol=:OOS Validity<<get values;
+	oostest=oosvaliditycol[1];	
+
+	
+	LineBox;
+	VSpacer(1);
+	Text Box(concat(samplenames[j]," Relative Infectivity and Infectious Particle Ratio")) << Font Color( "Blue" ) << Set Font Size( 16 ) << set Font Style( "Bold" ) <<set wrap(10000)<< journal();
+	LineBox;
+	VSpacer(1);
+	dtrp << journal();
+	
+	dtdelta= New Table("Unconstrained Report", "invisible");
+	dtdelta << add rows(1);
+	dtdelta << delete columns( :Column 1 );
+	dtdelta << New Column( "Unconstrained RI", continuous, Format( "Fixed Dec", 12, 1 ), set values( {UnConstrainedPotency*100} ) );
+	dtdelta << New Column( "Constrained RI", continuous, Format( "Fixed Dec", 12, 1 ), set values(  {ConstrainedPotency*100} ) );
+	dtdelta << New Column( "Relative Infectivity Delta", continuous,  Format( "Fixed Dec", 12, 1 ), set values({RPD}));
+	dtdelta << journal;
+
+	RPdeltalist[j]=RPD;
+
+	close(dtdelta, no save);
+	
+	dtir= new table("Infectious Particle Ratio Table","invisible");
+	dtir<<add rows(1);
+	dtir << delete columns( :Column 1 );
+	dtir << New Column( "Infectious Particle Ratio", continuous, Format( "Fixed Dec", 12, 1 ), set values( {infectparticleresult} ) );
+	dtir << New Column( "Infectious Particle Ratio Lower Limit", continuous, Format( "Fixed Dec", 12, 1 ), set values(  {infectpartLSL} ) );
+	dtir << New Column( "Infectious Particle Ratio Upper Limit", continuous,  Format( "Fixed Dec", 12, 1 ), set values({infectpartUSL}));
+	dtir << journal;
+	
+	close(dtir, no save);
+
+
+	//Save the results 
+	samplesec50ref[j] = 10 ^ (IPCon[2,2]);
+	samplesec50test[j] = 10 ^ (IPCon[1,2]);
+
+	samplesrp[j] = ConstrainedPotency * 100+ReferenceLotCF+StabilityCF;
+	samplesrpu95[j] = ReferenceLotCF + StabilityCF + ConstrainedPotencyU95 * 100;
+	samplesrpl95[j] = ReferenceLotCF + StabilityCF + ConstrainedPotencyL95 * 100;
+	
+	unconsamplesec50ref[j] = 10 ^ (IPUnCon[1,2]);
+	unconsamplesec50test[j] = 10 ^ (IPUnCon[2,2]);
+	unconsamplesrp[j] = UnconstrainedPotency * 100;
+	unconsamplesrpu95[j] = UnconstrainedPotencyU95 * 100;
+	unconsamplesrpl95[j] = UnconstrainedPotencyL95 * 100;
+	
+	//save the results for infectious particle ratios
+	infectparticlelist[j]=infectparticleresult;
+
+	overallvalidity[j] = reportable;
+	//End of Sample Loop
+
+	close(dtsubset, no save);
+	
+	if(j==1,
+		//Page break
+		pagebreaker = New Window( "     Nothing Really",
+			V List Box( String Col Box( "", {spacer} ), String Col Box( "", {spacer} ), Page Break Box(), )
+		);
+		pagebreaker << journal << close window;
+	);
+
+
+	//Tracking and Trending
+	TrackingAndTrendingdt = Open( concat(pathlocation,"Tracking and Trending\Astellas BQT Assay Tracking and Trending.jmp") );
+	Try(TrackingAndTrendingdt << Add Rows(
+		{
+		:Script Date and Time = datetimestamper,
+		:Script Version = ScriptVer ,
+		:Configuration File Name = confignamer,
+		:Assay Name ="Astellas BQT Infectivity Assay",
+		:Reference Standard = rstandard,
+		:Date Assay Initiated =assaydate ,
+		:Purpose =purposevalue ,
+		:Bioassay Run ID =bioassayrun ,
+		:Analyst Name = analystname,
+		:Bioassay Preparation = bioassayprep,
+		:Bioassay Revision = bioassayrev,
+		:Signal =signalvalue ,
+		:Method = methodvalue,
+		:Instrument ID =instrumentid,
+		:"Notes"n = AssayDetailsValues[13],
+		:"Material 1"n =Material_1 ,
+		:"Source 1"n = Source_1 ,
+		:"Catalog 1"n = Catalog_1 ,
+		:"Lot 1"n = Lot_1,
+		:"Expiration 1"n = Expiration_1 ,
+		:"Material 2"n = Material_2 ,
+		:"Source 2"n = Source_2, 
+		:"Catalog 2"n = Catalog_2 ,
+		:"Lot 2"n = Lot_2 ,
+		:"Expiration 2"n = Expiration_2 ,
+		:"Material 3"n = Material_3 ,
+		:"Source 3"n = Source_3 ,
+		:"Catalog 3"n = Catalog_3 ,
+		:"Lot 3"n = Lot_3 ,
+		:"Expiration 3"n = Expiration_3,
+		:"Material 4"n = Material_4,
+		:"Source 4"n = Source_4 ,
+		:"Catalog 4"n = Catalog _4 ,
+		:"Lot 4"n = Lot_4,
+		:"Expiration 4"n = Expiration_4 ,
+		:"Material 5"n = Material_5 ,
+		:"Source 5"n = Source_5,
+		:"Catalog 5"n = Catalog_5 ,
+		:"Lot 5"n =Lot_5 ,
+		:"Expiration 5"n = Expiration_5 ,
+		:"Material 6"n = Material_6 ,
+		:"Source 6"n = Source_6,
+		:"Catalog 6"n = Catalog_6 ,
+		:"Lot 6"n = Lot_6 ,
+		:"Expiration 6"n = Expiration_6 ,
+		:"Material 7"n = Material_7 ,
+		:"Source 7"n = Source_7 ,
+		:"Catalog 7"n = Catalog_7,
+		:"Lot 7"n = Lot_7,
+		:"Expiration 7"n = Expiration_7 ,
+		:"Material 8"n = Material_8,
+		:"Source 8"n = Source_8 ,
+		:"Catalog 8"n = Catalog_8 ,
+		:"Lot 8"n = Lot_8 ,
+		:"Expiration 8"n = Expiration_8,
+		:"Reference Standard ID"n = ReferenceName, 
+		:"RS Description"n = RSDescriptionvalue,
+		:"RS Expiry"n = RSExpiryvalue,
+		:"RS CF"n = ReferenceLotCF, 
+		:"Stability CF"n = StabilityCF,
+		:Test Article Information =talist[j] ,
+		:EC50 Reference = samplesec50ref[j],
+		:EC50 TA = samplesec50test[j],
+		:Name("Parallelism, Slope Ratio")= finalparallellist[j],
+		:Linearity Ratio =finallinearitylist[j] ,
+		:Dose Test = dosetestlist[j] ,
+		:Selected Model = selectedmodellist[j],
+		:EC50 Fixed Setpoint = fixedRFER,
+		:EC50 Reference Concentration Target = ec50referencecontarget,
+		:EC50 Reference Fixed = ec50refunconfourdose ,
+		:Reference Standard Curve Depth =refcurvedepth,
+		:Relative Infectivity Delta = RPdeltalist[j] ,
+		:Unconstrained RI =unconsamplesrp[j] ,
+		:Reportable RI =samplesrp[j] ,
+		:RI Upper 95 =samplesrpu95[j] ,
+		:RI Lower 95 =samplesrpl95[j] ,
+		:Infectious Particles Ratio =infectparticlelist[j] ,
+		:Failed Accepted Droplets = dropletsrescount,
+		:Name( "CI 95% Range" ) =cirangelist[j], 
+		:Name( "CI Range as % of Tolerance" ) = CItolerancelist[j],
+		:Assay Validity = overallvalidity[j]
+
+		}
+	));
+
+	trackingandtrendingdt << save( concat(pathlocation,"Tracking and Trending\Astellas BQT Assay Tracking and Trending.jmp") );
+	Close( trackingandtrendingdt, no save );
+
+
+);
+
+//////Page break
+//		pagebreaker = New Window( "     Nothing Really",
+//			V List Box( String Col Box( "", {spacer} ), String Col Box( "", {spacer} ), Page Break Box(), )
+//		);
+//		pagebreaker << journal << close window;
+
+//All Samples Potency Report
+//Header for Combined Potency Report
+potencyreportall = New Window( "     Data Display",
+	V List Box(
+		H List Box( String Col Box( "", {liner} ) ),
+		String Col Box( "", {spacer} ),
+		H List Box(
+			potencyselectall = Text Box( "Relative Infectivity All Samples" ),
+			String Col Box( "", {spacer} ),
+
+		)
+	),
+	V List Box( H List Box( String Col Box( "", {liner} ) ), String Col Box( "", {spacer} ), ), 
+
+);
+potencyselectall << Set Font Size( 16 );
+potencyselectall << Font Color( " Blue" ) << set Font Style( "Bold" ) << set Wrap( 2000 );
+potencyreportall << journal << close window;
+
+//Samples Summary All Relative Infectivity Table
+dtrpall = New Table( "Potency Report" );
+dtrpall << add rows( samplenum );
+dtrpall << New Column( "Sample Name", character, set values( samplenames ) );
+dtrpall << delete columns( :Column 1 );
+dtrpall << New Column( "EC50 Standard", continuous, set values( samplesec50ref ) );
+dtrpall << New Column( "EC50 Test", continuous, set values( samplesec50test ) );
+dtrpall << New Column( "Infectious Ratio", continuous, Format( "Fixed Dec", 12, 1 ), set values( infectparticlelist ) );
+dtrpall << New Column( "Reportable RI", continuous, Format( "Fixed Dec", 12, 1 ), set values( samplesrp ) );
+dtrpall << New Column( "RI Lower 95", continuous, Format( "Fixed Dec", 12, 1 ), set values( samplesrpl95 ) );
+dtrpall << New Column( "RI Upper 95", continuous, Format( "Fixed Dec", 12, 1 ), set values( samplesrpu95 ) );
+dtrpall << New Column( "Stderror", continuous, formula( ((:RI Upper 95 - :Reportable RI) / 1.96) ) );
+:Stderror << hide;
+
+dtrpall << journal;
+Close( dtrpall, no save );
+
+//Samples Summary All Potency Units Table
+dtpall = New Table( "Potency Report" );
+dtpall << add rows( samplenum );
+dtpall << New Column( "Sample Name", character, set values( samplenames ) );
+dtpall << delete columns( :Column 1 );
+dtpall << New Column( "Reportable RI", continuous, set values( samplesrp ) );
+:Reportable RI << hide;
+dtpall << New Column( "RI Lower 95", continuous, set values( samplesrpl95 ) );
+:RI Lower 95 << hide;
+dtpall << New Column( "RI Upper 95", continuous, set values( samplesrpu95 ) );
+:RI Upper 95 << hide;
+
+dtpall << New Column( "Overall Validity",
+	Character,
+	"Nominal",
+	Set Property(
+		"Value Colors",
+		{"Assay is Valid" = -15400938, "Failed One or More Validity Criteria" = -16768477}
+	),
+	Color Cell by Value,
+	Set Values( overallvalidity ),
+	Set Display Width( 200 )
+);
+
+dtpall << New Column( "OOS",
+	character,
+	Set Property(
+		"Value Colors",
+		{"Within Limits" = -15400938, "OOS" = -15400938, "Invalid Assay Results not Reportable" = -16768477}
+	),
+	Color Cell by Value,
+	formula( If( RPLSL <= :Reportable RI <= RPUSL, "Within Limits", "OOS" ) ),
+	Set Property( "Value Colors", {"OOS" = -16768477, "Within Limits" = -15400938} ),
+	Color Cell by Value, 
+	 
+);
+
+If( N Rows( dtpall ) == 6,
+	validitycheck = :Overall Validity << get values;
+	validitycheck1 = validitycheck[1];
+	validitycheck2 = validitycheck[2];
+	validitycheck3 = validitycheck[3];
+	validitycheck4 = validitycheck[4];
+	validitycheck5 = validitycheck[5];
+	validitycheck6 = validitycheck[6];
+
+,
+
+If( N Rows( dtpall ) == 5,
+	validitycheck = :Overall Validity << get values;
+	validitycheck1 = validitycheck[1];
+	validitycheck2 = validitycheck[2];
+	validitycheck3 = validitycheck[3];
+	validitycheck4 = validitycheck[4];
+	validitycheck5 = validitycheck[5];
+,
+	If( N Rows( dtpall ) == 4,
+		validitycheck = :Overall Validity << get values;
+		validitycheck1 = validitycheck[1];
+		validitycheck2 = validitycheck[2];
+		validitycheck3 = validitycheck[3];
+		validitycheck4 = validitycheck[4];
+	,
+		If( N Rows( dtpall ) == 3,
+			validitycheck = :Overall Validity << get values;
+			validitycheck1 = validitycheck[1];
+			validitycheck2 = validitycheck[2];
+			validitycheck3 = validitycheck[3];
+		,
+			If( N Rows( dtpall ) == 2,
+				validitycheck = :Overall Validity << get values;
+				validitycheck1 = validitycheck[1];
+				validitycheck2 = validitycheck[2];
+			,
+				If( N Rows( dtpall ) == 1,
+					validitycheck = :Overall Validity << get values;
+					validitycheck1 = validitycheck[1];
+				,
+					Empty()
+				)
+			)
+		)
+	)
+	)
+);
+
+If( N Rows( dtpall ) == 6,
+	ooscheck = :OOS << get values;
+	ooscheck1 = ooscheck[1];
+	ooscheck2 = ooscheck[2];
+	ooscheck3 = ooscheck[3];
+	ooscheck4 = ooscheck[4];
+	ooscheck5 = ooscheck[5];
+	ooscheck6 = ooscheck[6];
+,
+						
+If( N Rows( dtpall ) == 5,
+	ooscheck = :OOS << get values;
+	ooscheck1 = ooscheck[1];
+	ooscheck2 = ooscheck[2];
+	ooscheck3 = ooscheck[3];
+	ooscheck4 = ooscheck[4];
+	ooscheck5 = ooscheck[5];
+,
+	If( N Rows( dtpall ) == 4,
+		ooscheck = :OOS << get values;
+		ooscheck1 = ooscheck[1];
+		ooscheck2 = ooscheck[2];
+		ooscheck3 = ooscheck[3];
+		ooscheck4 = ooscheck[4];
+	,
+		If( N Rows( dtpall ) == 3,
+			ooscheck = :OOS << get values;
+			ooscheck1 = ooscheck[1];
+			ooscheck2 = ooscheck[2];
+			ooscheck3 = ooscheck[3];
+		,
+			If( N Rows( dtpall ) == 2,
+				ooscheck = :OOS << get values;
+				ooscheck1 = ooscheck[1];
+				ooscheck2 = ooscheck[2];
+			,
+				If( N Rows( dtpall ) == 1,
+					ooscheck = :OOS << get values;
+					ooscheck1 = ooscheck[1];
+				,
+					Empty()
+				)
+			)
+		)
+	)
+	)
+);
+
+dtpall << New Column( "Reportable",
+	Character,
+	"Nominal",
+	Formula( If( :Overall Validity == "Assay is Valid", "Reportable", "Not Reportable" ) ),
+	Set Property( "Value Colors", {"Not Reportable" = -16768477, "Reportable" = -15400938} ),
+	Color Cell by Value,
+	Set Display Width( 179 )
+);
+
+If( N Rows( dtpall ) == 6,
+	reportables = :Reportable << get values;
+	reportables1 = reportables[1];
+	reportables2 = reportables[2];
+	reportables3 = reportables[3];
+	reportables4 = reportables[4];
+	reportables5 = reportables[5];
+	reportables6 = reportables[6];
+,
+
+If( N Rows( dtpall ) == 5,
+	reportables = :Reportable << get values;
+	reportables1 = reportables[1];
+	reportables2 = reportables[2];
+	reportables3 = reportables[3];
+	reportables4 = reportables[4];
+	reportables5 = reportables[5];
+,
+	If( N Rows( dtpall ) == 4,
+		reportables = :Reportable << get values;
+		reportables1 = reportables[1];
+		reportables2 = reportables[2];
+		reportables3 = reportables[3];
+		reportables4 = reportables[4];
+	,
+		If( N Rows( dtpall ) == 3,
+			reportables = :Reportable << get values;
+			reportables1 = reportables[1];
+			reportables2 = reportables[2];
+			reportables3 = reportables[3];
+		,
+			If( N Rows( dtpall ) == 2,
+				reportables = :Reportable << get values;
+				reportables1 = reportables[1];
+				reportables2 = reportables[2];
+			,
+				If( N Rows( dtpall ) == 1,
+					reportables = :Reportable << get values;
+					reportables1 = reportables[1];
+				,
+					Empty()
+				)
+			);
+					
+		)
+	)
+	)
+);
+
+dtpall << journal;
+
+Close( dtpall, no save );
+
+
+//Materials Summary
+	materialsreport = New Window( "Plate Map Report",
+		V List Box( H List Box( String Col Box( "", {liner} ) ) ),
+		V List Box(
+			String Col Box( "", {spacer} ),
+			H List Box(materialsname = Text Box(concat(assaynameval," "," Bioassay Materials and Reference Standard Report")))  ,
+			V List Box( H List Box( String Col Box( "", {liner} ) ) ), 
+
+		),
+		String Col Box( "", {spacer} ), 
+
+	);
+	materialsname << Set Font Size( 16 );
+	materialsname << Font Color( "Blue" ) << set Font Style( "Bold" )<<set wrap(10000);
+	materialsreport << journal << close window;
+
+
+	tempdt = new table("",
+		New Column("Column 1", Character,"Nominal",Set Values(AssayDetailsNames)),
+		New Column("Column 2", Character,"Nominal",Set Values(AssayDetailsValues))
+	);
+	Ttempdt = tempdt << Transpose(
+		columns( :Column 2 ),
+		Label( :Column 1 ),
+		Output Table( "Transpose of Untitled 9" )
+	);
+	Ttempdt << Delete Columns(1);
+	
+	Ttempdt << Delete Columns(13);
+		
+	Text Box("Assay Details") << set Font Style( "Bold" ) << set wrap(2000) << journal();
+	Vspacer(1);
+	Ttempdt << journal();
+	
+	//Get the notes column
+	notesdetails=list();
+	notesdetails[1]=AssayDetailsNames[13];
+	
+	notesvalues=list();
+	notesvalues[1]=AssayDetailsValues[13];
+	
+		dttemp = new table("",
+		New Column("Column 1", Character,"Nominal",Set Values(notesdetails)),
+		New Column("Column 2", Character,"Nominal",Set Values(notesvalues))
+	);
+	dtnotes = dttemp << Transpose(
+		columns( :Column 2 ),
+		Label( :Column 1 ),
+		Output Table( "Transpose of Untitled 9" )
+	);
+	dtnotes << Delete Columns(1);
+
+	dtnotes<<journal();
+	
+	Close(dtnotes, no save);
+	Close(dttemp, no save);
+	Close(tempdt, No save);
+	Close(Ttempdt, No save);
+	Close(dtAssayInfo, No save);
+	
+	//Materials
+	Vspacer(1);
+	Text Box("Materials") << set Font Style( "Bold" ) << set wrap(2000) << journal();
+	Vspacer(1);
+	dtAssayInfo = Open(
+		configfile,
+		Worksheets( "Materials" ),
+		Use for all sheets( 1 ),
+		Concatenate Worksheets( 0 ),
+		Create Concatenation Column( 0 ),
+		Worksheet Settings(
+			1,
+			Has Column Headers( 1 ),
+			Number of Rows in Headers( 1 ),
+			Headers Start on Row( 15 ),
+			Data Starts on Row( 16 ),
+			Data Starts on Column( 1 ),
+			Data Ends on Row( 23 ),
+			Data Ends on Column( 7 ),
+			Replicated Spanned Rows( 1 ),
+			Replicated Spanned Headers( 0 ),
+			Suppress Hidden Rows( 1 ),
+			Suppress Hidden Columns( 1 ),
+			Suppress Empty Columns( 0 ),
+			Treat as Hierarchy( 0 ),
+			Multiple Series Stack( 0 ),
+			Import Cell Colors( 0 ),
+			Limit Column Detect( 0 ),
+			Column Separator String( "-" )
+		)
+	);
+	:Column 7<<hide(1);
+	dtAssayInfo << journal();
+	Close(dtAssayInfo, No save);
+	
+	
+		//Reference
+	Vspacer(1);
+	Text Box("Reference Details") << set Font Style( "Bold" ) << set wrap(2000) << journal();
+	Vspacer(1);
+	dtAssayInfo = Open(
+		configfile,
+		Worksheets( "Materials" ),
+		Use for all sheets( 1 ),
+		Concatenate Worksheets( 0 ),
+		Create Concatenation Column( 0 ),
+		Worksheet Settings(
+			1,
+			Has Column Headers( 1 ),
+			Number of Rows in Headers( 1 ),
+			Headers Start on Row( 25 ),
+			Data Starts on Row( 26 ),
+			Data Starts on Column( 1 ),
+			Data Ends on Row( 26 ),
+			Data Ends on Column( 10 ),
+			Replicated Spanned Rows( 1 ),
+			Replicated Spanned Headers( 0 ),
+			Suppress Hidden Rows( 1 ),
+			Suppress Hidden Columns( 1 ),
+			Suppress Empty Columns( 0 ),
+			Treat as Hierarchy( 0 ),
+			Multiple Series Stack( 0 ),
+			Import Cell Colors( 0 ),
+			Limit Column Detect( 0 ),
+			Column Separator String( "-" )
+		)
+	);
+	dtAssayInfo << journal();
+	Close(dtAssayInfo, No save);
+
+	//Page break to go to another page in the report
+pagebreaker = New Window( "     Nothing Really",
+	V List Box( String Col Box( "", {spacer} ), String Col Box( "", {spacer} ), Page Break Box(), )
+);
+pagebreaker << journal << close window;
+
+
+//Save input files to report (configuration and plate file)
+inputreport = New Window( "Input report",
+	V List Box( H List Box( String Col Box( "", {liner} ) ) ),
+	V List Box(
+		String Col Box( "", {spacer} ),
+		H List Box( inputname = Text Box( "   Input Files - Configuration File and Plate File(s)" ) ),
+		V List Box( H List Box( String Col Box( "", {liner} ) ) ), 
+
+	),
+	String Col Box( "", {spacer} ), 
+
+);
+inputname << Set Font Size( 16 );
+inputname << Font Color( "Blue" ) << set Font Style( "Bold" );
+inputname << Set Wrap (1000);
+inputreport << journal << close window;
+
+//import the excel material template again to print on pdf report
+Open(configurator, invisible);	
+configfile =configurator;			
+positionA = Contains( configfile , "/" , -1);//finds first position for file name
+datafilenamenopath = Substr( configfile, positionA+1 );//subtracts folder path from file name
+
+positionB = Contains( datafilenamenopath, "." );//finds last position for file name
+confignamer = Substr( datafilenamenopath, 1, positionB - 1 );//final template file name
+
+//create variables for all columns in the sample and materials info tab of the excel template
+dtconfiguration= Current Data Table();
+
+dtconfiguration << journal; 
+
+//close first tab of configuration file
+close(dtconfiguration, no save);
+
+//Reopen the raw infection plates to journal
+For( i = 1, i < platenumber + 1, i++,
+	dt = Open(datafilenamerlist[i] );
+	dtname[i] = dt << get name;
+);
+
+If(platenumber==1,  Data Table(dtname[1] )<< journal; close(dtname[1], no save); ,
+If(platenumber==2,  Data Table(dtname[1] )<< journal; Data Table(dtname[2] )<< journal; close(dtname[1], no save); close(dtname[2], no save);,
+If(platenumber==3,  Data Table(dtname[1] )<< journal; Data Table(dtname[2] )<< journal; Data Table(dtname[3] )<< journal; close(dtname[1], no save); close(dtname[2], no save); close(dtname[3], no save);,
+)));
+
+
+	//Set scollable displayed tables, fixes trucated data tables with last column and ensure PDF report displays all rows 
+	for(aa=1, aa<=100, aa++, 
+	Try(
+	Current Journal()[TableBox(aa)] <<Set Scrollable(0);
+	);
+
+	);
+
+	//create aggregate data table
+	//Concatenate the main data table in to the Aggregate Raw Data Table	
+	dtcd2=dttext<<select all rows<<subset(invisible);
+	dtcd2 << New Column( "Source Table", Character, Nominal, Set each value(filenamer) );
+	dtcd2 << New Column( "Script Version", Character, Nominal, Set each value(ScriptVer) );
+	dtcd2 << select columns("Source Table") << Move Selected Column( to first );
+	dtconcat = Open(concat(pathlocation,"Tracking and Trending\Astellas BQT Aggregate Raw Data Table.jmp"));
+	dtconcat  << Concatenate( dtcd2, "Append to First Table");
+	dtconcat<<clear row states;	dtconcat<<clear row states;
+	dtconcat << select columns("Source Table") << Move Selected Column( to first );
+	:Source Table<<Set Display Width( 400 );
+	dtconcat<<clear row states;
+	dtconcat << save(concat(pathlocation,"Tracking and Trending\Astellas BQT Aggregate Raw Data Table.jmp"));
+
+	close(dtconcat, no save);
+	close(dtcd2, no save);
+
+
+//Define setup information to save in pdf
+//get the date stamp for the file name
+datetimestamper = Substitute( Char( dateint ), ":", "-" );
+Current Journal() << Set Window Title( Concat( filenamer || "_" || datetimestamper ) );
+winJOURNAL = Current Journal();
+
+winJOURNAL << Set Print Footers(
+	concat("© 2023 - ",char(Year( Today() ))," BioAssay Sciences, Thomas A. Little Consulting" ,	"             Astellas Therapeutics Proprietary and Confidential"/*center*/,
+ ),/*left*/,
+	"Page &pn; of &pc;"/*right*/
+);
+headerleft = Concat( filenamer || "_" || datetimestamper );
+winJOURNAL << Set Print Headers( headerleft, "", "" );
+
+
+
+
+winJOURNAL << Set page setup(
+
+	margins( 0.5, 0.5, 0.5, 0.5 ), 
+
+	scale( 0.5 ), 
+
+	portrait( 1 ), 
+
+	paper size( "A3" )
+
+);
+
+
+
+winJOURNAL << get page setup();
+
+	//Set the file name and footer
+	if(nitems(dtname)==1,
+	ReportName = concat(dtname[1]|| "_Report_"||datetimestamper);
+	,
+	if(nitems(dtname)==2,
+		ReportName = concat(dtname[1]||"_"||dtname[2]|| "_Report_"||datetimestamper);
+,
+		ReportName = concat(dtname[1]||"_"||dtname[2]||"_"||dtname[3]|| "_Report_"||datetimestamper);
+	);
+	);
+	presentjournal = winJOURNAL;
+	presentjournal << Set Window Title( ReportName ) ;
+	presentjournal << Set Print Footers( concat("© 2023 - ",char(Year( Today() ))," BioAssay Sciences, Thomas A. Little Consulting" ));
+
+	//Define setup information to save in pdf
+	presentjournal << Set page setup(
+		margins( 0.5, 0.5, 0.5, 0.5 ), 
+		scale( 0.45 ), 
+		portrait( 1 ), 
+		paper size( "A3" )
+	);
+	
+
+
+	//Save pdf and journal
+	presentjournal << Save PDF( concat(pathlocation, "Reports\PDF\") || ReportName || ".pdf" );
+	presentjournal << Save Journal(concat(pathlocation, "Reports\Journal\") || ReportName || ".jrn");
+	presentjournal << close window(1);
+
+//Save pdf journal and data file to chosen file from the preset JMP Preferences
+savepath = Char( Get Preferences() );
+positionB = Contains( savepath, "Save As Directory" );
+savepathfinal = Substr( savepath, positionB );
+
+positionC = Contains( savepathfinal, "\!"" );
+positionD = Contains( savepathfinal, "\!"", 1 + positionC );
+
+savepathfinal = Substr( savepathfinal, 1 + positionC, positionD - (1 + positionC) );
+
+
+
+Current Journal() << close window;
+
+	Close(dttextsum2, Save(concat(pathlocation, "Reports\Data Table\") ||ReportName || ".jmp"));
+	Close(dttext, Save(concat(pathlocation, "Reports\Data Table\") ||ReportName || ".jmp"));
+
+Close All( data tables );
+
+	if(contains(JMP version(),"15")
+	,
+	//Closes the report window in JMP 15 or JMP 16
+	ReportList = Get Window List( type(Reports) );
+	If( N items(Reportlist )>0,
+		For( i=1, i<= N Items( reportlist ), i++,
+		ReportList[i] << Close Window(); 
+		);
+	);
+	,
+	empty();
+	
+	);
+	New Window( "Script Status",
+	<<modal,
+	Text Box( "Bioassay script is complete." ),
+	Text Box( "PDF Report, Journal and JMP files are in the folder" )
+	);
+
+	fontpref;//set fonts back to user font preferences
+	tablestyles;//set table styles back to user table style preferences

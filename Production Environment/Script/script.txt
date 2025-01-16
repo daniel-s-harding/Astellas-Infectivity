@@ -1,0 +1,1 @@
+Export JMP add-in with integrated license to this folder.

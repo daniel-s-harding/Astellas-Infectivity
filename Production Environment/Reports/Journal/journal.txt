@@ -1,0 +1,1 @@
+Script generates JMP Journal reports to this folder.

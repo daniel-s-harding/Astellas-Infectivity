@@ -1,0 +1,32 @@
+<!-- JMP Add-In Builder created --><jm:menu_and_toolbar_customizations xmlns:jm="http://www.jmp.com/ns/menu" version="3">
+  <jm:insert_in_main_menu>
+    <jm:insert_after>
+      <jm:name></jm:name>
+      <jm:menu>
+        <jm:name>Astellas</jm:name>
+        <jm:caption>Astellas BQT Assay Single Run</jm:caption>
+        <jm:command>
+          <jm:name>BQT</jm:name>
+          <jm:caption>BQT Assay Single Run Analysis</jm:caption>
+          <jm:action type="path">$ADDIN_HOME(com.astellas.BQT_SingleRun)\Astellas BQT Infectivity Assay Single Run Script 0.1 04November2024 v0.1.jsl</jm:action>
+		      <jm:tip>Run the bioassay</jm:tip>
+          <jm:icon type="builtin">FitCurve</jm:icon>
+        </jm:command>
+		    <jm:command>
+          <jm:name>DPOpenTandT</jm:name>
+          <jm:caption>Astellas BQT Assay Tracking and Trending</jm:caption>
+          <jm:action type="path">$ADDIN_HOME(com.astellas.BQT_SingleRun)\Open TandT.jsl</jm:action>
+		      <jm:tip>Open a temporary copy of the Tracking and Trending table</jm:tip>
+          <jm:icon type="builtin">DataFilter</jm:icon>
+        </jm:command>
+		    <jm:command>
+          <jm:name>DPSPC</jm:name>
+          <jm:caption>BQT Assay Single Run SPC</jm:caption>
+          <jm:action type="path">$ADDIN_HOME(com.astellas.BQT_SingleRun)\Open SPC.jsl</jm:action>
+		      <jm:tip>Statistical Process Control on the tracking and trending information</jm:tip>
+          <jm:icon type="builtin">ControlC</jm:icon>
+        </jm:command>
+      </jm:menu>
+    </jm:insert_after>
+  </jm:insert_in_main_menu>
+</jm:menu_and_toolbar_customizations>

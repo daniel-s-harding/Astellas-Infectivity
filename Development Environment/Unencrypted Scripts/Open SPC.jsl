@@ -1,0 +1,389 @@
+Names Default To Here(1);
+//Correct these for different assays, also the names of the SPC charts below
+	SystemSuitCol = "Reference Standard Med (RS, Copies/mL)";
+	SystemSuitTargetCol = "RS Medium Concentration (Copies/mL)";
+	TestArticleCol = "Geomean (VG/mL)";
+	TASPCName = "Vg Titer ddPCR SPC Table Test Article";
+	SSSPCName = "Vg Titer ddPCR SPC Table System Suitability";
+	ValidityCol = "Assay Validity";
+	RunID = "Sample Name";
+	TAID = "Test Article Information";
+//End
+
+FileList=Files In Directory("$TEMP");
+for (i = 1, i <= nitems(FileList), i++,
+	If(Contains(FileList[i], "Tracking and Trending"), Delete File("$TEMP/"||FileList[i]));
+);
+SourceDef = Load Text File("addin.def");
+ThisAddinID = Word( 2, SourceDef, " \!t\!n\!r=" );
+Try(
+	RootPath = GetEnvironmentVariable(ThisAddinID);
+	If(RootPath=="", NewWindow("Missing Environment Variable", <<modal, TextBox("Please create an Environment Variable with the name:\!n\!n" || ThisAddinID || "\!n\!nSet the variable value to the directory where script output should be stored. \!n\!nRefer to the script SOP for details.")); Stop());
+	If(!(Right(RootPath, 1) == "\" | Right(RootPath, 1) == "/"), RootPath = RootPath || "\"); //Add ending slash if not allready present.
+,
+	NewWindow("Error reading config", <<modal, TextBox("Cannot read config file, please run main script first."));
+	Stop();
+);
+dtTandT = Open( Concat( RootPath, "Tracking and Trending\Vg Titer ddPCR Tracking and Trending.jmp" ), invisible);
+dtTandT << ClearRowStates;
+ValidlityOptions = AssociativeArray(dtTandT:ValidityCol<< get values) << GetKeys;
+NewWindow("Assay Validity Options",
+	<<modal,
+	TextBox("Please select the assay validity options you would like to exclude from the control charts."),
+	CB = CheckBox(ValidlityOptions),
+	HCenterBox(ButtonBox("Ok", SelectedAssay = CB << GetSelected))
+);
+If(NItems(SelectedAssay)>0,
+	For(i=1, i<=NItems(SelectedAssay), i++,
+		eval(evalexpr(dtTandT << SelectWhere(expr(parse(":\!""||ValidityCol||"\!"n")) == SelectedAssay[i] )));
+		dtTandT << HideandExclude(1) << ClearSelect;
+	);
+);
+dtSPCSS = dtTandT << Subset( All rows, Selected columns only( 0 ));
+dtSPCTA = dtTandT << Subset( All rows, Selected columns only( 0 ));
+dtSPCSS << ClearSelect;
+dtSPCTA << ClearSelect;
+dtSPCTA << SetName(TASPCName);
+dtSPCSS << SetName(SSSPCName);
+
+Eval(EvalExpr(dtSPCSS << New Column( "Delta to target",
+	Numeric,
+	"Continuous",
+	Format( "Fixed Dec", 12, 1 ),
+	Formula( expr(nameexpr(AsColumn(SystemSuitCol))) - expr(nameexpr(AsColumn(num(SystemSuitTargetCol)))) ),
+)));
+Eval(EvalExpr(dtSPCTA << New Column( "Delta to target",
+	Numeric,
+	"Continuous",
+	Format( "Fixed Dec", 12, 1 ),
+	Formula( expr(nameexpr(AsColumn(SystemSuitCol))) - expr(nameexpr(AsColumn(num(SystemSuitTargetCol)))) ),
+)));
+
+dtSPCTA << Sort(Replace Table, By(:Script Date and Time), Order(ascending));
+dtSPCSS << Sort(Replace Table, By(:Script Date and Time), Order(ascending));
+For(i=2, i<=n rows(dtSPCSS), i++,
+    If(:Script Date and Time[i]==:Script Date and Time[i-1], dtSPCSS<<SelectRows(i))
+);
+Wait(0.1);
+dtSPCSS<<DeleteRows();
+Wait(0.1);
+KnownRunsTA = RowsToDeleteTA = {};
+For(i=n rows(dtSPCTA), i>=1, i--,
+    If( NItems(Loc(KnownRunsTA, dtSPCTA:RunID[i] || dtSPCTA:TAID[i] ))==0,
+	//First time run is seen
+		InsertInto(KnownRunsTA, dtSPCTA:RunID[i] || dtSPCTA:TAID[i]);
+		Continue();
+	,
+	//Allready there
+		InsertInto(RowsToDeleteTA, i);
+	);
+);
+dtSPCTA << DeleteRows(RowsToDeleteTA);
+KnownRunsSS = RowsToDeleteSS = {};
+For(i=n rows(dtSPCSS), i>=1, i--,
+    If( NItems(Loc(KnownRunsSS, dtSPCSS:RunID[i]))==0,
+	//First time run is seen
+		InsertInto(KnownRunsSS, dtSPCSS:RunID[i]);
+		Continue();
+	,
+	//Allready there
+		InsertInto(RowsToDeleteSS, i);
+	);
+);
+dtSPCSS << DeleteRows(RowsToDeleteSS);
+
+//Read current control limits from TandT table
+ControlLimitsSS = Column(dtTandT, SystemSuitCol) << Get Property("Control Limits");
+SigmaSS = Column(dtTandT, SystemSuitCol) << Get Property("Sigma");
+ControlLimitsTA = Column(dtTandT, TestArticleCol) << Get Property("Control Limits");
+SigmaTA = Column(dtTandT, TestArticleCol) << Get Property("Sigma");
+LimitsBasedOnSS = Column(dtTandT, SystemSuitCol) <<GetProperty("Control Limits Based On");
+LimitsBasedOnTA = Column(dtTandT, TestArticleCol) <<GetProperty("Control Limits Based On");
+
+//Extract the Levey Jennings limits
+If(!IsEmpty(ControlLimitsSS),
+	For(i=1, i<=NArg(ControlLimitsSS), i++,
+		If(Head(Arg(ControlLimitsSS, i)) == parse("Levey Jennings"),
+			ControlLimitsSS = EvalList(List(Arg(ControlLimitsSS, i)));
+			Break();
+		);
+	);
+	If(NArg(ControlLimitsSS)>1, ControlLimitsSS = EMpty());
+);
+If(!IsEmpty(ControlLimitsTA),
+	For(i=1, i<=NArg(ControlLimitsTA), i++,
+		If(Head(Arg(ControlLimitsTA, i)) == parse("Levey Jennings"),
+			ControlLimitsTA = EvalList(List(Arg(ControlLimitsTA, i)));
+			Break();
+		);
+	);
+	If(NArg(ControlLimitsTA)>1, ControlLimitsTA = EMpty());
+);
+If(!IsEmpty(ControlLimitsCD),
+	For(i=1, i<=NArg(ControlLimitsCD), i++,
+		If(Head(Arg(ControlLimitsCD, i)) == parse("Levey Jennings"),
+			ControlLimitsCD = EvalList(List(Arg(ControlLimitsCD, i)));
+			Break();
+		);
+	);
+	If(NArg(ControlLimitsCD)>1, ControlLimitsCD = EMpty());
+);
+
+//Write current control limits to SPC table
+If(!IsEmpty(ControlLimitsSS),
+	Eval(EvalExpr(Column(dtSPCSS, "Delta to Target") << Set Property(
+			"Control Limits",
+			Expr(ControlLimitsSS)
+	)))
+);
+If(!IsEmpty(SigmaSS),Column(dtSPCSS, "Delta to Target") << Set Property( "Sigma", SigmaSS ));
+
+//Calculate new limits for System Suitability if needed
+SampleSizeSS = NRows(dtSPCSS);
+If(SampleSizeSS<=100 & IsEmpty(LimitsBasedOnSS),
+	//Outlier detection and exclusion
+	Eval(EvalExpr(multi = dtSPCSS << Multivariate(
+		Y( Expr(NameExpr(AsColumn(SystemSuitCol))) ),
+		Jackknife Distances( 1 )
+	)));
+	multi << Jackknife Distances( 1, Save Jackknife Distances ) << close window;
+	Column(dtSPCSS, "Jackknife Distances") << Format( "Fixed", 6, 3 );
+	dtSPCSS << SelectWhere( :Jackknife Distances > 3 ) << HideandExclude( 1 ) << ClearSelect;
+
+	//Calculate 4k sigma and write col prop
+	Summarize(dtSPCSS, SSMean = Mean(:Delta to Target), SSSD = StdDev(:Delta to Target));
+	If(SampleSizeSS>=30,
+		Eval(EvalExpr(Column(dtTandT, SystemSuitCol) << Set Property(
+			"Control Limits",
+			{Levey Jennings(
+				Avg( 0 ),
+				LCL( Expr(-4*SSSD) ),
+				UCL( Expr(4*SSSD) )
+			)}
+		)));
+		Column(dtTandT, SystemSuitCol) << Set Property( "Sigma", 1.3333*SSSD );
+		Column(dtTandT, SystemSuitCol) <<SetProperty("Control Limits Based On", "4 k sigma");
+	);
+	Eval(EvalExpr(Column(dtSPCSS, "Delta to Target") << Set Property(
+		"Control Limits",
+		{Levey Jennings(
+			Avg( 0 ),
+			LCL( Expr(-4*SSSD) ),
+			UCL( Expr(4*SSSD) )
+		)}
+	)));
+	Column(dtSPCSS, "Delta to Target") << Set Property( "Sigma", 1.3333*SSSD );
+	, SampleSizeSS >100 & LimitsBasedOnSS != "3 k sigma",
+	//Outlier detection and exclusion
+	Eval(EvalExpr(multi = dtSPCSS << Multivariate(
+		Y( Expr(NameExpr(AsColumn(SystemSuitCol))) ),
+		Jackknife Distances( 1 )
+	)));
+	multi << Jackknife Distances( 1, Save Jackknife Distances ) << close window;
+	Column(dtSPCSS, "Jackknife Distances") << Format( "Fixed", 6, 3 );
+	dtSPCSS << SelectWhere( :Jackknife Distances > 3 ) << HideandExclude( 1 ) << ClearSelect;
+
+	//Calculate 3 k sigma limits and write col prop
+	Summarize(dtSPCSS, SSMean = Mean(:Delta to Target), SSSD = StdDev(:Delta to Target));
+	Eval(EvalExpr(Column(dtTandT, SystemSuitCol) << Set Property(
+		"Control Limits",
+		{Levey Jennings(
+			Avg( 0 ),
+			LCL( Expr(-3*SSSD) ),
+			UCL( Expr(3*SSSD) )
+		)}
+	)));
+	Column(dtTandT, SystemSuitCol) << Set Property( "Sigma", SSSD );
+	Eval(EvalExpr(Column(dtSPCSS, "Delta to Target") << Set Property(
+		"Control Limits",
+		{Levey Jennings(
+			Avg( 0 ),
+			LCL( Expr(-3*SSSD) ),
+			UCL( Expr(3*SSSD) )
+		)}
+	)));
+	Column(dtSPCSS, "Delta to Target") << Set Property( "Sigma", SSSD );
+	Column(dtTandT, SystemSuitCol) <<SetProperty("Control Limits Based On", "3 k sigma");
+);
+Try(dtSPCSS << SelectWhere( :Jackknife Distances > 3 ) << HideandExclude( 0 ) << ClearSelect);
+//And Test Article
+SampleSizeTA = NRows(dtSPCTA);
+If(SampleSizeTA<=100 & IsEmpty(LimitsBasedOnTA),
+	//Outlier detection and exclusion
+	Eval(EvalExpr(multi = dtSPCTA << Multivariate(
+		Y( Expr(NameExpr(AsColumn(TestArticleCol))) ),
+		Jackknife Distances( 1 )
+	)));
+	multi << Jackknife Distances( 1, Save Jackknife Distances ) << close window;
+	Column(dtSPCTA, "Jackknife Distances") << Format( "Fixed", 6, 3 );
+	dtSPCTA << SelectWhere( :Jackknife Distances > 3 ) << HideandExclude( 1 ) << ClearSelect;
+
+	//Calculate 4k sigma and write col prop
+	Summarize(dtSPCTA, TAMean = Mean(AsColumn(TestArticleCol)), TASD = StdDev(AsColumn(TestArticleCol)));
+	If(SampleSizeTA>=30,
+		Eval(EvalExpr(Column(dtTandT, TestArticleCol) << Set Property(
+			"Control Limits",
+			{Levey Jennings(
+				Avg( Expr(TAMean) ),
+				LCL( Expr(-4*TASD+TAMean) ),
+				UCL( Expr(4*TASD+TAMean) )
+			)}
+		)));
+		Column(dtTandT, TestArticleCol) << Set Property( "Sigma", 1.3333*TASD );
+		Column(dtTandT, TestArticleCol) <<SetProperty("Control Limits Based On", "4 k sigma");
+	);
+	Eval(EvalExpr(Column(dtSPCTA, TestArticleCol) << Set Property(
+		"Control Limits",
+		{Levey Jennings(
+			Avg( Expr(TAMean) ),
+			LCL( Expr(-4*TASD+TAMean) ),
+			UCL( Expr(4*TASD+TAMean) )
+		)}
+	)));
+	Column(dtSPCTA, TestArticleCol) << Set Property( "Sigma", 1.3333*TASD );
+, SampleSizeTA >100 & LimitsBasedOnTA != "3 k sigma",
+	
+	//Outlier detection and exclusion
+	Eval(EvalExpr(multi = dtSPCTA << Multivariate(
+		Y( Expr(NameExpr(AsColumn(TestArticleCol))) ),
+		Jackknife Distances( 1 )
+	)));
+	multi << Jackknife Distances( 1, Save Jackknife Distances ) << close window;
+	Column(dtSPCTA, "Jackknife Distances") << Format( "Fixed", 6, 3 );
+	dtSPCTA << SelectWhere( :Jackknife Distances > 3 ) << HideandExclude( 1 ) << ClearSelect;
+
+	//Calculate 3 k sigma limits and write col prop
+	Summarize(dtSPCTA, TAMean = Mean(AsColumn(TestArticleCol)), TASD = StdDev(AsColumn(TestArticleCol)));
+	Eval(EvalExpr(Column(dtTandT, TestArticleCol) << Set Property(
+		"Control Limits",
+		{Levey Jennings(
+			Avg( Expr(TAMean) ),
+			LCL( Expr(-3*TASD+TAMean) ),
+			UCL( Expr(3*TASD+TAMean) )
+		)}
+	)));
+	Column(dtTandT, TestArticleCol) << Set Property( "Sigma", TASD );
+	Eval(EvalExpr(Column(dtSPCTA, TestArticleCol) << Set Property(
+		"Control Limits",
+		{Levey Jennings(
+			Avg( Expr(TAMean) ),
+			LCL( Expr(-3*TASD+TAMean) ),
+			UCL( Expr(3*TASD+TAMean) )
+		)}
+	)));
+	Column(dtSPCTA, TestArticleCol) << Set Property( "Sigma", TASD );
+	Column(dtTandT, TestArticleCol) <<SetProperty("Control Limits Based On", "3 k sigma");
+);
+Try(dtSPCTA << SelectWhere( :Jackknife Distances > 3 ) << HideandExclude( 0 ) << ClearSelect);
+
+Close(dtTandT, save);
+
+TimeNow = Today();
+CopyFile(RootPath || "Tracking and Trending\Vg Titer ddPCR Tracking and Trending.jmp", "$TEMP\Vg Titer ddPCR Tracking and Trending_" || Substitute( Char( As Date( TimeNow ) ), ":", "-" ) || ".jmp");
+dtTandT = Open( "$TEMP\Vg Titer ddPCR Tracking and Trending_" || Substitute( Char( As Date( TimeNow ) ), ":", "-" ) || ".jmp");
+
+TextBox("Report created on: " || Long Date( TimeNow ) || " " || Format( TimeNow, "h:m:s", 12, 0 ) || "\!n", <<SetWrap(1000) ) << Journal;
+(dtSPCSS << Control Chart(
+	Sample Label( Column(RunID) ),
+	KSigma( 3 ),
+	Chart Col(
+		:Delta to target,
+		Levey Jennings(
+			Show Zones( 1 ),
+			Shade Zones( 1 ),
+			Test 1( 1 ),
+			Test 2( 1 ),
+			Test 5( 1 ),
+			Avg( 0 )
+		)
+	),
+	SendToReport(
+		Dispatch(
+			{},
+			"Control Chart",
+			OutlineBox,
+			{Set Title( "BQT Infectivity Method Control" )}
+		),
+		Dispatch(
+			{},
+			"Levey Jennings of Delta to target",
+			OutlineBox,
+			{Set Title(
+				"Delta to Target, System Suitability Reference Standard EC50 four dose fixed MOI"
+			)}
+		),
+		Dispatch(
+			{"Levey Jennings of Delta to target"},
+			"1",
+			ScaleBox,
+			{Inc( 1 ), Minor Ticks( 1 )}
+		),
+		Dispatch(
+			{"Levey Jennings of Delta to target"},
+			"",
+			AxisBox,
+			{Add Axis Label( "Delta to target MOI" )}
+		),
+		Dispatch(
+			{"Levey Jennings of Delta to target"},
+			"Levey Jennings Chart",
+			FrameBox,
+			{Frame Size( 1487, 378 )}
+		)
+	)
+)) << Journal <<CloseWindow;
+TextBox("Control limits and sigma based on "|| If(Column(dtTandT, SystemSuitCol) <<GetProperty("Control Limits Based On")!="3 k sigma", "4 k sigma", "3 k sigma")||"\!n") <<journal;
+
+
+(dtSPCTA << Control Chart(
+	Sample Label( Column(RunID) ),
+	KSigma( 3 ),
+	Chart Col(
+		AsColumn(TestArticleCol),
+		Levey Jennings(
+			Show Zones( 1 ),
+			Shade Zones( 1 ),
+			Test 1( 1 ),
+			Test 2( 1 ),
+			Test 5( 1 )
+		)
+	),
+	SendToReport(
+		Dispatch(
+			{},
+			"Control Chart",
+			OutlineBox,
+			{Set Title( "BQT Infectivity Method Control" )}
+		),
+		Dispatch(
+			{},
+			"Levey Jennings of Reported RI",
+			OutlineBox,
+			{Set Title(
+				"Reported Relative Infectivity Test Article (%)"
+			)}
+		),
+		Dispatch(
+			{"Levey Jennings of Reported RI"},
+			"1",
+			ScaleBox,
+			{Inc( 1 ), Minor Ticks( 1 )}
+		),
+		Dispatch(
+			"Levey Jennings of Reported RI",
+			"Levey Jennings Chart",
+			FrameBox,
+			{Frame Size( 1487, 378 )}
+		)
+	)
+)) << Journal <<CloseWindow;
+TextBox("Control limits and sigma based on "|| If(Column(dtTandT, TestArticleCol) <<GetProperty("Control Limits Based On")!="3 k sigma", "4 k sigma", "3 k sigma")) <<journal;
+
+////remove error message for JMP 19
+//current journal()[textbox(2)]<<delete;
+//
+//current journal()[textbox(6)]<<delete;
+//
+//current journal()[textbox(8)]<<delete;
+//
+//current journal()[textbox(8)]<<delete;

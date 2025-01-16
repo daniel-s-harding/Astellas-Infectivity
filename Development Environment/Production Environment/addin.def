@@ -1,0 +1,6 @@
+id=com.astellas.BQT_SingleRun
+name=Astellas - BQT Single Run
+supportJmpSE=0
+addinVersion=241118
+minJmpVersion=18
+host=Win

@@ -1,0 +1,19 @@
+FileList=Files In Directory("$TEMP");
+for (i = 1, i <= nitems(FileList), i++,
+	If(Contains(FileList[i], "Tracking and Trending"), Delete File("$TEMP/"||FileList[i]));
+);
+SourceDef = Load Text File("addin.def");
+ThisAddinID = Word( 2, SourceDef, " \!t\!n\!r=" );
+
+Try(
+	RootPath = GetEnvironmentVariable(ThisAddinID);
+	If(RootPath=="", NewWindow("Missing Environment Variable", <<modal, TextBox("Please create an Environment Variable with the name:\!n\!n" || ThisAddinID || "\!n\!nSet the variable value to the directory where script output should be stored. \!n\!nRefer to the script SOP for details.")); Stop());
+	If(!(Right(RootPath, 1) == "\" | Right(RootPath, 1) == "/"), RootPath = RootPath || "\"); //Add ending slash if not allready present.
+,
+	NewWindow("Error reading config", <<modal, TextBox("Cannot read config file, please run main script first."));
+	Stop();
+);
+TimeNow = Today();
+CopyFile(RootPath || "Tracking and Trending\Astellas BQT Assay Tracking and Trending.jmp", "$TEMP\Astellas BQT Assay Tracking and Trending_" || Substitute( Char( As Date( TimeNow ) ), ":", "-" ) || ".jmp");
+NewWindow("Warning", <<modal, TextBox("To protect the original tracking and trending table, it has been copied to your temp folder and you are looking at a copy."));
+dtTandT = Open( "$TEMP\Astellas BQT Assay Tracking and Trending_" || Substitute( Char( As Date( TimeNow ) ), ":", "-" ) || ".jmp");
