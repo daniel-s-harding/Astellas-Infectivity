@@ -2414,7 +2414,7 @@ Throw("!Total Number of Plates Is Missing!");
 );
 
 //GUI for selecting data file from QuantaSoft 
-Filelist2 = Pick File( "Select Plate File", "", {"Plate File|csv"}, 1, 0, "", multiple );	
+Filelist2 = Pick File( "Select Plate File", Concat( pathlocation, "\Data File\" ), {"Plate File|csv"}, 1, 0, "", multiple );	
 			
 datafilenamerlist = Filelist2;
 platenumber = N Items( datafilenamerlist );
