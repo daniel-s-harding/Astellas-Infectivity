@@ -27,7 +27,6 @@ NamesDefaultToHere(1);
 //create environment variables
 pathlocation =GetEnvironmentVariable("Infectivity");
 
-Try(
 scriptver = "Astellas Infectivity PLA Script Version 3.1";
 
 
@@ -300,17 +299,17 @@ winJOURNAL << Set page setup(
 /*
 savepath = Char( Get Preferences() );
 positionB = Contains( savepath, "Save As Directory" );
-savepathfinal = Substr( savepath, positionB );
+pathlocation = Substr( savepath, positionB );
 
-positionC = Contains( savepathfinal, "\!"" );
-positionD = Contains( savepathfinal, "\!"", 1 + positionC );
+positionC = Contains( pathlocation, "\!"" );
+positionD = Contains( pathlocation, "\!"", 1 + positionC );
 
-savepathfinal = Substr( savepathfinal, 1 + positionC, positionD - (1 + positionC) );
+pathlocation = Substr( pathlocation, 1 + positionC, positionD - (1 + positionC) );
 */
 
 // Save pdf and journal
 winJOURNAL << get page setup();//get setup information
-winJOURNAL << Save PDF( Concat( savepathfinal || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
+winJOURNAL << Save PDF( Concat( pathlocation || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
 
 Close All( data tables , journals);
 Throw("!Lower Specification Limit is Missing!");
@@ -421,7 +420,7 @@ winJOURNAL << Set page setup(
 
 // Save pdf and journal
 winJOURNAL << get page setup();//get setup information
-winJOURNAL << Save PDF( Concat( savepathfinal || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
+winJOURNAL << Save PDF( Concat( pathlocation || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
 
 Close All( data tables , journals);
 Throw("!Upper Specification Limit is Missing!");
@@ -531,7 +530,7 @@ winJOURNAL << Set page setup(
 
 // Save pdf and journal
 winJOURNAL << get page setup();//get setup information
-winJOURNAL << Save PDF( Concat( savepathfinal || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
+winJOURNAL << Save PDF( Concat( pathlocation || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
 
 Close All( data tables , journals);
 Throw("!Reference Standard Curve Depth Limit Is Missing!");
@@ -641,7 +640,7 @@ winJOURNAL << Set page setup(
 
 // Save pdf and journal
 winJOURNAL << get page setup();//get setup information
-winJOURNAL << Save PDF( Concat( savepathfinal || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
+winJOURNAL << Save PDF( Concat( pathlocation || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
 
 Close All( data tables , journals);
 Throw("!Sample Size Per Dose Limit Is Missing!");
@@ -751,7 +750,7 @@ winJOURNAL << Set page setup(
 
 // Save pdf and journal
 winJOURNAL << get page setup();//get setup information
-winJOURNAL << Save PDF( Concat( savepathfinal || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
+winJOURNAL << Save PDF( Concat( pathlocation || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
 
 Close All( data tables , journals);
 Throw("!Unconstrained EC50 Standard Lower Limit Is Missing!");
@@ -861,7 +860,7 @@ winJOURNAL << Set page setup(
 
 // Save pdf and journal
 winJOURNAL << get page setup();//get setup information
-winJOURNAL << Save PDF( Concat( savepathfinal || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
+winJOURNAL << Save PDF( Concat( pathlocation || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
 
 Close All( data tables , journals);
 Throw("!Unconstrained EC50 Standard Upper Limit  Is Missing!");
@@ -970,7 +969,7 @@ winJOURNAL << Set page setup(
 
 // Save pdf and journal
 winJOURNAL << get page setup();//get setup information
-winJOURNAL << Save PDF( Concat( savepathfinal || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
+winJOURNAL << Save PDF( Concat( pathlocation || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
 
 Close All( data tables , journals);
 Throw("!% Relative Potency Delta (Constrained – Unconstrained) Limit  Is Missing!");
@@ -1080,7 +1079,7 @@ winJOURNAL << Set page setup(
 
 // Save pdf and journal
 winJOURNAL << get page setup();//get setup information
-winJOURNAL << Save PDF( Concat( savepathfinal || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
+winJOURNAL << Save PDF( Concat( pathlocation || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
 
 Close All( data tables , journals);
 Throw("!R-Squared Limit  Is Missing!");
@@ -1189,16 +1188,16 @@ winJOURNAL << Set page setup(
 //Save pdf journal and data file to chosen file from the preset JMP Preferences
 savepath = Char( Get Preferences() );
 positionB = Contains( savepath, "Save As Directory" );
-savepathfinal = Substr( savepath, positionB );
+pathlocation = Substr( savepath, positionB );
 
-positionC = Contains( savepathfinal, "\!"" );
-positionD = Contains( savepathfinal, "\!"", 1 + positionC );
+positionC = Contains( pathlocation, "\!"" );
+positionD = Contains( pathlocation, "\!"", 1 + positionC );
 
-savepathfinal = Substr( savepathfinal, 1 + positionC, positionD - (1 + positionC) );
+pathlocation = Substr( pathlocation, 1 + positionC, positionD - (1 + positionC) );
 
 // Save pdf and journal
 winJOURNAL << get page setup();//get setup information
-winJOURNAL << Save PDF( Concat( savepathfinal || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
+winJOURNAL << Save PDF( Concat( pathlocation || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
 
 Close All( data tables , journals);
 Throw("!Within Group Jackknife z Outlier Limit  Is Missing!");
@@ -1308,7 +1307,7 @@ winJOURNAL << Set page setup(
 
 // Save pdf and journal
 winJOURNAL << get page setup();//get setup information
-winJOURNAL << Save PDF( Concat( savepathfinal || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
+winJOURNAL << Save PDF( Concat( pathlocation || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
 
 Close All( data tables , journals);
 Throw("!Between Group Studentized Residuals Outlier Limit  Is Missing!");
@@ -1417,7 +1416,7 @@ winJOURNAL << Set page setup(
 
 // Save pdf and journal
 winJOURNAL << get page setup();//get setup information
-winJOURNAL << Save PDF( Concat( savepathfinal || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
+winJOURNAL << Save PDF( Concat( pathlocation || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
 
 Close All( data tables , journals);
 Throw("!Parallelism Slope Ratio Lower Limit Is Missing!");
@@ -1526,7 +1525,7 @@ winJOURNAL << Set page setup(
 
 // Save pdf and journal
 winJOURNAL << get page setup();//get setup information
-winJOURNAL << Save PDF( Concat( savepathfinal || "\Protein Expression\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
+winJOURNAL << Save PDF( Concat( pathlocation || "\Protein Expression\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
 
 Close All( data tables , journals);
 Throw("!Parallelism Slope Ratio Upper Limit Is Missing!");
@@ -1634,7 +1633,7 @@ winJOURNAL << Set page setup(
 
 // Save pdf and journal
 winJOURNAL << get page setup();//get setup information
-winJOURNAL << Save PDF( Concat( savepathfinal || "\Protein Expression\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
+winJOURNAL << Save PDF( Concat( pathlocation || "\Protein Expression\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
 
 Close All( data tables , journals);
 Throw("!Linearity Ratio Lower Limit Is Missing!");
@@ -1744,7 +1743,7 @@ winJOURNAL << Set page setup(
 
 // Save pdf and journal
 winJOURNAL << get page setup();//get setup information
-winJOURNAL << Save PDF( Concat( savepathfinal || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
+winJOURNAL << Save PDF( Concat( pathlocation || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
 
 Close All( data tables , journals);
 Throw("!Dose Response Test Limit Is Missing!");
@@ -1852,7 +1851,7 @@ winJOURNAL << Set page setup(
 
 // Save pdf and journal
 winJOURNAL << get page setup();//get setup information
-winJOURNAL << Save PDF( Concat( savepathfinal || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
+winJOURNAL << Save PDF( Concat( pathlocation || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
 
 Close All( data tables , journals);
 Throw("!CV Limit Is Missing!");
@@ -1961,7 +1960,7 @@ winJOURNAL << Set page setup(
 
 // Save pdf and journal
 winJOURNAL << get page setup();//get setup information
-winJOURNAL << Save PDF( Concat( savepathfinal || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
+winJOURNAL << Save PDF( Concat( pathlocation || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
 
 Close All( data tables , journals);
 Throw("!Report File Name Is Missing!");
@@ -2070,7 +2069,7 @@ winJOURNAL << Set page setup(
 
 // Save pdf and journal
 winJOURNAL << get page setup();//get setup information
-winJOURNAL << Save PDF( Concat( savepathfinal || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
+winJOURNAL << Save PDF( Concat( pathlocation || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
 
 Close All( data tables , journals);
 Throw("!Reference Standard Is Missing!");
@@ -2180,7 +2179,7 @@ winJOURNAL << Set page setup(
 
 // Save pdf and journal
 winJOURNAL << get page setup();//get setup information
-winJOURNAL << Save PDF( Concat( savepathfinal || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
+winJOURNAL << Save PDF( Concat( pathlocation || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
 
 Close All( data tables , journals);
 Throw("!Assay Control Is Missing!");
@@ -2289,16 +2288,16 @@ winJOURNAL << Set page setup(
 //Save pdf journal and data file to chosen file from the preset JMP Preferences
 savepath = Char( Get Preferences() );
 positionB = Contains( savepath, "Save As Directory" );
-savepathfinal = Substr( savepath, positionB );
+pathlocation = Substr( savepath, positionB );
 
-positionC = Contains( savepathfinal, "\!"" );
-positionD = Contains( savepathfinal, "\!"", 1 + positionC );
+positionC = Contains( pathlocation, "\!"" );
+positionD = Contains( pathlocation, "\!"", 1 + positionC );
 
-savepathfinal = Substr( savepathfinal, 1 + positionC, positionD - (1 + positionC) );
+pathlocation = Substr( pathlocation, 1 + positionC, positionD - (1 + positionC) );
 
 // Save pdf and journal
 winJOURNAL << get page setup();//get setup information
-winJOURNAL << Save PDF( Concat( savepathfinal || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
+winJOURNAL << Save PDF( Concat( pathlocation || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
 
 Close All( data tables , journals);
 Throw("!Sample Information Is Missing!");
@@ -2407,7 +2406,7 @@ winJOURNAL << Set page setup(
 
 // Save pdf and journal
 winJOURNAL << get page setup();//get setup information
-winJOURNAL << Save PDF( Concat( savepathfinal || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
+winJOURNAL << Save PDF( Concat( pathlocation || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
 
 Close All( data tables , journals);
 Throw("!Total Number of Plates Is Missing!");
@@ -2668,7 +2667,7 @@ winJOURNAL << Set page setup(
 
 // Save pdf and journal
 winJOURNAL << get page setup();//get setup information
-winJOURNAL << Save PDF( Concat( savepathfinal || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
+winJOURNAL << Save PDF( Concat( pathlocation || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
 
 Close All( data tables , journals);
 Throw("!Total Number of Samples Less Than Plate Data Sample Number. Add Missing Sample Information To Configuration File!");
@@ -2776,7 +2775,7 @@ winJOURNAL << Set page setup(
 
 // Save pdf and journal
 winJOURNAL << get page setup();//get setup information
-winJOURNAL << Save PDF( Concat( savepathfinal || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
+winJOURNAL << Save PDF( Concat( pathlocation || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
 
 Close All( data tables , journals);
 Throw("!Total Number of Samples Greater Than Plate Data Sample Number. Load More Data Files!");
@@ -3303,7 +3302,7 @@ winJOURNAL << Set page setup(
 
 // Save pdf and journal
 winJOURNAL << get page setup();//get setup information
-winJOURNAL << Save PDF( Concat( savepathfinal || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
+winJOURNAL << Save PDF( Concat( pathlocation || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
 
 Close All( data tables , journals);
 Throw("!MOI Serial Dilution(s) Are Missing!");
@@ -7503,27 +7502,18 @@ winJOURNAL << Set page setup(
 winJOURNAL << get page setup();
 
 
-//Save pdf journal and data file to chosen file from the preset JMP Preferences
-savepath = Char( Get Preferences() );
-positionB = Contains( savepath, "Save As Directory" );
-savepathfinal = Substr( savepath, positionB );
-
-positionC = Contains( savepathfinal, "\!"" );
-positionD = Contains( savepathfinal, "\!"", 1 + positionC );
-
-savepathfinal = Substr( savepathfinal, 1 + positionC, positionD - (1 + positionC) );
 
 // Save pdf and journal
 winJOURNAL << get page setup();
 
 //get setup information
-winJOURNAL << Save PDF( Concat( savepathfinal || "\Reports\" || filenamer||"_"|| datetimestamper || ".pdf" ) );
-winJOURNAL << Save Journal( Concat( savepathfinal || "\Reports\" ||filenamer||"_"|| datetimestamper || ".jrn" ) );
+winJOURNAL << Save PDF( Concat( pathlocation || "\Reports\" || filenamer||"_"|| datetimestamper || ".pdf" ) );
+winJOURNAL << Save Journal( Concat( pathlocation || "\Reports\" ||filenamer||"_"|| datetimestamper || ".jrn" ) );
 
 
 Current Journal() << close window;
 
-dttextsum2 << save( Concat( savepathfinal || "\Reports\" ||filenamer||"_"||datetimestamper || ".jmp" ) );
+dttextsum2 << save( Concat( pathlocation || "\Reports\" ||filenamer||"_"||datetimestamper || ".jmp" ) );
 
 Close All( data tables );
 
@@ -7531,7 +7521,7 @@ Close All( data tables );
 //Tracking and Trending
 //create new row in the tracking and trending data table that records all the trendable results from the report
 //create Tracking and Trending table
-trackingandtrendingdt = Open( Concat( savepathfinal, "\Reports\", "Astellas Infectivity Tracking and Trending.jmp" ), invisible );
+trackingandtrendingdt = Open( Concat( pathlocation, "\Tracking and Trending\Astellas Infectivity Tracking and Trending.jmp" ), invisible );
 Current Data Table( trackingandtrendingdt );
 trackingandtrendingdt << Add Rows(
 	{:Script Date and Time = timestamp ; :File Name = filenamer ; :Curve Depth =
@@ -7795,7 +7785,7 @@ trackingandtrendingdt << Add Rows(
 		reportables[5]
 	) ; }
 );
-trackingandtrendingdt << save( Concat( savepathfinal, "\Reports\","Astellas Infectivity Tracking and Trending.jmp" ) );
+trackingandtrendingdt << save( Concat( pathlocation, "\Tracking and Trending\Astellas Infectivity Tracking and Trending.jmp" ) );
 Close( trackingandtrendingdt, no save );
 
 New Window( "Script Status",
@@ -7806,4 +7796,4 @@ New Window( "Script Status",
 
 fontpref;//set fonts back to user font preferences
 tablestyles;//set table styles back to user table style preferences
-);
+
