@@ -105,6 +105,15 @@ userdomaindisplay = Concat( "User Domain: ", userdomainr );//concatenate "User D
 computernamedisplay = Concat( "Computer Name: ", computernamer );//concatenate "Computer Name:"  and computernamer variable for report displays
 logonserverdisplay = Concat( "Logon Server: ", logonserverr );//concatenate "Logon Server:"  and logonserverr variable for report displays
 
+	// Initialize configuration file list 
+	Filelist1 = {};
+	// Initialize data file list 
+	Filelist2 = {};
+	// Data file names to use later in "Data File:" section of header
+	datafilenames = {}; 
+	// Config names to use later in "Configuration File:" section of header
+	configfilenames = List(); 
+
 // Get the data requirements from the user
 //a GUI appears and the user selects the appropriate completed excel material template
 				
