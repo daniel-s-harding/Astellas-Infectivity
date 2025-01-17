@@ -310,7 +310,7 @@ savepathfinal = Substr( savepathfinal, 1 + positionC, positionD - (1 + positionC
 
 // Save pdf and journal
 winJOURNAL << get page setup();//get setup information
-winJOURNAL << Save PDF( Concat( savepathfinal || "\Infectivity\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
+winJOURNAL << Save PDF( Concat( savepathfinal || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
 
 Close All( data tables , journals);
 Throw("!Lower Specification Limit is Missing!");
@@ -417,18 +417,11 @@ winJOURNAL << Set page setup(
 	winJOURNAL << get page setup();
 
 //Save pdf journal and data file to chosen file from the preset JMP Preferences
-savepath = Char( Get Preferences() );
-positionB = Contains( savepath, "Save As Directory" );
-savepathfinal = Substr( savepath, positionB );
 
-positionC = Contains( savepathfinal, "\!"" );
-positionD = Contains( savepathfinal, "\!"", 1 + positionC );
-
-savepathfinal = Substr( savepathfinal, 1 + positionC, positionD - (1 + positionC) );
 
 // Save pdf and journal
 winJOURNAL << get page setup();//get setup information
-winJOURNAL << Save PDF( Concat( savepathfinal || "\Infectivity\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
+winJOURNAL << Save PDF( Concat( savepathfinal || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
 
 Close All( data tables , journals);
 Throw("!Upper Specification Limit is Missing!");
@@ -534,19 +527,11 @@ winJOURNAL << Set page setup(
 
 	winJOURNAL << get page setup();
 
-//Save pdf journal and data file to chosen file from the preset JMP Preferences
-savepath = Char( Get Preferences() );
-positionB = Contains( savepath, "Save As Directory" );
-savepathfinal = Substr( savepath, positionB );
 
-positionC = Contains( savepathfinal, "\!"" );
-positionD = Contains( savepathfinal, "\!"", 1 + positionC );
-
-savepathfinal = Substr( savepathfinal, 1 + positionC, positionD - (1 + positionC) );
 
 // Save pdf and journal
 winJOURNAL << get page setup();//get setup information
-winJOURNAL << Save PDF( Concat( savepathfinal || "\Infectivity\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
+winJOURNAL << Save PDF( Concat( savepathfinal || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
 
 Close All( data tables , journals);
 Throw("!Reference Standard Curve Depth Limit Is Missing!");
@@ -652,19 +637,11 @@ winJOURNAL << Set page setup(
 
 	winJOURNAL << get page setup();
 
-//Save pdf journal and data file to chosen file from the preset JMP Preferences
-savepath = Char( Get Preferences() );
-positionB = Contains( savepath, "Save As Directory" );
-savepathfinal = Substr( savepath, positionB );
 
-positionC = Contains( savepathfinal, "\!"" );
-positionD = Contains( savepathfinal, "\!"", 1 + positionC );
-
-savepathfinal = Substr( savepathfinal, 1 + positionC, positionD - (1 + positionC) );
 
 // Save pdf and journal
 winJOURNAL << get page setup();//get setup information
-winJOURNAL << Save PDF( Concat( savepathfinal || "\Infectivity\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
+winJOURNAL << Save PDF( Concat( savepathfinal || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
 
 Close All( data tables , journals);
 Throw("!Sample Size Per Dose Limit Is Missing!");
@@ -770,19 +747,11 @@ winJOURNAL << Set page setup(
 
 	winJOURNAL << get page setup();
 
-//Save pdf journal and data file to chosen file from the preset JMP Preferences
-savepath = Char( Get Preferences() );
-positionB = Contains( savepath, "Save As Directory" );
-savepathfinal = Substr( savepath, positionB );
 
-positionC = Contains( savepathfinal, "\!"" );
-positionD = Contains( savepathfinal, "\!"", 1 + positionC );
-
-savepathfinal = Substr( savepathfinal, 1 + positionC, positionD - (1 + positionC) );
 
 // Save pdf and journal
 winJOURNAL << get page setup();//get setup information
-winJOURNAL << Save PDF( Concat( savepathfinal || "\Infectivity\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
+winJOURNAL << Save PDF( Concat( savepathfinal || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
 
 Close All( data tables , journals);
 Throw("!Unconstrained EC50 Standard Lower Limit Is Missing!");
@@ -888,19 +857,11 @@ winJOURNAL << Set page setup(
 
 	winJOURNAL << get page setup();
 
-//Save pdf journal and data file to chosen file from the preset JMP Preferences
-savepath = Char( Get Preferences() );
-positionB = Contains( savepath, "Save As Directory" );
-savepathfinal = Substr( savepath, positionB );
 
-positionC = Contains( savepathfinal, "\!"" );
-positionD = Contains( savepathfinal, "\!"", 1 + positionC );
-
-savepathfinal = Substr( savepathfinal, 1 + positionC, positionD - (1 + positionC) );
 
 // Save pdf and journal
 winJOURNAL << get page setup();//get setup information
-winJOURNAL << Save PDF( Concat( savepathfinal || "\Infectivity\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
+winJOURNAL << Save PDF( Concat( savepathfinal || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
 
 Close All( data tables , journals);
 Throw("!Unconstrained EC50 Standard Upper Limit  Is Missing!");
@@ -1006,19 +967,10 @@ winJOURNAL << Set page setup(
 
 	winJOURNAL << get page setup();
 
-//Save pdf journal and data file to chosen file from the preset JMP Preferences
-savepath = Char( Get Preferences() );
-positionB = Contains( savepath, "Save As Directory" );
-savepathfinal = Substr( savepath, positionB );
-
-positionC = Contains( savepathfinal, "\!"" );
-positionD = Contains( savepathfinal, "\!"", 1 + positionC );
-
-savepathfinal = Substr( savepathfinal, 1 + positionC, positionD - (1 + positionC) );
 
 // Save pdf and journal
 winJOURNAL << get page setup();//get setup information
-winJOURNAL << Save PDF( Concat( savepathfinal || "\Infectivity\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
+winJOURNAL << Save PDF( Concat( savepathfinal || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
 
 Close All( data tables , journals);
 Throw("!% Relative Potency Delta (Constrained – Unconstrained) Limit  Is Missing!");
@@ -1124,19 +1076,11 @@ winJOURNAL << Set page setup(
 
 	winJOURNAL << get page setup();
 
-//Save pdf journal and data file to chosen file from the preset JMP Preferences
-savepath = Char( Get Preferences() );
-positionB = Contains( savepath, "Save As Directory" );
-savepathfinal = Substr( savepath, positionB );
 
-positionC = Contains( savepathfinal, "\!"" );
-positionD = Contains( savepathfinal, "\!"", 1 + positionC );
-
-savepathfinal = Substr( savepathfinal, 1 + positionC, positionD - (1 + positionC) );
 
 // Save pdf and journal
 winJOURNAL << get page setup();//get setup information
-winJOURNAL << Save PDF( Concat( savepathfinal || "\Infectivity\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
+winJOURNAL << Save PDF( Concat( savepathfinal || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
 
 Close All( data tables , journals);
 Throw("!R-Squared Limit  Is Missing!");
@@ -1254,7 +1198,7 @@ savepathfinal = Substr( savepathfinal, 1 + positionC, positionD - (1 + positionC
 
 // Save pdf and journal
 winJOURNAL << get page setup();//get setup information
-winJOURNAL << Save PDF( Concat( savepathfinal || "\Infectivity\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
+winJOURNAL << Save PDF( Concat( savepathfinal || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
 
 Close All( data tables , journals);
 Throw("!Within Group Jackknife z Outlier Limit  Is Missing!");
@@ -1360,19 +1304,11 @@ winJOURNAL << Set page setup(
 
 	winJOURNAL << get page setup();
 
-//Save pdf journal and data file to chosen file from the preset JMP Preferences
-savepath = Char( Get Preferences() );
-positionB = Contains( savepath, "Save As Directory" );
-savepathfinal = Substr( savepath, positionB );
 
-positionC = Contains( savepathfinal, "\!"" );
-positionD = Contains( savepathfinal, "\!"", 1 + positionC );
-
-savepathfinal = Substr( savepathfinal, 1 + positionC, positionD - (1 + positionC) );
 
 // Save pdf and journal
 winJOURNAL << get page setup();//get setup information
-winJOURNAL << Save PDF( Concat( savepathfinal || "\Infectivity\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
+winJOURNAL << Save PDF( Concat( savepathfinal || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
 
 Close All( data tables , journals);
 Throw("!Between Group Studentized Residuals Outlier Limit  Is Missing!");
@@ -1478,19 +1414,10 @@ winJOURNAL << Set page setup(
 
 	winJOURNAL << get page setup();
 
-//Save pdf journal and data file to chosen file from the preset JMP Preferences
-savepath = Char( Get Preferences() );
-positionB = Contains( savepath, "Save As Directory" );
-savepathfinal = Substr( savepath, positionB );
-
-positionC = Contains( savepathfinal, "\!"" );
-positionD = Contains( savepathfinal, "\!"", 1 + positionC );
-
-savepathfinal = Substr( savepathfinal, 1 + positionC, positionD - (1 + positionC) );
 
 // Save pdf and journal
 winJOURNAL << get page setup();//get setup information
-winJOURNAL << Save PDF( Concat( savepathfinal || "\Infectivity\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
+winJOURNAL << Save PDF( Concat( savepathfinal || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
 
 Close All( data tables , journals);
 Throw("!Parallelism Slope Ratio Lower Limit Is Missing!");
@@ -1596,15 +1523,6 @@ winJOURNAL << Set page setup(
 
 	winJOURNAL << get page setup();
 
-//Save pdf journal and data file to chosen file from the preset JMP Preferences
-savepath = Char( Get Preferences() );
-positionB = Contains( savepath, "Save As Directory" );
-savepathfinal = Substr( savepath, positionB );
-
-positionC = Contains( savepathfinal, "\!"" );
-positionD = Contains( savepathfinal, "\!"", 1 + positionC );
-
-savepathfinal = Substr( savepathfinal, 1 + positionC, positionD - (1 + positionC) );
 
 // Save pdf and journal
 winJOURNAL << get page setup();//get setup information
@@ -1713,15 +1631,6 @@ winJOURNAL << Set page setup(
 
 	winJOURNAL << get page setup();
 
-//Save pdf journal and data file to chosen file from the preset JMP Preferences
-savepath = Char( Get Preferences() );
-positionB = Contains( savepath, "Save As Directory" );
-savepathfinal = Substr( savepath, positionB );
-
-positionC = Contains( savepathfinal, "\!"" );
-positionD = Contains( savepathfinal, "\!"", 1 + positionC );
-
-savepathfinal = Substr( savepathfinal, 1 + positionC, positionD - (1 + positionC) );
 
 // Save pdf and journal
 winJOURNAL << get page setup();//get setup information
@@ -1832,19 +1741,10 @@ winJOURNAL << Set page setup(
 
 	winJOURNAL << get page setup();
 
-//Save pdf journal and data file to chosen file from the preset JMP Preferences
-savepath = Char( Get Preferences() );
-positionB = Contains( savepath, "Save As Directory" );
-savepathfinal = Substr( savepath, positionB );
-
-positionC = Contains( savepathfinal, "\!"" );
-positionD = Contains( savepathfinal, "\!"", 1 + positionC );
-
-savepathfinal = Substr( savepathfinal, 1 + positionC, positionD - (1 + positionC) );
 
 // Save pdf and journal
 winJOURNAL << get page setup();//get setup information
-winJOURNAL << Save PDF( Concat( savepathfinal || "\Infectivity\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
+winJOURNAL << Save PDF( Concat( savepathfinal || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
 
 Close All( data tables , journals);
 Throw("!Dose Response Test Limit Is Missing!");
@@ -1950,19 +1850,9 @@ winJOURNAL << Set page setup(
 
 	winJOURNAL << get page setup();
 
-//Save pdf journal and data file to chosen file from the preset JMP Preferences
-savepath = Char( Get Preferences() );
-positionB = Contains( savepath, "Save As Directory" );
-savepathfinal = Substr( savepath, positionB );
-
-positionC = Contains( savepathfinal, "\!"" );
-positionD = Contains( savepathfinal, "\!"", 1 + positionC );
-
-savepathfinal = Substr( savepathfinal, 1 + positionC, positionD - (1 + positionC) );
-
 // Save pdf and journal
 winJOURNAL << get page setup();//get setup information
-winJOURNAL << Save PDF( Concat( savepathfinal || "\Infectivity\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
+winJOURNAL << Save PDF( Concat( savepathfinal || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
 
 Close All( data tables , journals);
 Throw("!CV Limit Is Missing!");
@@ -2068,19 +1958,10 @@ winJOURNAL << Set page setup(
 
 	winJOURNAL << get page setup();
 
-//Save pdf journal and data file to chosen file from the preset JMP Preferences
-savepath = Char( Get Preferences() );
-positionB = Contains( savepath, "Save As Directory" );
-savepathfinal = Substr( savepath, positionB );
-
-positionC = Contains( savepathfinal, "\!"" );
-positionD = Contains( savepathfinal, "\!"", 1 + positionC );
-
-savepathfinal = Substr( savepathfinal, 1 + positionC, positionD - (1 + positionC) );
 
 // Save pdf and journal
 winJOURNAL << get page setup();//get setup information
-winJOURNAL << Save PDF( Concat( savepathfinal || "\Infectivity\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
+winJOURNAL << Save PDF( Concat( savepathfinal || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
 
 Close All( data tables , journals);
 Throw("!Report File Name Is Missing!");
@@ -2186,19 +2067,10 @@ winJOURNAL << Set page setup(
 
 	winJOURNAL << get page setup();
 
-//Save pdf journal and data file to chosen file from the preset JMP Preferences
-savepath = Char( Get Preferences() );
-positionB = Contains( savepath, "Save As Directory" );
-savepathfinal = Substr( savepath, positionB );
-
-positionC = Contains( savepathfinal, "\!"" );
-positionD = Contains( savepathfinal, "\!"", 1 + positionC );
-
-savepathfinal = Substr( savepathfinal, 1 + positionC, positionD - (1 + positionC) );
 
 // Save pdf and journal
 winJOURNAL << get page setup();//get setup information
-winJOURNAL << Save PDF( Concat( savepathfinal || "\Infectivity\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
+winJOURNAL << Save PDF( Concat( savepathfinal || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
 
 Close All( data tables , journals);
 Throw("!Reference Standard Is Missing!");
@@ -2304,19 +2176,11 @@ winJOURNAL << Set page setup(
 
 	winJOURNAL << get page setup();
 
-//Save pdf journal and data file to chosen file from the preset JMP Preferences
-savepath = Char( Get Preferences() );
-positionB = Contains( savepath, "Save As Directory" );
-savepathfinal = Substr( savepath, positionB );
 
-positionC = Contains( savepathfinal, "\!"" );
-positionD = Contains( savepathfinal, "\!"", 1 + positionC );
-
-savepathfinal = Substr( savepathfinal, 1 + positionC, positionD - (1 + positionC) );
 
 // Save pdf and journal
 winJOURNAL << get page setup();//get setup information
-winJOURNAL << Save PDF( Concat( savepathfinal || "\Infectivity\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
+winJOURNAL << Save PDF( Concat( savepathfinal || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
 
 Close All( data tables , journals);
 Throw("!Assay Control Is Missing!");
@@ -2434,7 +2298,7 @@ savepathfinal = Substr( savepathfinal, 1 + positionC, positionD - (1 + positionC
 
 // Save pdf and journal
 winJOURNAL << get page setup();//get setup information
-winJOURNAL << Save PDF( Concat( savepathfinal || "\Infectivity\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
+winJOURNAL << Save PDF( Concat( savepathfinal || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
 
 Close All( data tables , journals);
 Throw("!Sample Information Is Missing!");
@@ -2539,19 +2403,11 @@ winJOURNAL << Set page setup(
 
 	winJOURNAL << get page setup();
 
-//Save pdf journal and data file to chosen file from the preset JMP Preferences
-savepath = Char( Get Preferences() );
-positionB = Contains( savepath, "Save As Directory" );
-savepathfinal = Substr( savepath, positionB );
 
-positionC = Contains( savepathfinal, "\!"" );
-positionD = Contains( savepathfinal, "\!"", 1 + positionC );
-
-savepathfinal = Substr( savepathfinal, 1 + positionC, positionD - (1 + positionC) );
 
 // Save pdf and journal
 winJOURNAL << get page setup();//get setup information
-winJOURNAL << Save PDF( Concat( savepathfinal || "\Infectivity\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
+winJOURNAL << Save PDF( Concat( savepathfinal || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
 
 Close All( data tables , journals);
 Throw("!Total Number of Plates Is Missing!");
@@ -2809,19 +2665,10 @@ winJOURNAL << Set page setup(
 
 	winJOURNAL << get page setup();
 
-//Save pdf journal and data file to chosen file from the preset JMP Preferences
-savepath = Char( Get Preferences() );
-positionB = Contains( savepath, "Save As Directory" );
-savepathfinal = Substr( savepath, positionB );
-
-positionC = Contains( savepathfinal, "\!"" );
-positionD = Contains( savepathfinal, "\!"", 1 + positionC );
-
-savepathfinal = Substr( savepathfinal, 1 + positionC, positionD - (1 + positionC) );
 
 // Save pdf and journal
 winJOURNAL << get page setup();//get setup information
-winJOURNAL << Save PDF( Concat( savepathfinal || "\Infectivity\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
+winJOURNAL << Save PDF( Concat( savepathfinal || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
 
 Close All( data tables , journals);
 Throw("!Total Number of Samples Less Than Plate Data Sample Number. Add Missing Sample Information To Configuration File!");
@@ -2926,19 +2773,10 @@ winJOURNAL << Set page setup(
 
 	winJOURNAL << get page setup();
 
-//Save pdf journal and data file to chosen file from the preset JMP Preferences
-savepath = Char( Get Preferences() );
-positionB = Contains( savepath, "Save As Directory" );
-savepathfinal = Substr( savepath, positionB );
-
-positionC = Contains( savepathfinal, "\!"" );
-positionD = Contains( savepathfinal, "\!"", 1 + positionC );
-
-savepathfinal = Substr( savepathfinal, 1 + positionC, positionD - (1 + positionC) );
 
 // Save pdf and journal
 winJOURNAL << get page setup();//get setup information
-winJOURNAL << Save PDF( Concat( savepathfinal || "\Infectivity\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
+winJOURNAL << Save PDF( Concat( savepathfinal || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
 
 Close All( data tables , journals);
 Throw("!Total Number of Samples Greater Than Plate Data Sample Number. Load More Data Files!");
@@ -3462,19 +3300,10 @@ winJOURNAL << Set page setup(
 
 	winJOURNAL << get page setup();
 
-//Save pdf journal and data file to chosen file from the preset JMP Preferences
-savepath = Char( Get Preferences() );
-positionB = Contains( savepath, "Save As Directory" );
-savepathfinal = Substr( savepath, positionB );
-
-positionC = Contains( savepathfinal, "\!"" );
-positionD = Contains( savepathfinal, "\!"", 1 + positionC );
-
-savepathfinal = Substr( savepathfinal, 1 + positionC, positionD - (1 + positionC) );
 
 // Save pdf and journal
 winJOURNAL << get page setup();//get setup information
-winJOURNAL << Save PDF( Concat( savepathfinal || "\Infectivity\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
+winJOURNAL << Save PDF( Concat( savepathfinal || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
 
 Close All( data tables , journals);
 Throw("!MOI Serial Dilution(s) Are Missing!");
