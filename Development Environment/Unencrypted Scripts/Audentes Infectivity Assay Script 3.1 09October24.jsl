@@ -127,8 +127,8 @@ Filelist1 = Pick File(
 );
 
 //import the excel material template as a data table and name the plate map	
-Open(Filelist1[1], invisible);	
-configfile =Filelist1[1];			
+Open(Filelist1, invisible);	
+configfile =Filelist1;			
 positionA = Contains( configfile , "/" , -1);//finds first position for file name
 datafilenamenopath = Substr( configfile, positionA+1 );//subtracts folder path from file name
 
