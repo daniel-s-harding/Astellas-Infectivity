@@ -4683,7 +4683,7 @@ fixedRFER = 9.73;
 //EC50 STD  Dose Unconstrained Fixed
 dtbetween=dttextsum2<<select where( contains( :Name( "Group" ),rstandard))<<subset(invisible);
 
-:Name( "MOI" ) << set modeling type( "Continuous" );
+:Name( "MOI (Vg/cell)" ) << set modeling type( "Continuous" );
 
 	group1 = Fit Model(
 		Y( :Name("Log10 Vg/mL") ),
@@ -4751,7 +4751,6 @@ ec50refunconfourdose = 10 ^ (ec50refunconfourdoselog);
 ec50refunconr << close window;
 
 dtbetween << clear row states;
-dtbetween << select where( :Droplet Result == "1") << exclude;
 dtbetween << select where( :Outlier Within Group == "Outlier" ) << exclude;
 dtbetween << select where( :Outlier Between Group == "Outlier" ) << exclude;
 
