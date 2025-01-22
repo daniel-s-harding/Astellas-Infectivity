@@ -4681,6 +4681,7 @@ dttextsum2 << invert row selection << exclude << hide;
 fixedRFER = 9.73;
 
 //EC50 STD  Dose Unconstrained Fixed
+current data table(dttextsum2);
 dtbetween=dttextsum2<<select where( contains( :Name( "Group" ),rstandard))<<subset(invisible);
 
 :Name( "MOI (Vg/cell)" ) << set modeling type( "Continuous" );
