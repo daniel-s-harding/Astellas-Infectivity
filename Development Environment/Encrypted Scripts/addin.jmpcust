@@ -4,25 +4,25 @@
       <jm:name></jm:name>
       <jm:menu>
         <jm:name>Astellas</jm:name>
-        <jm:caption>Astellas BQT Assay Single Run</jm:caption>
+        <jm:caption>Astellas Infectivity</jm:caption>
         <jm:command>
-          <jm:name>BQT</jm:name>
-          <jm:caption>BQT Assay Single Run Analysis</jm:caption>
-          <jm:action type="path">$ADDIN_HOME(com.astellas.BQT_SingleRun)\Astellas BQT Infectivity Assay Single Run Script 0.1 04November2024 v0.1.jsl</jm:action>
+          <jm:name>Infectivity</jm:name>
+          <jm:caption>Infectivity Assay Single Run Analysis</jm:caption>
+          <jm:action type="path">$ADDIN_HOME(com.astellas.Infectivity)\Astellas Infectivity Assay Script 3.1 09October24.jsl</jm:action>
 		      <jm:tip>Run the bioassay</jm:tip>
           <jm:icon type="builtin">FitCurve</jm:icon>
         </jm:command>
 		    <jm:command>
           <jm:name>DPOpenTandT</jm:name>
-          <jm:caption>Astellas BQT Assay Tracking and Trending</jm:caption>
-          <jm:action type="path">$ADDIN_HOME(com.astellas.BQT_SingleRun)\Open TandT.jsl</jm:action>
+          <jm:caption>Astellas Infectivity Tracking and Trending</jm:caption>
+          <jm:action type="path">$ADDIN_HOME(com.astellas.Infectivity)\Open TandT.jsl</jm:action>
 		      <jm:tip>Open a temporary copy of the Tracking and Trending table</jm:tip>
           <jm:icon type="builtin">DataFilter</jm:icon>
         </jm:command>
 		    <jm:command>
           <jm:name>DPSPC</jm:name>
           <jm:caption>BQT Assay Single Run SPC</jm:caption>
-          <jm:action type="path">$ADDIN_HOME(com.astellas.BQT_SingleRun)\Open SPC.jsl</jm:action>
+          <jm:action type="path">$ADDIN_HOME(com.astellas.Infectivity)\Open SPC.jsl</jm:action>
 		      <jm:tip>Statistical Process Control on the tracking and trending information</jm:tip>
           <jm:icon type="builtin">ControlC</jm:icon>
         </jm:command>
