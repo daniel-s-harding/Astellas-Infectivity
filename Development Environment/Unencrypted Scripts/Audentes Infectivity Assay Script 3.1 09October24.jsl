@@ -7458,7 +7458,7 @@ inputname << Font Color( 19 ) << set Font Style( "Bold" );
 inputname << Set Wrap (1000);
 inputreport << journal << close window;
 
-dtconfig2=Open( Filelist1[1], invisible );
+dtconfig2=Open( Filelist1, invisible );
 
 dtconfig2 << journal; 
 close(dtconfig2, no save);
