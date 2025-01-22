@@ -1,8 +1,8 @@
 Names default to here(1);
 //List of parameters to change
 AddinSource = "../Encrypted Scripts/";
-Name = "Astellas - BQT Single Run";
-ID = "com.astellas.BQT_SingleRun";
+Name = "Astellas - Infectivity";
+ID = "com.astellas.Infectivity";
 
 Version = Format( Today(), "Format Pattern", "<YY><MM><DD>" );
 JMPVersion = Left(JMP Version(), 2);
