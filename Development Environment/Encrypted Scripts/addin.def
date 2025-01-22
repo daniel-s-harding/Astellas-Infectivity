@@ -1,0 +1,6 @@
+id=com.astellas.Infectivity
+name=Astellas - Infectivity
+supportJmpSE=0
+addinVersion=250122
+minJmpVersion=18
+host=Win

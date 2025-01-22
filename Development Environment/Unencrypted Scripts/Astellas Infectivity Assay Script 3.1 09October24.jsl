@@ -1534,7 +1534,7 @@ winJOURNAL << Set page setup(
 
 // Save pdf and journal
 winJOURNAL << get page setup();//get setup information
-winJOURNAL << Save PDF( Concat( pathlocation || "\Protein Expression\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
+winJOURNAL << Save PDF( Concat( pathlocation || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
 
 Close All( data tables , journals);
 Throw("!Parallelism Slope Ratio Upper Limit Is Missing!");
@@ -1642,7 +1642,7 @@ winJOURNAL << Set page setup(
 
 // Save pdf and journal
 winJOURNAL << get page setup();//get setup information
-winJOURNAL << Save PDF( Concat( pathlocation || "\Protein Expression\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
+winJOURNAL << Save PDF( Concat( pathlocation || "\Reports\" || "Error Report" || "_" || datetimestamper || ".pdf" ) );
 
 Close All( data tables , journals);
 Throw("!Linearity Ratio Lower Limit Is Missing!");
@@ -2427,46 +2427,6 @@ Filelist2 = Pick File( "Select Plate File", Concat( pathlocation, "\Data File\" 
 datafilenamerlist = Filelist2;
 platenumber = N Items( datafilenamerlist );
 
-if (
-platenumber == 1,  
-
-positionA = Contains( datafilenamerlist[1] , "/" , -1); //finds first position for file name
-platenameA =  Substr( datafilenamerlist[1], positionA+1 );//subtracts folder path from file name
-
-positionC = Contains( platenameA , "." );//finds last position for file name
-
-platenamerA =Substr( platenameA, 1, positionC - 1 );//final template file name
-,
-platenumber == 2, 
-
-positionA = Contains( datafilenamerlist[1] , "/" , -1); //finds first position for file name
-positionB = Contains( datafilenamerlist[2] , "/" , -1); //finds first position for file name
-platenameA =  Substr( datafilenamerlist[1], positionA+1 );//subtracts folder path from file name
-platenameB =  Substr( datafilenamerlist[2], positionB+1 );//subtracts folder path from file name
-
-positionC = Contains( platenameA , "." );//finds last position for file name
-positionD = Contains( platenameB , "." );//finds last position for file name
-
-platenamerA =Substr( platenameA, 1, positionC - 1 );//final template file name
-platenamerB = Substr( platenameB, 1, positionD - 1 );//final template file name
-,
-platenumber == 3,  
-
-positionA = Contains( datafilenamerlist[1] , "/" , -1); //finds first position for file name
-positionB = Contains( datafilenamerlist[2] , "/" , -1); //finds first position for file name
-positionC = Contains( datafilenamerlist[2] , "/" , -1); //finds first position for file name
-platenameA =  Substr( datafilenamerlist[1], positionA+1 );//subtracts folder path from file name
-platenameB =  Substr( datafilenamerlist[2], positionB+1 );//subtracts folder path from file name
-platenameC =  Substr( datafilenamerlist[2], positionB+1 );//subtracts folder path from file name
-
-positionD = Contains( platenameA , "." );//finds last position for file name
-positionE = Contains( platenameB , "." );//finds last position for file name
-positionF = Contains( platenameC , "." );//finds last position for file name
-
-platenamerA =Substr( platenameA, 1, positionC - 1 );//final template file name
-platenamerB = Substr( platenameB, 1, positionD - 1 );//final template file name
-platenamerC = Substr( platenameB, 1, positionD - 1 );//final template file name
-);
 
 // Loading user selected files
 dtname = List( platenumber  );
@@ -4440,7 +4400,99 @@ dttextsum2 << select where( :First Outlier Within Group Check == "Outlier" ) << 
 dttextsum2 << ClearSelect;
 
 //summary table for mean 
-dtMeanSummary = dttextsum2 << Summary(
+dttextsum2MeanSummary = dttextsum2 << Summary(
+    invisible,
+    Group( :Group, :"MOI (Vg/cell)"n ),
+    Mean( :"Vg/mL"n )
+);
+
+dttextsum2 << Update(
+    With( dttextsum2MeanSummary ),
+    Match Columns( :Group = :Group, :"MOI (Vg/cell)"n = :"MOI (Vg/cell)"n ),
+    Add Columns from Update Table( :"Mean(Vg/mL)"n ),
+    Replace Columns in Main Table( None )
+);
+Close( dttextsum2MeanSummary, no save );
+dttextsum2 << New Column( "Residual Vg/mL",
+    Numeric,
+    "Continuous",
+    Format( "Fixed Dec", 12, 3 ),
+    Formula( :"Vg/mL"n - :"Mean(Vg/mL)"n )
+);
+
+
+//summary table for SD 
+dttextsum2SDSummary = dttextsum2 << Summary(
+    invisible,
+    Group( :"MOI (Vg/cell)"n ),
+    StdDev( :"Residual Vg/mL"n )
+);
+
+dttextsum2 << Update(
+    With( dttextsum2SDSummary ),
+    Match Columns( :"MOI (Vg/cell)"n = :"MOI (Vg/cell)"n ),
+    Add Columns from Update Table( :"Std Dev(Residual Vg/mL)"n ),
+    Replace Columns in Main Table( None )
+);
+Close( dttextsum2SDSummary, no save );
+
+Eval(EvalExpr(New Column( "Outlier Within Group",
+    Character,
+    "Nominal",
+    Formula(
+        If(
+            :Jackknife z > Expr(num(outlierlimitnum)),
+                If(:"Mean(Vg/mL)"n - 1.96*:"Std Dev(Residual Vg/mL)"n <= :"Vg/mL"n <= :"Mean(Vg/mL)"n + 1.96*:"Std Dev(Residual Vg/mL)"n,
+                    "Within Analytical Error",
+                    "Outlier"
+                ),
+            "Ok"
+        )
+    ),
+    Set Property( "Value Colors", {"Ok" = -15400938, "Within Analytical Error" = -15400938, "Outlier" = -16768477} ),
+    Color Cell by Value
+)));
+
+	
+dttextsum2 << Clear Row States;
+dttextsum2 << select where( :Outlier Within Group == "Outlier" ) << Exclude(1) << ClearSelect;
+
+	//create variable name for the test article type. whether it's TA or TI
+	
+	dttestart=dttextsum2<<select where(!contains(:Group,"Std"))<<subset(invisible);
+	
+	testsampletypes=:Group<<get values;
+	
+	testsamplelist= Associative Array( testsampletypes );
+	
+	talist=testsamplelist<<get keys;
+		
+	
+	//close the TA data table
+	close(dttestart, no save);	
+
+
+//Outlier Studentized Residuals, Between Group/Dose Outlier Determination
+//Between Group Outlier Removal Prior to Model Fitting and Masking Selection
+current data table(dttextsum2);
+dttextsum2 << Clear Row States;
+dttextsum2 << select where( :Outlier Within Group == "Outlier" ) << exclude;
+dttextsum2 << select all rows;
+dttextsum2 << invert row selection;
+
+
+//hide outlier within dose columns
+:First Outlier Within Group Check<<hide(1);
+:Name("Mean (Vg/mL)")<<hide(1);
+:Name("Residual Vg/mL")<<hide(1);
+:Name("Std Dev(Residual Vg/mL)")<<hide(1);
+
+//set name of first table
+dttextsum2 << set name("first table");
+
+
+//summary table for mean 
+/*dtMeanSummary = dttextsum2 << Summary(
 	invisible,
 	Group( :Group, ::Name("MOI (Vg/cell)") ),
 	Mean( :Name( "Vg/mL" ) ),
@@ -4617,16 +4669,52 @@ For( i = 1, i <= N Table(), i++,
 	:Analytical Error Upper<<hide(1);
 	:Analytical Error Lower<<hide(1);
 	
+*/
 
 //EC50 STD 5 Dose Unconstrained Fixed
 
 dttextsum2 << clear row states;
 :Name( "MOI (Vg/cell)" ) << set modeling type( "Continuous" );
 dttextsum2 << select where( :Outlier Within Group == "Outlier" ) << exclude;
-dttextsum2 << select where( :Outlier Between Group == "Outlier" ) << exclude;
 dttextsum2 << select where( :Group == rstandard );
 dttextsum2 << invert row selection << exclude << hide;
 fixedRFER = 9.73;
+
+//EC50 STD  Dose Unconstrained Fixed
+dtbetween=dttextsum2<<select where( contains( :Name( "Group" ),rstandard))<<subset(invisible);
+
+:Name( "MOI" ) << set modeling type( "Continuous" );
+
+	group1 = Fit Model(
+		Y( :Name("Log10 Vg/mL") ),
+		Effects( :Group, :Name( "Log10 MOI (Vg/cell)" ), :Group* :Name( "Log10 MOI (Vg/cell)" ) ),
+		Personality( "Standard Least Squares" ),
+		Emphasis( "Effect Leverage" ),
+		Run(
+			:Name("Log10 Vg/mL") << {Summary of Fit( 1 ), Analysis of Variance( 1 ), Parameter Estimates( 1 ), Scaled Estimates( 1 ),
+			Plot Actual by Predicted( 1 ), Plot Residual by Predicted( 1 ), Plot Residual by Row( 1 ), Plot Studentized Residuals( 0 ),
+			Plot Effect Leverage( 1 ), Plot Residual by Normal Quantiles( 0 ), Box Cox Y Transformation( 0 ), Show VIF( 1 )},
+			Effect Summary( 0 )
+		)
+	); 
+	group1r = group1 << report;
+	group1r << Externally Studentized Residuals; 
+	group1r << close window;
+
+	:Name("Externally Studentized Residuals Log10 Vg/mL") << set Name( "Externally Studentized Residuals" );
+	:Externally Studentized Residuals << Format( "Fixed Dec", 7, 3 );
+	dtbetween << New Column( "Outlier Between Group",
+		Character,
+		"Nominal",
+		formula( If( Abs( :Externally Studentized Residuals ) >= studoutlierlimitnum, "Outlier", "Ok" ) )
+	);
+
+	:Outlier Between Group<<Set Property( "Value Colors", {"Ok" = -15400938, "Outlier" = -16768477} )<<Color Cell by Value;
+	
+
+	dtbetween << select where( :Outlier Between Group == "Outlier" ) << exclude;
+	dtbetween << clear select;
+
 
 ec50refuncon = Fit Model(
 	Y( :Name( "Log10 Vg/mL" ) ),
@@ -4634,6 +4722,11 @@ ec50refuncon = Fit Model(
 	Personality( "Standard Least Squares" ),
 	Emphasis( "Effect Leverage" ),
 	Run(
+		Profiler(
+			1,
+			Confidence Intervals( 1 ),
+			Term Value( Name( "Log10 MOI (Vg/cell)" )(-1.29874, Lock( 0 ), Show( 1 )) )
+		),
 		:Name( "Log10 Vg/mL" ) << {Summary of Fit( 1 ), Analysis of Variance( 1 ), Parameter Estimates( 1 ),
 		Scaled Estimates( 1 ), Plot Actual by Predicted( 1 ), Plot Residual by Predicted( 1 ),
 		Plot Residual by Row( 1 ), Plot Studentized Residuals( 0 ), Plot Effect Leverage( 1 ),
@@ -4650,14 +4743,43 @@ ec50refuncon = Fit Model(
 		)
 	)
 );
+
 ec50refunconr = ec50refuncon << report;
 ec50refvalues = ec50refunconr["Inverse Prediction"][columnbox( 2 )] << getasmatrix;
 ec50refunconfourdoselog = ec50refvalues[1];
 ec50refunconfourdose = 10 ^ (ec50refunconfourdoselog);
 ec50refunconr << close window;
-dttextsum2 << clear row states;
-dttextsum2 << select where( :Outlier Within Group == "Outlier" ) << exclude;
-dttextsum2 << select where( :Outlier Between Group == "Outlier" ) << exclude;
+
+dtbetween << clear row states;
+dtbetween << select where( :Droplet Result == "1") << exclude;
+dtbetween << select where( :Outlier Within Group == "Outlier" ) << exclude;
+dtbetween << select where( :Outlier Between Group == "Outlier" ) << exclude;
+
+//Calculate curve depth 
+	dtcurvedepth = dtbetween << Summary(
+		Group( :"MOI (Vg/cell)"n ),
+		Mean( :"Vg/mL"n ),
+		Freq( "None" ),
+		Weight( "None" )
+	);
+	
+	
+	//Column for calculating the Reference minimum and maximum
+	current data table(dtcurvedepth);
+	
+	
+	//Column for calculating the curve depth
+	dtcurvedepth << New Column( "Reference Curve Depth",
+			continuous,
+			formula( If( Row() == 1, Col Maximum( :"Mean(Vg/mL)"n ) - Col Minimum( :"Mean(Vg/mL)"n ) ) )
+		);
+		:Reference Curve Depth << Format( "Fixed", 7, 2 );
+		refcurvedepth = :Reference Curve Depth[1];
+			
+	close(dtcurvedepth, no save);
+	close(ec50refuncon, no save);
+	close(dtbetween, no save);
+
 
 
 
@@ -4743,7 +4865,7 @@ dttextsum2 << Journal;
 
 //Add Limits of Outlier Detections to report below table
 jackztb = Text Box( Concat( "Outliers detected in Outlier Within Group column are Jackknife z greater than ", Char( outlierlimitnum ),
-" and RLU outside of 95% analytical error" ) );
+" and Vg/mL outside of 95% analytical error" ) );
 jackztb << Font Color( 19 ) << set Font Style( "Bold" );
 jackztb << Set Font Size( 12 );
 jackztb << Set Wrap( 1000 );
@@ -4781,7 +4903,7 @@ If( SN1 == rstandard,
 
 //Add Limits of Outlier Detections to report below table
 jackztb = Text Box( Concat( "Outliers detected in Outlier Within Group column are Jackknife z greater than ", Char( outlierlimitnum ),
-" and RLU outside of 95% analytical error" ) );
+" and Vg/mL outside of 95% analytical error" ) );
 jackztb << Font Color( 19 ) << set Font Style( "Bold" );
 jackztb << Set Font Size( 12 );
 jackztb << Set Wrap( 1000 );
@@ -4821,7 +4943,7 @@ If( sn2 == "" | sn2 == rstandard,
 
 //Add Limits of Outlier Detections to report below table
 jackztb = Text Box( Concat( "Outliers detected in Outlier Within Group column are Jackknife z greater than ", Char( outlierlimitnum ),
-" and RLU outside of 95% analytical error" ) );
+" and Vg/mL outside of 95% analytical error" ) );
 jackztb << Font Color( 19 ) << set Font Style( "Bold" );
 jackztb << Set Font Size( 12 );
 jackztb << Set Wrap( 1000 );
@@ -4874,7 +4996,7 @@ If( SN3 == "" | SN3 == rstandard,
 
 //Add Limits of Outlier Detections to report below table
 jackztb = Text Box( Concat( "Outliers detected in Outlier Within Group column are Jackknife z greater than ", Char( outlierlimitnum ),
-" and RLU outside of 95% analytical error" ) );
+" and Vg/mL outside of 95% analytical error" ) );
 jackztb << Font Color( 19 ) << set Font Style( "Bold" );
 jackztb << Set Font Size( 12 );
 jackztb << Set Wrap( 1000 );
@@ -4929,7 +5051,7 @@ If( sn4 == "" | sn4 == rstandard,
 
 //Add Limits of Outlier Detections to report below table
 jackztb = Text Box( Concat( "Outliers detected in Outlier Within Group column are Jackknife z greater than ", Char( outlierlimitnum ),
-" and RLU outside of 95% analytical error" ) );
+" and Vg/mL outside of 95% analytical error" ) );
 jackztb << Font Color( 19 ) << set Font Style( "Bold" );
 jackztb << Set Font Size( 12 );
 jackztb << Set Wrap( 1000 );
@@ -4987,7 +5109,7 @@ If( sn5 == "" | sn5 == rstandard,
 
 //Add Limits of Outlier Detections to report below table
 jackztb = Text Box( Concat( "Outliers detected in Outlier Within Group column are Jackknife z greater than ", Char( outlierlimitnum ),
-" and RLU outside of 95% analytical error" ) );
+" and Vg/mL outside of 95% analytical error" ) );
 jackztb << Font Color( 19 ) << set Font Style( "Bold" );
 jackztb << Set Font Size( 12 );
 jackztb << Set Wrap( 1000 );
@@ -5028,7 +5150,7 @@ If( sn6 == "" | sn6 == rstandard,
 
 //Add Limits of Outlier Detections to report below table
 jackztb = Text Box( Concat( "Outliers detected in Outlier Within Group column are Jackknife z greater than ", Char( outlierlimitnum ),
-" and RLU outside of 95% analytical error" ) );
+" and Vg/mL outside of 95% analytical error" ) );
 jackztb << Font Color( 19 ) << set Font Style( "Bold" );
 jackztb << Set Font Size( 12 );
 jackztb << Set Wrap( 1000 );
@@ -5343,70 +5465,7 @@ empty();
 	cvchecker = :CV Check << get values;
 	samplesizechecker = :Sample Size Check << get values;
 	
-	//Curve Depth Calculation
-	dtsummary << New Column( "Curve Depth Max Min",
-		continuous,
-		formula(
-			If(
-				:Group == rstandard & :Name( "MOI (Vg/cell)" ) == minmoi | :Group == rstandard & :Name( "MOI (Vg/cell)" ) ==
-				maxmoi,
-				:Name( "Mean(Vg/mL)" ),
-				Empty()
-			)
-		)
-	);
-
-
-	dtsummary << New Column( "Curve Depth",
-		continuous,
-		formula( Col Maximum( :Curve Depth Max Min ) - Col Minimum( :Curve Depth Max Min ) )
-	);
-	curvedepthstd = :Curve Depth << get values;
-	cuvedepthstd = curvedepthstd[1];
-
-	dtsummary << select where( :Group == rstandard ) << move rows( at start );
-	dtsummary << clear select;
-	dtsummary << New Column( "Standard Curve Depth",
-		continuous,
-		Format( "Fixed", 7, 2 ),
-		formula( If( Row() == 1, Round( cuvedepthstd, 2 ) ) )
-	);
-	refcurvedepth = :Standard Curve Depth << Get Values;
-	refcurvedepth = cuvedepthstd;
-	dtsampcheck = dtsummary << select where( :Group == rstandard | :Group == samplenames[j] ) <<
-	subset( invisible );
-	Current Data Table( dtsampcheck ); 
-	minngroup = :Name( "N Rows" ) << Get Values;
-	minngroup = Minimum( minngroup );
-	maxcvgroup = :Name( "CV(Vg/mL)" ) << get values;
-	maxcvgroup = Maximum( maxcvgroup );
-	Close( dtsampcheck, no save );
-	Current Data Table( dtsummary );
-	dtsummary << invert row selection;
-	dtsummary << New Column( "Curve Depth Test",
-		Character,
-		"Nominal",
-		Formula(
-			If( :Standard Curve Depth >= curvedepthlimit,
-				"Pass",
-				"Fail"
-			)
-		),
-		Set Property(
-			"Value Colors",
-			{"" = 2, "Pass" = -15400938, "Fail" = -16768477}
-		),
-		Color Cell by Value(1), 
-
-	);
-	curvedepthcheckers = :Curve Depth Test << get values;
-	curvedepthcheck = curvedepthcheckers[1];
-	:Curve Depth Max Min << hide;
-	:Curve Depth << hide;
-	:Name("CV(Vg/mL)")<<set name ("CV(%)");
-	dtsummary << invert row selection;
-	dtsummary << journal;
-	Close( dtsummary, no save );
+	
 
 //Add Limits of CV, Sample Size, and Curve Depth to report below table
 	cvtb = Text Box(
